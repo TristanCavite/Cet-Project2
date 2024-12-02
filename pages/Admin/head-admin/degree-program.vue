@@ -4,8 +4,12 @@
     </div>
 </template>
 
-<script lang="ts">
-    definePageMeta({
-        layout: "head-admin"
-    });
+<script setup> 
+
+// Apply middleware for authentication and role protection
+definePageMeta({
+  middleware: 'auth', // Protect this page
+  layout: "head-admin", // Optional: use specific layout
+});
 </script>
+  
