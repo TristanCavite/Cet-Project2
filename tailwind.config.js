@@ -1,93 +1,20 @@
-const { fontFamily } = require("tailwindcss/defaultTheme");
-
-/**@type {import('tailwindcss').Config} */
+const animate = require("tailwindcss-animate")
+const typography = require("@tailwindcss/typography");
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: "class",
+  darkMode: ["class"],
+  safelist: ["dark"],
+  prefix: "",
+  
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
-      container: {
-        center: true,
-        padding: {
-          DEFAULT: "1rem",
-          sm: "2rem",
-          lg: "4rem",
-        },
-        screens: {
-          "2xl": "1300px",
-        },
-      },
-      fontFamily: {
-        sans: [
-          `Inter, ${fontFamily.sans.join(", ")}`,
-          {
-            fontFeatureSettings: '"cv02","cv03","cv04","cv11"',
-          },
-        ],
-        mono: ["'Fira Code'", ...fontFamily.mono],
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
-      keyframes: {
-        shine: {
-          from: { backgroundPosition: "200% 0" },
-          to: { backgroundPosition: "-200% 0" },
-        },
-        meteor: {
-          "0%": { transform: "rotate(215deg) translateX(0)", opacity: 1 },
-          "70%": { opacity: 1 },
-          "100%": {
-            transform: "rotate(215deg) translateX(-500px)",
-            opacity: 0,
-          },
-        },
-        grid: {
-          "0%": { transform: "translateY(-50%)" },
-          "100%": { transform: "translateY(0)" },
-        },
-        "border-beam": {
-          "100%": {
-            "offset-distance": "100%",
-          },
-        },
-        "accordion-down": {
-          from: { height: "0px" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0px" },
-        },
-        fadeIn: {
-          from: { opacity: "0" },
-          to: { opacity: "1" },
-        },
-        fadeOut: {
-          from: { opacity: "1" },
-          to: { opacity: "0" },
-        },
-        "collapse-down": {
-          from: { height: "0px" },
-          to: { height: "var(--radix-collapsible-content-height)" },
-        },
-        "collapse-up": {
-          from: { height: "var(--radix-collapsible-content-height)" },
-          to: { height: "0px" },
-        },
-      },
-      animation: {
-        shine: "shine 8s ease-in-out infinite",
-        meteor: "meteor 5s linear infinite",
-        grid: "grid 15s linear infinite",
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        fadeIn: "fadeIn 0.2s ease-out",
-        fadeOut: "fadeOut 0.2s ease-out",
-        "collapse-down": "collapse-down 0.2s ease-out",
-        "collapse-up": "collapse-up 0.2s ease-out",
-      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -122,19 +49,113 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-          input: "hsl(var(--sidebar-input))",
+      },
+      borderRadius: {
+        xl: "calc(var(--radius) + 4px)",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: 0 },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: 0 },
+        },
+        "collapsible-down": {
+          from: { height: 0 },
+          to: { height: 'var(--radix-collapsible-content-height)' },
+        },
+        "collapsible-up": {
+          from: { height: 'var(--radix-collapsible-content-height)' },
+          to: { height: 0 },
         },
       },
+      height: {
+        '128': '32rem', // Custom height
+        '144': '36rem', // Another custom height
+        '160': '40rem', // Another custom height
+        '176': '44rem', // Another custom height
+        '192': '48rem', // Another custom height
+        '208': '52rem', // Another custom height
+        '212': '53rem', // Another custom height
+        '216': '54rem', // Another custom height
+        '224': '56rem', // Another custom height
+        '240': '60rem', // Another custom height
+        '256': '70rem', // Another custom height
+        '272': '92rem', // Another custom height
+        '288': '110rem', // Another custom height
+      },
+      width: {
+        '100': '26rem', // Custom width
+        '128': '32rem', // Custom width
+        '144': '36rem', // Another custom width
+        '160': '40rem', // Another custom width
+        '176': '44rem', // Another custom width
+        '192': '48rem', // Another custom width
+        '208': '52rem', // Another custom width
+        '224': '56rem', // Another custom width
+        '240': '60rem', // Another custom width
+        '256': '64rem', // Another custom width
+        '270': '68rem', // Another custom width
+        '272': '70rem', // Another custom width
+        '288': '72rem', // Another custom width
+        '304': '76rem', // Another custom width
+        '320': '80rem', // Another custom width
+        '336': '84rem', // Another custom width
+        '352': '88rem', // Another custom width
+        '368': '92rem', // Another custom width
+        '384': '96rem', // Another custom width
+        '400': '100rem', // Another custom width
+        '416': '108rem', // Another custom width
+        '432': '116rem', // Another custom width
+      },
+      padding: {
+        '100': '26rem', // Custom padding
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        "collapsible-down": "collapsible-down 0.2s ease-in-out",
+        "collapsible-up": "collapsible-up 0.2s ease-in-out",
+      },
+      fontFamily: {
+        montserrat: ['Montserrat', 'Arial', 'sans-serif'],
+        roboto_condensed:['Roboto Condensed', 'Arial', 'sans-serif'],
+        roboto: ['Roboto', 'Arial', 'sans-serif'],
+        playfair: ['Playfair Display', 'Arial', 'sans-serif'],
+        inter: ['Inter', 'Arial', 'sans-serif'],
+      },
+
+      typography: ({ theme }) => ({
+        DEFAULT: {
+          css: {
+            ul: {
+              margin: "0", // Reset list margin
+              padding: "0 0 0 1.25rem", // Add consistent padding for bullets
+              listStyleType: "disc", // Ensure proper bullet markers
+            },
+            ol: {
+              margin: "0", // Reset ordered list margin
+              padding: "0 0 0 1.5rem", // Add consistent padding for numbers
+        listStyleType: "decimal", // Ensure proper number markers
+            },
+            "ul > li::marker": {
+              color: theme("colors.black"), // Force bullet color to black
+            },
+            "ol > li::marker": {
+              color: theme("colors.black"), // Force number color to black
+            },
+            li: {
+              marginBottom: "0.25rem", // Adjust spacing between list items
+            },
+          },
+        },
+      }),
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/forms")({ strategy: "class" })],
-};
+  plugins: [animate, typography],
+}
