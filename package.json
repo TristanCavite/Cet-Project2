@@ -16,6 +16,7 @@
     "@morev/vue-transitions": "^3.0.5",
     "@nuxt/fonts": "^0.10.2",
     "@vee-validate/nuxt": "^4.14.7",
+    "@vee-validate/yup": "^4.14.7",
     "@vueform/multiselect": "^2.6.11",
     "@vueup/vue-quill": "^1.2.0",
     "firebase": "^10.14.1",
