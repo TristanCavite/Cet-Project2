@@ -133,53 +133,57 @@
 </template>
 
 <script setup>
-  import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-  import { doc, getFirestore, setDoc } from "firebase/firestore";
-  import { ref } from "vue";
-  import * as yup from "yup";
-  import { useRouter } from 'vue-router';
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { ref } from "vue";
+import * as yup from "yup";
+import { useRouter } from "vue-router";
 
-  definePageMeta({
-    middleware: 'auth',
-    layout: "no-navbar-footer", // Optional: use specific layout
-  });
-  // Departments list
-  const departments = ref([
-    { id: "dept1", name: "Agricultural and Biosystem Engineering" },
-    { id: "dept2", name: "Civil Engineering" },
-    { id: "dept3", name: "Computer Science" },
-    { id: "dept4", name: "Geodetic Engineering" },
-    { id: "dept5", name: "Mechanical Engineering" },
-    { id: "dept6", name: "Meteorology" },
-  ]);
+// Page metadata and layout
+definePageMeta({
+  middleware: "auth",
+  layout: "no-navbar-footer", // Use specific layout without navbar and footer
+});
 
-  const router = useRouter();
+// Departments list
+const departments = ref([
+  { id: "dept1", name: "Agricultural and Biosystem Engineering" },
+  { id: "dept2", name: "Civil Engineering" },
+  { id: "dept3", name: "Computer Science" },
+  { id: "dept4", name: "Geodetic Engineering" },
+  { id: "dept5", name: "Mechanical Engineering" },
+  { id: "dept6", name: "Meteorology" },
+]);
 
-  const navigateToDashboard = () => {
-  router.push('/admin/super-admin');
+const router = useRouter();
+
+const navigateToDashboard = () => {
+  router.push("/admin/super-admin"); // Navigate back to the super admin dashboard
 };
 
+// Form data and errors
+const form = ref({
+  firstName: "",
+  lastName: "",
+  email: "",
+  title: "Faculty Member", // Default title
+  departmentId: "",
+  password: "",
+  confirmPassword: "",
+});
+const errors = ref({});
+const isHeadDepartment = ref(false); // Tracks whether the user is a head admin
 
-  // Form data and errors
-  const form = ref({
-    firstName: "",
-    lastName: "",
-    email: "",
-    title: "Faculty Member",
-    departmentId: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const errors = ref({});
-  const isHeadDepartment = ref(false);
-
-  // Yup validation schema
-  const schema = yup.object().shape({
-    firstName: yup.string().required("First Name is required"),
-    lastName: yup.string().required("Last Name is required"),
-    email: yup.string().email("A valid email is required").required("Email is required"),
-    title: yup.string().required("Title is required"),
-    departmentId: yup
+// Yup validation schema
+const schema = yup.object().shape({
+  firstName: yup.string().required("First Name is required"),
+  lastName: yup.string().required("Last Name is required"),
+  email: yup
+    .string()
+    .email("A valid email is required")
+    .required("Email is required"),
+  title: yup.string().required("Title is required"),
+  departmentId: yup
       .string()
       .nullable()
       .when("title", (title, schema) => {
@@ -188,68 +192,76 @@
         }
         return schema.nullable();
       }),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
+});
 
-    password: yup
-      .string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref("password")], "Passwords must match")
-      .required("Confirm Password is required"),
-  });
+// Handle title changes
+const handleTitleChange = () => {
+  isHeadDepartment.value = form.value.title === "Chair/Head of Department";
+};
 
-  // Handle title changes
-  const handleTitleChange = () => {
-    isHeadDepartment.value = form.value.title === "Chair/Head of Department";
-  };
+// Form submission
+const submitForm = async () => {
+  try {
+    // Validate form inputs
+    await schema.validate(form.value, { abortEarly: false });
+    errors.value = {}; // Reset errors if validation passes
 
-  // Form submission
-  const submitForm = async () => {
-    try {
-      await schema.validate(form.value, { abortEarly: false });
-      errors.value = {};
+    // Firebase Authentication and Firestore
+    const auth = getAuth();
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      form.value.email,
+      form.value.password
+    );
+    const user = userCredential.user;
 
-      // Firebase Authentication and Firestore
-      const auth = getAuth();
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        form.value.email,
-        form.value.password
-      );
-      const user = userCredential.user;
+    // Assign designation and role based on title
+    const designation = isHeadDepartment.value ? "Department Head" : "None";
+    const role = isHeadDepartment.value ? "Head Admin" : "Faculty";
 
-      const db = getFirestore();
-      await setDoc(doc(db, "users", user.uid), {
-        firstName: form.value.firstName,
-        lastName: form.value.lastName,
-        email: form.value.email,
-        title: form.value.title,
-        departmentId: isHeadDepartment.value ? form.value.departmentId : null,
-        role: isHeadDepartment.value ? "Head Admin" : "Faculty",
+    const db = getFirestore();
+    await setDoc(doc(db, "users", user.uid), {
+      firstName: form.value.firstName,
+      lastName: form.value.lastName,
+      email: form.value.email,
+      title: form.value.title,
+      designation, // Automatically assigned designation
+      departmentId: isHeadDepartment.value ? form.value.departmentId : null,
+      role, // Role based on title
+    });
+
+    // Show success alert and reset form
+    alert("Account created successfully!");
+    form.value = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      title: "Faculty Member", // Reset to default title
+      departmentId: "",
+      password: "",
+      confirmPassword: "",
+    };
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      // Show validation errors
+      err.inner.forEach((e) => {
+        errors.value[e.path] = e.message;
       });
-
-      alert("Account created successfully!");
-      form.value = {
-        firstName: "",
-        lastName: "",
-        email: "",
-        title: "Faculty Member",
-        departmentId: "",
-        password: "",
-        confirmPassword: "",
-      };
-    } catch (err) {
-      if (err.name === "ValidationError") {
-        err.inner.forEach((e) => {
-          errors.value[e.path] = e.message;
-        });
-      } else {
-        console.error("Error:", err.message);
-        alert("Error: " + err.message);
-      }
+    } else {
+      // Log other errors (e.g., Firebase)
+      console.error("Error:", err.message);
+      alert("Error: " + err.message);
     }
-  };
+  }
+};
 </script>
 
 <style scoped>
