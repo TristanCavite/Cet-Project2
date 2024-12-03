@@ -14,7 +14,7 @@
     <div class="mt-8" v-if="collegeDean">
       <h2 class="text-xl font-semibold text-center mb-4">College Dean</h2>
       <div class="flex justify-center">
-        <div class="text-center">
+        <div class="text-center cursor-pointer" @click="showProfilePreview(collegeDean)">
           <img
             :src="collegeDean.photo || '/placeholder.png'"
             alt="College Dean"
@@ -30,7 +30,12 @@
     <div class="mt-12" v-if="headAdmins.length">
       <h2 class="text-xl font-semibold text-center mb-4">Head Members</h2>
       <div class="grid grid-cols-4 gap-6">
-        <div v-for="head in headAdmins" :key="head.id" class="text-center">
+        <div
+          v-for="head in headAdmins"
+          :key="head.id"
+          class="text-center cursor-pointer"
+          @click="showProfilePreview(head)"
+        >
           <img
             :src="head.photo || '/placeholder.png'"
             alt="Head Member"
@@ -46,7 +51,12 @@
     <div class="mt-12" v-if="adminStaff.length">
       <h2 class="text-xl font-semibold text-center mb-4">Staff</h2>
       <div class="grid grid-cols-4 gap-6">
-        <div v-for="staff in adminStaff" :key="staff.id" class="text-center">
+        <div
+          v-for="staff in adminStaff"
+          :key="staff.id"
+          class="text-center cursor-pointer"
+          @click="showProfilePreview(staff)"
+        >
           <img
             :src="staff.photo || '/placeholder.png'"
             alt="Staff"
@@ -58,48 +68,93 @@
       </div>
     </div>
 
+    <!-- Profile Preview Modal -->
+    <div
+      v-if="showProfilePreviewModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+    >
+      <div class="bg-white p-8 rounded shadow-lg w-2/3 max-w-3xl">
+        <div class="text-center">
+          <img
+            :src="selectedProfile?.photo || '/placeholder.png'"
+            alt="Profile Picture"
+            class="w-32 h-32 rounded-full object-cover mx-auto"
+          />
+          <h2 class="mt-4 text-2xl font-bold text-maroon">{{ selectedProfile?.name }}</h2>
+          <p class="text-gray-600 text-lg font-semibold">{{ selectedProfile?.designation }}</p>
+        </div>
+        <div class="mt-6 space-y-4 text-lg">
+          <p><strong>Specialization:</strong> {{ selectedProfile?.specialization || "N/A" }}</p>
+          <p><strong>Email:</strong> {{ selectedProfile?.email || "N/A" }}</p>
+          <p>
+            <strong>Highest Educational Attainment:</strong>
+            <span class="prose text-black" v-html="selectedProfile?.education"></span>
+          </p>
+          <p>
+            <strong>Websites:</strong>
+            <span v-if="selectedProfile?.websites?.length">
+              <span
+                v-for="(website, index) in selectedProfile.websites"
+                :key="index"
+                class="block text-blue-500 underline"
+              >
+                <a :href="website" target="_blank">{{ website }}</a>
+              </span>
+            </span>
+            <span v-else>No websites provided</span>
+          </p>
+        </div>
+        <div class="mt-6 text-center">
+          <button
+            class="bg-gray-300 px-6 py-2 rounded shadow hover:bg-gray-400"
+            @click="closeProfilePreviewModal"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add Faculty/Staff Modal -->
     <div v-if="showAddModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div class="bg-white p-8 rounded shadow-lg w-96">
         <h2 class="text-lg font-bold mb-4">Add Faculty/Staff</h2>
 
         <!-- Search Bar with Suggestions -->
-<div class="relative mb-4">
-  <div class="relative">
-    <input
-      v-model="searchQuery"
-      @focus="dropdownVisible = true"
-      @input="filterUsers"
-      @blur="hideDropdown"
-      type="text"
-      placeholder="Search Faculty"
-      class="w-full border rounded px-3 py-2 pl-10"
-    />
-    <Search class="absolute left-3 top-2 text-gray-500 w-5 h-5" />
-  </div>
-  <ul
-    v-if="dropdownVisible && filteredUsers.length"
-    class="absolute w-full bg-white border rounded shadow mt-1 z-10"
-  >
-    <li
-      v-for="user in filteredUsers"
-      :key="user.id"
-      class="px-3 py-2 hover:bg-gray-200 cursor-pointer"
-      @mousedown="selectUser(user)"
-    >
-      {{ user.name }}
-    </li>
-  </ul>
-</div>
-
+        <div class="relative mb-4">
+          <div class="relative">
+            <input
+              v-model="searchQuery"
+              @focus="dropdownVisible = true"
+              @input="filterUsers"
+              @blur="hideDropdown"
+              type="text"
+              placeholder="Search Faculty"
+              class="w-full border rounded px-3 py-2 pl-10"
+            />
+            <Search class="absolute left-3 top-2 text-gray-500 w-5 h-5" />
+          </div>
+          <ul
+            v-if="dropdownVisible && filteredUsers.length"
+            class="absolute w-full bg-white border rounded shadow mt-1 z-10"
+          >
+            <li
+              v-for="user in filteredUsers"
+              :key="user.id"
+              class="px-3 py-2 hover:bg-gray-200 cursor-pointer"
+              @mousedown="selectUser(user)"
+            >
+              {{ user.name }}
+            </li>
+          </ul>
+        </div>
 
         <!-- Designation Dropdown -->
-        <div class="mb-4">
+        <div v-if="selectedUser.role !== 'Head Admin'" class="mb-4">
           <label class="block text-sm font-medium">Designation:</label>
-          <select v-model="selectedUser.role" class="w-full border rounded px-3 py-2">
+          <select v-model="selectedUser.designation" class="w-full border rounded px-3 py-2">
             <option value="" disabled>Select Designation</option>
             <option value="College Dean">College Dean</option>
-            <option value="Head Admin">Head Admin</option>
             <option value="Staff">Staff</option>
           </select>
         </div>
@@ -124,14 +179,14 @@
   </div>
 </template>
 
+
 <script setup>
 import Search from "@/components/Icons/Search.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import {
   getFirestore,
   collection,
-  getDoc,
-  getDocs,
+  onSnapshot,
   updateDoc,
   doc,
   arrayUnion,
@@ -144,57 +199,57 @@ const collegeDean = ref(null);
 const headAdmins = ref([]);
 const adminStaff = ref([]);
 const showAddModal = ref(false);
+const showProfilePreviewModal = ref(false); // To control profile preview modal visibility
+const selectedProfile = ref(null); // Stores the selected profile for preview
 const users = ref([]);
 const filteredUsers = ref([]);
 const searchQuery = ref("");
 const selectedUser = ref({});
 
 definePageMeta({
-    middleware: 'auth',
-    layout: "super-admin", // Optional: use specific layout
+  middleware: "auth",
+  layout: "super-admin", // Optional: use specific layout
+});
+
+// Real-time listener for Faculty and Staff
+const fetchCollegeFacultyStaffRealTime = () => {
+  const usersCollection = collection(db, "users");
+
+  onSnapshot(usersCollection, (snapshot) => {
+    users.value = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+      name: `${doc.data().firstName || ""} ${doc.data().lastName || ""}`.trim(),
+    }));
+
+    // Update filtered users initially
+    filteredUsers.value = [...users.value];
+
+    // Assign users to appropriate roles in the UI
+    assignRoles(users.value);
   });
-
-// Fetch data from Firestore
-const fetchCollegeFacultyStaff = async () => {
-  const docRef = doc(db, "college_faculty_staff", "college-wide");
-  const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    collegeDean.value = data.collegeDean || null;
-    headAdmins.value = data.headAdmins || [];
-    adminStaff.value = data.adminStaff || [];
-  } else {
-    console.error("No such document!");
-  }
 };
 
-const fetchUsers = async () => {
-  try {
-    const querySnapshot = await getDocs(collection(db, "users"));
-    users.value = querySnapshot.docs
-      .map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          name: data.firstName && data.lastName ? `${data.firstName} ${data.lastName}` : null, // Only construct name if both exist
-        };
-      })
-      .filter(
-        (user) =>
-          user.role !== "Super Admin" && // Exclude Super Admin
-          user.name // Include only users with valid names
-      );
-
-    filteredUsers.value = [...users.value]; // Initially show all users
-    console.log("Fetched users:", users.value); // Debugging log
-  } catch (error) {
-    console.error("Error fetching users:", error);
-  }
+// Function to assign roles dynamically
+const assignRoles = (usersList) => {
+  collegeDean.value = usersList.find((user) => user.designation === "College Dean") || null;
+  headAdmins.value = usersList.filter((user) => user.role === "Head Admin");
+  adminStaff.value = usersList.filter((user) => user.designation === "Staff");
 };
 
+// Function to show profile preview
+const showProfilePreview = (profile) => {
+  selectedProfile.value = profile;
+  showProfilePreviewModal.value = true;
+};
 
+// Function to close profile preview modal
+const closeProfilePreviewModal = () => {
+  selectedProfile.value = null;
+  showProfilePreviewModal.value = false;
+};
+
+// Filter users based on search query
 const filterUsers = () => {
   const query = searchQuery.value.toLowerCase();
   filteredUsers.value = query
@@ -204,47 +259,73 @@ const filterUsers = () => {
     : [...users.value]; // Show all users if query is empty
 };
 
+// Select a user from the search suggestions
 const selectUser = (user) => {
   selectedUser.value = { ...user };
   searchQuery.value = user.name;
   filteredUsers.value = [];
 };
 
+// Reset the modal
 const resetModal = () => {
   selectedUser.value = {};
   searchQuery.value = "";
   showAddModal.value = false;
 };
 
+// Add a faculty or staff member
 const addFacultyOrStaff = async () => {
-  if (!selectedUser.value.id || !selectedUser.value.role) {
-    alert("Please select a user and assign a designation.");
+  if (!selectedUser.value.id) {
+    alert("Please select a user.");
+    return;
+  }
+
+  if (
+    selectedUser.value.role === "Faculty" &&
+    !selectedUser.value.designation
+  ) {
+    alert("Please select a designation for the faculty member.");
     return;
   }
 
   const docRef = doc(db, "college_faculty_staff", "college-wide");
+  const userDocRef = doc(db, "users", selectedUser.value.id);
 
-  if (selectedUser.value.role === "College Dean") {
-    await updateDoc(docRef, { collegeDean: selectedUser.value });
-  } else if (selectedUser.value.role === "Head Admin") {
-    await updateDoc(docRef, {
-      headAdmins: arrayUnion(selectedUser.value),
-    });
-  } else if (selectedUser.value.role === "Staff") {
-    await updateDoc(docRef, {
-      adminStaff: arrayUnion(selectedUser.value),
-    });
+  try {
+    if (selectedUser.value.role === "Faculty") {
+      // Update Firestore with designation
+      await updateDoc(userDocRef, { designation: selectedUser.value.designation });
+
+      // Add the user to the appropriate section
+      if (selectedUser.value.designation === "College Dean") {
+        await updateDoc(docRef, { collegeDean: selectedUser.value });
+      } else if (selectedUser.value.designation === "Staff") {
+        await updateDoc(docRef, {
+          adminStaff: arrayUnion(selectedUser.value),
+        });
+      }
+    } else if (selectedUser.value.role === "Head Admin") {
+      await updateDoc(docRef, {
+        headAdmins: arrayUnion(selectedUser.value),
+      });
+    }
+
+    resetModal();
+    alert("Faculty/Staff successfully added!");
+  } catch (error) {
+    console.error("Error updating Firestore:", error);
+    alert("Failed to add Faculty/Staff. Please try again.");
   }
-
-  await fetchCollegeFacultyStaff();
-  resetModal();
-  alert("Faculty/Staff successfully added!");
 };
 
 // Fetch data on page load
-fetchCollegeFacultyStaff();
-fetchUsers();
+onMounted(() => {
+  fetchCollegeFacultyStaffRealTime(); // Real-time listener
+});
 </script>
+
+
+
 
 <style scoped>
 .text-maroon {

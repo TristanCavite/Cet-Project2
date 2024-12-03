@@ -1,21 +1,21 @@
 <template>
-  <div class="p-8 bg-gray-50 min-h-screen">
-    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-      <div class="bg-gradient-to-r from-maroon to-red-600 p-6 text-center">
+  <div class="min-h-screen bg-gray-50 p-8">
+    <div class="mx-auto max-w-4xl overflow-hidden rounded-lg bg-white shadow-lg">
+      <div class="from-maroon bg-gradient-to-r to-red-600 p-6 text-center">
         <h1 class="text-3xl font-bold text-white">Faculty Profile</h1>
       </div>
       <div class="p-8">
-        <div class="text-center mb-8">
+        <div class="mb-8 text-center">
           <div class="relative">
             <img
               :src="profilePhoto || 'https://via.placeholder.com/150'"
               alt="Profile Picture"
-              class="w-32 h-32 rounded-full object-cover mx-auto shadow-lg border-4 border-gray-100"
+              class="mx-auto h-32 w-32 rounded-full border-4 border-gray-100 object-cover shadow-lg"
             />
             <label
               v-if="isEditing"
               for="file-upload"
-              class="absolute bottom-0 right-0 bg-maroon text-white p-2 rounded-full cursor-pointer"
+              class="bg-maroon absolute bottom-0 right-0 cursor-pointer rounded-full p-2 text-white"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -41,83 +41,77 @@
               v-if="isEditing"
             />
           </div>
-          <h2 class="text-xl font-semibold mt-4 text-gray-800">{{ profile.name }}</h2>
+          <h2 class="mt-4 text-xl font-semibold text-gray-800">{{ profile.name }}</h2>
         </div>
 
         <div class="space-y-6">
           <div>
-            <label class="block text-lg font-bold text-maroon">Name:</label>
+            <label class="text-maroon block text-lg font-bold">Name:</label>
             <p class="text-lg font-medium text-gray-700">{{ profile.name }}</p>
           </div>
 
           <div>
-            <label class="block text-lg font-bold text-maroon">Designation:</label>
+            <label class="text-maroon block text-lg font-bold">Designation:</label>
             <p class="text-lg font-medium text-gray-700">{{ profile.designation }}</p>
           </div>
 
           <div>
-            <label class="block text-lg font-bold text-maroon">Specialization:</label>
+            <label class="text-maroon block text-lg font-bold">Specialization:</label>
             <p v-if="!isEditing" class="text-lg font-medium text-gray-700">
               {{ profile.specialization }}
             </p>
             <input
               v-model="profile.specialization"
               type="text"
-              class="w-full mt-2 border-gray-300 rounded-lg shadow-sm focus:border-maroon focus:ring-maroon"
+              class="focus:border-maroon focus:ring-maroon mt-2 w-full rounded-lg border-gray-300 shadow-sm"
               v-else
             />
           </div>
 
           <div>
-  <label class="block text-lg font-bold text-maroon">
-    Highest Educational Attainment:
-  </label>
+            <label class="text-maroon block text-lg font-bold">
+              Highest Educational Attainment:
+            </label>
 
-  <!-- Display Mode -->
-  <div
-    v-if="!isEditing"
-    class="prose text-black"
-    v-html="profile.educationHtml"
-  ></div>
+            <!-- Display Mode -->
+            <div v-if="!isEditing" class="prose text-black" v-html="profile.educationHtml"></div>
 
-  <!-- Edit Mode -->
-  <div v-else>
-    <client-only>
-      <quill-editor
-        ref="quillEditorRef"
-        v-model="profile.education"
-        :options="editorOptions"
-        class="border-gray-300 rounded-lg shadow-sm focus:border-maroon focus:ring-maroon"
-        placeholder="Add your highest educational attainment"
-      ></quill-editor>
-    </client-only>
-  </div>
-</div>
+            <!-- Edit Mode -->
+            <div v-else>
+              <client-only>
+                <quill-editor
+                  ref="quillEditorRef"
+                  v-model="profile.education"
+                  :options="editorOptions"
+                  class="focus:border-maroon focus:ring-maroon rounded-lg border-gray-300 shadow-sm"
+                  placeholder="Add your highest educational attainment"
+                ></quill-editor>
+              </client-only>
+            </div>
+          </div>
 
           <div>
-            <label class="block text-lg font-bold text-maroon">Email Address:</label>
+            <label class="text-maroon block text-lg font-bold">Email Address:</label>
             <p v-if="!isEditing" class="text-lg font-medium text-gray-700">
               {{ profile.email }}
             </p>
             <input
               v-model="profile.email"
               type="email"
-              class="w-full mt-2 border-gray-300 rounded-lg shadow-sm focus:border-maroon focus:ring-maroon"
+              class="focus:border-maroon focus:ring-maroon mt-2 w-full rounded-lg border-gray-300 shadow-sm"
               v-else
             />
           </div>
 
           <div>
-            <label class="block text-lg font-bold text-maroon">Websites:</label>
+            <label class="text-maroon block text-lg font-bold">Websites:</label>
             <div v-if="!isEditing" class="space-y-2">
               <p
                 v-for="(website, index) in profile.websites"
                 :key="index"
                 class="text-lg font-medium text-gray-700"
               >
-                <a :href="website" target="_blank" class="text-blue-500 underline">{{
-                  website
-                }}</a>
+                <a :href="website" target="_blank" class="text-blue-500 underline">{{ website }}</a>
               </p>
             </div>
             <div v-else class="space-y-2">
@@ -129,19 +123,16 @@
                 <input
                   v-model="profile.websites[index]"
                   type="url"
-                  class="w-full mt-2 border-gray-300 rounded-lg shadow-sm focus:border-maroon focus:ring-maroon"
+                  class="focus:border-maroon focus:ring-maroon mt-2 w-full rounded-lg border-gray-300 shadow-sm"
                   placeholder="Enter website URL"
                 />
-                <button
-                  @click="removeWebsite(index)"
-                  class="text-red-500 hover:text-red-700"
-                >
+                <button @click="removeWebsite(index)" class="text-red-500 hover:text-red-700">
                   &times;
                 </button>
               </div>
               <button
                 @click="addWebsite"
-                class="mt-2 px-4 py-2 text-sm bg-maroon text-white rounded-lg hover:bg-red-700"
+                class="bg-maroon mt-2 rounded-lg px-4 py-2 text-sm text-white hover:bg-red-700"
               >
                 Add Website
               </button>
@@ -149,23 +140,23 @@
           </div>
         </div>
 
-        <div class="flex justify-end gap-4 mt-8">
+        <div class="mt-8 flex justify-end gap-4">
           <button
-            class="px-5 py-2 text-white bg-gray-400 rounded-lg hover:bg-gray-600"
+            class="rounded-lg bg-gray-400 px-5 py-2 text-white hover:bg-gray-600"
             v-if="isEditing"
             @click="toggleEdit"
           >
             Cancel
           </button>
           <button
-            class="px-5 py-2 text-white bg-maroon rounded-lg hover:bg-red-700"
+            class="bg-maroon rounded-lg px-5 py-2 text-white hover:bg-red-700"
             v-if="isEditing"
             @click="saveProfile"
           >
             Save
           </button>
           <button
-            class="px-5 py-2 text-white bg-maroon rounded-lg hover:bg-red-700"
+            class="bg-maroon rounded-lg px-5 py-2 text-white hover:bg-red-700"
             v-else
             @click="toggleEdit"
           >
@@ -178,11 +169,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
 import { QuillEditor } from "@vueup/vue-quill";
+import { onMounted, ref } from "vue";
+
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+
 import { getAuth } from "firebase/auth";
+import { doc, getDoc, onSnapshot, getFirestore, updateDoc } from "firebase/firestore";
+import { getDownloadURL, getStorage, ref as storageRef, uploadBytes } from "firebase/storage";
 
 definePageMeta({
   middleware: "auth",
@@ -191,6 +185,7 @@ definePageMeta({
 
 const db = getFirestore();
 const auth = getAuth();
+const storage = getStorage();
 
 const isEditing = ref(false);
 const profile = ref({
@@ -203,6 +198,70 @@ const profile = ref({
   websites: [""],
 });
 const profilePhoto = ref("");
+
+// Real-time profile data listener
+const fetchProfileRealTime = () => {
+  const currentUser = auth.currentUser;
+  if (!currentUser) {
+    console.error("No user is logged in.");
+    return;
+  }
+
+  const docRef = doc(db, "users", currentUser.uid);
+  onSnapshot(docRef, (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      profile.value = {
+        name: `${data.firstName || ""} ${data.lastName || ""}`.trim(),
+        designation: data.designation || "N/A",
+        specialization: data.specialization || "",
+        education: data.education || "",
+        educationHtml: data.education || "",
+        email: data.email || "",
+        websites: data.websites || [""],
+      };
+      profilePhoto.value = data.photo || "https://via.placeholder.com/150";
+    } else {
+      console.error("No profile data found.");
+    }
+  });
+};
+
+const uploadProfilePicture = async (event) => {
+  try {
+    const file = event.target.files[0];
+    if (!file) {
+      alert("No file selected!");
+      return;
+    }
+
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      console.error("No user is logged in.");
+      return;
+    }
+
+    // Define the storage path and upload the file
+    const storagePath = `profile-pictures/${currentUser.uid}/${file.name}`;
+    const imageRef = storageRef(storage, storagePath);
+    await uploadBytes(imageRef, file);
+
+    // Retrieve the public URL of the uploaded file
+    const downloadURL = await getDownloadURL(imageRef);
+
+    // Update the Firestore document
+    const docRef = doc(db, "users", currentUser.uid);
+    await updateDoc(docRef, { photo: downloadURL });
+
+    // Update the UI immediately
+    profilePhoto.value = downloadURL;
+    alert("Profile picture updated successfully!");
+  } catch (error) {
+    console.error("Error uploading profile picture:", error);
+    alert("Failed to upload profile picture. Please try again.");
+  }
+};
+
 const editorOptions = {
   theme: "snow",
   modules: {
@@ -229,34 +288,6 @@ const removeWebsite = (index) => {
   profile.value.websites.splice(index, 1);
 };
 
-const fetchProfile = async () => {
-  const currentUser = auth.currentUser;
-  if (!currentUser) {
-    console.error("No user is logged in.");
-    return;
-  }
-
-  const docRef = doc(db, "users", currentUser.uid);
-  const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    console.debug("Retrieved HTML Content:", data.education); 
-    profile.value = {
-      name: `${data.firstName || ""} ${data.lastName || ""}`.trim(),
-      designation: data.designation || "N/A",
-      specialization: data.specialization || "",
-      education: data.education || "",
-      educationHtml: data.education || "",
-      email: data.email || "",
-      websites: data.websites || [""],
-    };
-    profilePhoto.value = data.photo || "https://via.placeholder.com/150";
-  } else {
-    console.error("No user data found.");
-  }
-};
-
 const saveProfile = async () => {
   try {
     const currentUser = auth.currentUser;
@@ -267,7 +298,6 @@ const saveProfile = async () => {
     }
 
     const contentHtml = quillEditorRef.value.getHTML();
-    console.debug("Saving HTML Content:", contentHtml); 
     if (!contentHtml.trim()) {
       alert("Education field cannot be empty!");
       return;
@@ -275,8 +305,6 @@ const saveProfile = async () => {
 
     const docRef = doc(db, "users", currentUser.uid);
     await updateDoc(docRef, {
-      name: profile.value.name,
-      designation: profile.value.designation,
       specialization: profile.value.specialization,
       education: contentHtml,
       email: profile.value.email,
@@ -292,17 +320,15 @@ const saveProfile = async () => {
   }
 };
 
-onMounted(fetchProfile);
+onMounted(() => {
+  fetchProfileRealTime();
+});
 </script>
-
 <style scoped>
-.text-maroon {
-  color: #740505;
-}
-.bg-maroon {
-  background-color: #740505;
-}
-
-
-
+  .text-maroon {
+    color: #740505;
+  }
+  .bg-maroon {
+    background-color: #740505;
+  }
 </style>
