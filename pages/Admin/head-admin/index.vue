@@ -175,12 +175,12 @@ import { onMounted, ref } from "vue";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 
 import { getAuth } from "firebase/auth";
-import { doc, getDoc, onSnapshot, getFirestore, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, getFirestore, updateDoc } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref as storageRef, uploadBytes } from "firebase/storage";
 
 definePageMeta({
   middleware: "auth",
-  layout: "faculty",
+  layout: "head-admin",
 });
 
 const db = getFirestore();
@@ -227,6 +227,7 @@ const fetchProfileRealTime = () => {
   });
 };
 
+// Upload profile picture
 const uploadProfilePicture = async (event) => {
   try {
     const file = event.target.files[0];
@@ -241,19 +242,15 @@ const uploadProfilePicture = async (event) => {
       return;
     }
 
-    // Define the storage path and upload the file
     const storagePath = `profile-pictures/${currentUser.uid}/${file.name}`;
     const imageRef = storageRef(storage, storagePath);
     await uploadBytes(imageRef, file);
 
-    // Retrieve the public URL of the uploaded file
     const downloadURL = await getDownloadURL(imageRef);
 
-    // Update the Firestore document
     const docRef = doc(db, "users", currentUser.uid);
     await updateDoc(docRef, { photo: downloadURL });
 
-    // Update the UI immediately
     profilePhoto.value = downloadURL;
     alert("Profile picture updated successfully!");
   } catch (error) {
@@ -262,6 +259,7 @@ const uploadProfilePicture = async (event) => {
   }
 };
 
+// Quill editor options
 const editorOptions = {
   theme: "snow",
   modules: {
@@ -288,10 +286,10 @@ const removeWebsite = (index) => {
   profile.value.websites.splice(index, 1);
 };
 
+// Save profile changes to both collections
 const saveProfile = async () => {
   try {
     const currentUser = auth.currentUser;
-
     if (!currentUser) {
       console.error("No user is logged in.");
       return;
@@ -303,13 +301,37 @@ const saveProfile = async () => {
       return;
     }
 
-    const docRef = doc(db, "users", currentUser.uid);
-    await updateDoc(docRef, {
+    // Update the users collection
+    const userDocRef = doc(db, "users", currentUser.uid);
+    await updateDoc(userDocRef, {
       specialization: profile.value.specialization,
       education: contentHtml,
       email: profile.value.email,
       websites: profile.value.websites.filter((url) => url.trim() !== ""),
     });
+
+    // Update the college_faculty_staff collection
+    const facultyDocRef = doc(db, "college_faculty_staff", "college-wide");
+    const updatedData = {
+      specialization: profile.value.specialization,
+      education: contentHtml,
+      email: profile.value.email,
+      websites: profile.value.websites.filter((url) => url.trim() !== ""),
+      name: profile.value.name,
+      designation: profile.value.designation,
+      photo: profilePhoto.value,
+    };
+
+    // Update the corresponding section based on designation
+    if (profile.value.designation === "College Dean") {
+      await updateDoc(facultyDocRef, { collegeDean: updatedData });
+    } else if (profile.value.designation === "Staff") {
+      const currentStaff = (await (await getDoc(facultyDocRef)).data()).adminStaff || [];
+      const updatedStaff = currentStaff.map((staff) =>
+        staff.email === profile.value.email ? updatedData : staff
+      );
+      await updateDoc(facultyDocRef, { adminStaff: updatedStaff });
+    }
 
     profile.value.educationHtml = contentHtml;
     toggleEdit();

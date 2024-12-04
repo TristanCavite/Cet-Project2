@@ -184,14 +184,14 @@ const schema = yup.object().shape({
     .required("Email is required"),
   title: yup.string().required("Title is required"),
   departmentId: yup
-      .string()
-      .nullable()
-      .when("title", (title, schema) => {
-        if (title === "Chair/Head of Department") {
-          return schema.required("Department is required for Head of Department");
-        }
-        return schema.nullable();
-      }),
+    .string()
+    .nullable()
+    .when("title", (title, schema) => {
+      if (title === "Chair/Head of Department") {
+        return schema.required("Department is required for Head of Department");
+      }
+      return schema.nullable();
+    }),
   password: yup
     .string()
     .min(6, "Password must be at least 6 characters")
@@ -236,6 +236,8 @@ const submitForm = async () => {
       designation, // Automatically assigned designation
       departmentId: isHeadDepartment.value ? form.value.departmentId : null,
       role, // Role based on title
+      status: "active", // Default status as active
+      createdAt: new Date(), // Optional: Store the creation timestamp
     });
 
     // Show success alert and reset form
@@ -263,6 +265,7 @@ const submitForm = async () => {
   }
 };
 </script>
+
 
 <style scoped>
   .text-red-500 {
