@@ -29,7 +29,16 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo('/login');
   }
 
-  const role = userDoc.data().role;
+  const userData = userDoc.data();
+  const role = userData.role;
+  const status = userData.status;
+
+  // Allow "Super Admin" to access routes regardless of status
+  if (role !== 'Super Admin' && status !== 'active') {
+    console.log('User is inactive. Redirecting to login...');
+    alert('Your account is inactive. Please contact the administrator.');
+    return navigateTo('/login');
+  }
 
   // Role-based access control
   if (to.path.startsWith('/super-admin') && role !== 'Super Admin') {
