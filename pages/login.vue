@@ -67,12 +67,12 @@
 <script setup>
 import { ref } from 'vue';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
 
 definePageMeta({
-  layout:"no-navbar-footer"
-})
+  layout: "no-navbar-footer"
+});
 
 const email = ref('');
 const password = ref('');
@@ -96,13 +96,22 @@ const submit = async () => {
       console.log('No user document found. Creating one...');
       await setDoc(userDocRef, {
         email: user.email,
-        role: 'Faculty', // Default role (adjust as needed)
+        role: 'Faculty', // Default role
         departmentId: null,
+        status: 'active', // Default to active
       });
       console.log('User document created successfully.');
     }
 
-    const role = userDoc.data()?.role || 'Faculty';
+    const userData = userDoc.exists() ? userDoc.data() : { status: 'inactive' };
+    const role = userData?.role || 'Faculty';
+    const status = userData?.status;
+
+    // Allow "Super Admin" to log in regardless of status
+    if (role !== 'Super Admin' && status !== 'active') {
+      alert('Your account is inactive. Please contact the administrator.');
+      return;
+    }
 
     // Redirect based on role
     if (role === 'Super Admin') {
@@ -122,8 +131,8 @@ const submit = async () => {
 };
 
 const cancel = () => {
-  navigateTo("/", { replace: true }); // Redirect to the homepage or any desired page
+  router.push("/", { replace: true });
 };
-
 </script>
+
 
