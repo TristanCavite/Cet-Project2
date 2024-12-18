@@ -22,6 +22,10 @@ export default defineNuxtConfig({
 
   colorMode: {
     classSuffix: "",
+    preference: 'light',
+    fallback: 'light',
+    dataValue: 'light',
+    storageKey: 'color-mode',
   },
 
   imports: {
