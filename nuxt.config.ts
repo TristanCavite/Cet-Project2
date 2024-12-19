@@ -25,7 +25,7 @@ export default defineNuxtConfig({
     preference: 'light',
     fallback: 'light',
     dataValue: 'light',
-    storageKey: 'color-mode',
+    storageKey: 'force-light-mode',
   },
 
   imports: {
