@@ -8,6 +8,7 @@
               <NuxtLink
                 to="/admin/super-admin/"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+                :class="['block px-3 py-2 hover:text-yellow-400', isActive('/admin/super-admin/') ? 'active' : '']"  
               >
                 Home
               </NuxtLink>
@@ -16,6 +17,7 @@
               <NuxtLink
                 to="/admin/super-admin/admission"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+                :class="['block px-3 py-2 hover:text-yellow-400', isActive('/admin/super-admin/admission') ? 'active' : '']"  
               >
                 Admission
               </NuxtLink>
@@ -24,6 +26,7 @@
               <NuxtLink
                 to="/admin/super-admin/create-account"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+                :class="['block px-3 py-2 hover:text-yellow-400', isActive('/admin/super-admin/create-account') ? 'active' : '']"  
               >
                 Create Account
               </NuxtLink>
@@ -32,6 +35,7 @@
               <NuxtLink
                 to="/admin/super-admin/manage_news"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+                :class="['block px-3 py-2 hover:text-yellow-400', isActive('/admin/super-admin/manage-news') ? 'active' : '']"
               >
                 Manage News
               </NuxtLink>
@@ -40,6 +44,7 @@
               <NuxtLink
                 to="/admin/super-admin/manage_research"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+                :class="['block px-3 py-2 hover:text-yellow-400', isActive('/admin/super-admin/manage_research') ? 'active' : '']"  
               >
                 Manage Researches
               </NuxtLink>
@@ -48,6 +53,7 @@
               <NuxtLink
                 to="/admin/super-admin/faculty_staff"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+                :class="['block px-3 py-2 hover:text-yellow-400', isActive('/admin/super-admin/faculty_staff') ? 'active' : '']"  
               >
                 Faculty and Staff
               </NuxtLink>
@@ -56,6 +62,7 @@
               <NuxtLink
                 to="/admin/super-admin/manage_gallery"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+                :class="['block px-3 py-2 hover:text-yellow-400', isActive('/admin/super-admin/manage_gallery') ? 'active' : '']"
               >
                 Manage Gallery
               </NuxtLink>
@@ -64,6 +71,7 @@
               <NuxtLink
                 to="/admin/super-admin/manage_event"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+                :class="['block px-3 py-2 hover:text-yellow-400', isActive('/admin/super-admin/manage_event') ? 'active' : '']"  
               >
                 Manage Events
               </NuxtLink>
@@ -72,6 +80,7 @@
               <NuxtLink
                 to="/admin/super-admin/department"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+                :class="['block px-3 py-2 hover:text-yellow-400', isActive('/admin/super-admin/department') ? 'active' : '']"  
               >
                 Departments
               </NuxtLink>
@@ -97,7 +106,15 @@
   
   const auth = useFirebaseAuth();
   const router = useRouter();
-  
+  const route = useRoute(); // Use the current route object
+
+  const isActive = (path) => {
+  if (path === '/admin/super-admin/') {
+    // Check if we're at the root admin path or exact match
+      return route.path === '/admin/super-admin/' || route.path === '/admin/super-admin';
+    }
+    return route.path === path;
+  };
   const logout = async () => {
     if (auth) {
       await signOut(auth);
@@ -112,6 +129,12 @@
   }
   .hover\:text-yellow-400:hover {
     color: #ffd700;
+  }
+  .active {
+  background-color: white; /* Optional background color */
+  color: #ffd700; /* Highlight the active tab with yellow color */
+  font-weight: bold; /* Make it stand out */
+  border-left: 4px solid #ffd700; /* Add a left border for visual effect */
   }
   </style>
   

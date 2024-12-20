@@ -1,7 +1,9 @@
 <template>
-    <div>
-        this is the degree program page for head admin
-    </div>
+    <main class="p-10">
+        <div class="mt-20">
+            this is the degree program page for head admin
+        </div>
+    </main>
 </template>
 
 <script setup> 

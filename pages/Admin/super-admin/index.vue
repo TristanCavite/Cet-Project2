@@ -1,6 +1,6 @@
 <template>
     <!-- Main Content -->
-    <main class="flex-1 p-8">
+    <main class="flex-1 p-10">
       <header class="mb-6">
         <h1 class="text-3xl font-semibold text-red-800">Admin Dashboard</h1>
       </header>
