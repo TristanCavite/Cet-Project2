@@ -1,10 +1,10 @@
 <template>
   <div
-    class="flex min-h-screen items-center justify-center bg-cover bg-center"
+    class="flex items-center justify-center min-h-screen bg-center bg-cover"
     style="background-image: url(&quot;/CET%20Faculty.jpg&quot;)"
   >
-    <div class="mx-auto w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
-        <h2 class="mb-4 text-center text-xl font-semibold text-gray-800">Create Account</h2>
+    <div class="w-full max-w-md p-8 mx-auto bg-white rounded-lg shadow-lg">
+        <h2 class="mb-4 text-xl font-semibold text-center text-gray-800">Create Account</h2>
         <form @submit.prevent="submitForm">
           <!-- First Name -->
           <div class="mb-4">
@@ -15,7 +15,7 @@
               v-model="form.firstName"
               type="text"
               id="first_name"
-              class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
+              class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-red-600"
               placeholder="First Name"
             />
             <p v-if="errors.firstName" class="mt-1 text-xs text-red-500">{{ errors.firstName }}</p>
@@ -28,7 +28,7 @@
               v-model="form.lastName"
               type="text"
               id="last_name"
-              class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
+              class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-red-600"
               placeholder="Last Name"
             />
             <p v-if="errors.lastName" class="mt-1 text-xs text-red-500">{{ errors.lastName }}</p>
@@ -41,7 +41,7 @@
               v-model="form.email"
               type="email"
               id="email"
-              class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
+              class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-red-600"
               placeholder="Email"
             />
             <p v-if="errors.email" class="mt-1 text-xs text-red-500">{{ errors.email }}</p>
@@ -54,7 +54,7 @@
               v-model="form.title"
               id="title"
               @change="handleTitleChange"
-              class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
+              class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-red-600"
             >
               <option value="Faculty Member">Faculty Member</option>
               <option value="Chair/Head of Department">Chair/Head of Department</option>
@@ -70,7 +70,7 @@
             <select
               v-model="form.departmentId"
               id="department"
-              class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
+              class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-red-600"
             >
               <option value="">Select Department</option>
               <option v-for="dept in departments" :key="dept.id" :value="dept.id">
@@ -89,7 +89,7 @@
               v-model="form.password"
               type="password"
               id="password"
-              class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
+              class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-red-600"
               placeholder="Password"
             />
             <p v-if="errors.password" class="mt-1 text-xs text-red-500">{{ errors.password }}</p>
@@ -104,7 +104,7 @@
               v-model="form.confirmPassword"
               type="password"
               id="confirm_password"
-              class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
+              class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-red-600"
               placeholder="Confirm Password"
             />
             <p v-if="errors.confirmPassword" class="mt-1 text-xs text-red-500">
@@ -114,7 +114,7 @@
 
           <button
             type="submit"
-            class="w-full rounded-md bg-red-800 py-2 text-white shadow-md transition hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-600"
+            class="w-full py-2 text-white transition bg-red-800 rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-600"
           >
             Create Account
           </button>
@@ -122,7 +122,7 @@
           <button
   type="button"
   @click="navigateToDashboard"
-  class="mt-4 w-full rounded-md bg-gray-500 py-2 text-white shadow-md transition hover:bg-gray-600 focus:outline-none focus:ring focus:ring-gray-400"
+  class="w-full py-2 mt-4 text-white transition bg-gray-500 rounded-md shadow-md hover:bg-gray-600 focus:outline-none focus:ring focus:ring-gray-400"
 >
   Cancel
 </button>
@@ -142,7 +142,7 @@ import { useRouter } from "vue-router";
 // Page metadata and layout
 definePageMeta({
   middleware: "auth",
-  layout: "no-navbar-footer", // Use specific layout without navbar and footer
+  layout: "super-admin", // Use specific layout without navbar and footer
 });
 
 // Departments list

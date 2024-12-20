@@ -8,7 +8,8 @@
               <NuxtLink
                 to="/admin/head-admin/"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
-              >
+                :class="['block px-3 py-2 ', isActive('/admin/head-admin/') ? 'active' : '']"
+                >
               <!--this is the index.vue-->
                 Profile
               </NuxtLink>
@@ -17,6 +18,7 @@
               <NuxtLink
                 to="/admin/head-admin/faculty-staff"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+                :class="['block px-3 py-2 ', isActive('/admin/head-admin/faculty-staff') ? 'active' : '']"
               >
                 Faculty and Staff
               </NuxtLink>
@@ -25,6 +27,7 @@
               <NuxtLink
                 to="/admin/head-admin/degree-program"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+                :class="['block px-3 py-2 ', isActive('/admin/head-admin/degree-program') ? 'active' : '']"
               >
                 Degree Program
               </NuxtLink>
@@ -50,7 +53,15 @@
   
   const auth = useFirebaseAuth();
   const router = useRouter();
-  
+  const route = useRoute(); // Use the current route object
+
+  const isActive = (path) => {
+  if (path === '/admin/head-admin/') {
+    // Check if we're at the root admin path or exact match
+    return route.path === '/admin/head-admin/' || route.path === '/admin/head-admin';
+  }
+  return route.path === path;
+  };
   const logout = async () => {
     if (auth) {
       await signOut(auth);
@@ -65,6 +76,12 @@
   }
   .hover\:text-yellow-400:hover {
     color: #ffd700;
+  }
+  .active {
+  background-color: white; /* Optional background color */
+  color: #ffd700; /* Highlight the active tab with yellow color */
+  font-weight: bold; /* Make it stand out */
+  border-left: 4px solid #ffd700; /* Add a left border for visual effect */
   }
   </style>
   
