@@ -1,12 +1,9 @@
 <template>
     <!-- Main Content -->
-    <main class="flex-1 p-8">
-      <header class="mb-6">
-        <h1 class="text-3xl font-semibold text-red-800">Admin Dashboard</h1>
-      </header>
-      <section>
-        <p>Welcome to the Admin Dashboard. Select a section to manage.</p>
-      </section>
+    <main class="p-10">
+        <div class="mt-20">
+            this is the home page for super admin
+        </div>
     </main>
   </template>
   

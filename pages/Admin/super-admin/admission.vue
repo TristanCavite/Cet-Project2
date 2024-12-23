@@ -1,6 +1,6 @@
 <template>
-  <main class="p-10 h-212 bg-stone-200">
-    <div class="shadow-xl h-192 w-384 bg-neutral-50">
+  <main class="h-auto p-10 bg-stone-200">
+    <div class="mt-20 shadow-xl h-192 w-344 bg-neutral-50">
       <!-- edit button -->
       <div class="flex justify-end p-10">
         <UiButton class="bg-gray-600 hover:bg-red-900 w-36" @click="toggleEditAdmission">

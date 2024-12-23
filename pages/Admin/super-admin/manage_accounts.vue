@@ -1,20 +1,20 @@
 <template>
-    <div class="p-8">
-      <h1 class="text-2xl font-bold mb-6 text-maroon">User Management</h1>
+    <div class="p-12">
+      <h1 class="mb-6 text-2xl font-bold text-maroon">User Management</h1>
   
       <!-- Search Bar -->
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center justify-between mb-6">
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Search users by name or email..."
-          class="border rounded px-4 py-2 w-1/3"
+          class="w-1/3 px-4 py-2 border rounded"
         />
       </div>
   
       <!-- User List -->
       <div class="bg-white rounded shadow-md">
-        <table class="table-auto w-full border-collapse text-left">
+        <table class="w-full text-left border-collapse table-auto">
           <thead>
             <tr class="bg-gray-100 border-b">
               <th class="px-6 py-4">Profile</th>
@@ -31,11 +31,11 @@
               class="border-b hover:bg-gray-50"
             >
               <!-- Profile Picture -->
-              <td class="px-6 py-4 flex items-center">
+              <td class="flex items-center px-6 py-4">
                 <img
                   :src="user.photo || '/placeholder.png'"
                   alt="Profile"
-                  class="h-10 w-10 rounded-full object-cover mr-3"
+                  class="object-cover w-10 h-10 mr-3 rounded-full"
                 />
                 <span>{{ user.firstName }} {{ user.lastName }}</span>
               </td>
@@ -57,7 +57,7 @@
                 <button
                   @click="toggleStatus(user)"
                   :class="user.status === 'active' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'"
-                  class="text-white px-4 py-2 rounded"
+                  class="px-4 py-2 text-white rounded"
                 >
                   {{ user.status === 'active' ? 'Deactivate' : 'Activate' }}
                 </button>

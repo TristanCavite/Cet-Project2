@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-8">
-    <div class="mx-auto max-w-4xl overflow-hidden rounded-lg bg-white shadow-lg">
-      <div class="from-maroon bg-gradient-to-r to-red-600 p-6 text-center">
+  <div class="min-h-screen pb-10 bg-gray-50 pt-28">
+    <div class="max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-2xl">
+      <div class="p-6 text-center from-maroon bg-gradient-to-r to-red-600">
         <h1 class="text-3xl font-bold text-white">Faculty Profile</h1>
       </div>
       <div class="p-8">
@@ -10,16 +10,16 @@
             <img
               :src="profilePhoto || 'https://via.placeholder.com/150'"
               alt="Profile Picture"
-              class="mx-auto h-32 w-32 rounded-full border-4 border-gray-100 object-cover shadow-lg"
+              class="object-cover w-32 h-32 mx-auto border-4 border-gray-100 rounded-full shadow-lg"
             />
             <label
               v-if="isEditing"
               for="file-upload"
-              class="bg-maroon absolute bottom-0 right-0 cursor-pointer rounded-full p-2 text-white"
+              class="absolute bottom-0 right-0 p-2 text-white rounded-full cursor-pointer bg-maroon"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
+                class="w-6 h-6"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -46,30 +46,30 @@
 
         <div class="space-y-6">
           <div>
-            <label class="text-maroon block text-lg font-bold">Name:</label>
+            <label class="block text-lg font-bold text-maroon">Name:</label>
             <p class="text-lg font-medium text-gray-700">{{ profile.name }}</p>
           </div>
 
           <div>
-            <label class="text-maroon block text-lg font-bold">Designation:</label>
+            <label class="block text-lg font-bold text-maroon">Designation:</label>
             <p class="text-lg font-medium text-gray-700">{{ profile.designation }}</p>
           </div>
 
           <div>
-            <label class="text-maroon block text-lg font-bold">Specialization:</label>
+            <label class="block text-lg font-bold text-maroon">Specialization:</label>
             <p v-if="!isEditing" class="text-lg font-medium text-gray-700">
               {{ profile.specialization }}
             </p>
             <input
               v-model="profile.specialization"
               type="text"
-              class="focus:border-maroon focus:ring-maroon mt-2 w-full rounded-lg border-gray-300 shadow-sm"
+              class="w-full mt-2 border-gray-300 rounded-lg shadow-sm focus:border-maroon focus:ring-maroon"
               v-else
             />
           </div>
 
           <div>
-            <label class="text-maroon block text-lg font-bold">
+            <label class="block text-lg font-bold text-maroon">
               Highest Educational Attainment:
             </label>
 
@@ -83,7 +83,7 @@
                   ref="quillEditorRef"
                   v-model="profile.education"
                   :options="editorOptions"
-                  class="focus:border-maroon focus:ring-maroon rounded-lg border-gray-300 shadow-sm"
+                  class="border-gray-300 rounded-lg shadow-sm focus:border-maroon focus:ring-maroon"
                   placeholder="Add your highest educational attainment"
                 ></quill-editor>
               </client-only>
@@ -91,20 +91,20 @@
           </div>
 
           <div>
-            <label class="text-maroon block text-lg font-bold">Email Address:</label>
+            <label class="block text-lg font-bold text-maroon">Email Address:</label>
             <p v-if="!isEditing" class="text-lg font-medium text-gray-700">
               {{ profile.email }}
             </p>
             <input
               v-model="profile.email"
               type="email"
-              class="focus:border-maroon focus:ring-maroon mt-2 w-full rounded-lg border-gray-300 shadow-sm"
+              class="w-full mt-2 border-gray-300 rounded-lg shadow-sm focus:border-maroon focus:ring-maroon"
               v-else
             />
           </div>
 
           <div>
-            <label class="text-maroon block text-lg font-bold">Websites:</label>
+            <label class="block text-lg font-bold text-maroon">Websites:</label>
             <div v-if="!isEditing" class="space-y-2">
               <p
                 v-for="(website, index) in profile.websites"
@@ -123,7 +123,7 @@
                 <input
                   v-model="profile.websites[index]"
                   type="url"
-                  class="focus:border-maroon focus:ring-maroon mt-2 w-full rounded-lg border-gray-300 shadow-sm"
+                  class="w-full mt-2 border-gray-300 rounded-lg shadow-sm focus:border-maroon focus:ring-maroon"
                   placeholder="Enter website URL"
                 />
                 <button @click="removeWebsite(index)" class="text-red-500 hover:text-red-700">
@@ -132,7 +132,7 @@
               </div>
               <button
                 @click="addWebsite"
-                class="bg-maroon mt-2 rounded-lg px-4 py-2 text-sm text-white hover:bg-red-700"
+                class="px-4 py-2 mt-2 text-sm text-white rounded-lg bg-maroon hover:bg-red-700"
               >
                 Add Website
               </button>
@@ -140,23 +140,23 @@
           </div>
         </div>
 
-        <div class="mt-8 flex justify-end gap-4">
+        <div class="flex justify-end gap-4 mt-8">
           <button
-            class="rounded-lg bg-gray-400 px-5 py-2 text-white hover:bg-gray-600"
+            class="px-5 py-2 text-white bg-gray-400 rounded-lg hover:bg-gray-600"
             v-if="isEditing"
             @click="toggleEdit"
           >
             Cancel
           </button>
           <button
-            class="bg-maroon rounded-lg px-5 py-2 text-white hover:bg-red-700"
+            class="px-5 py-2 text-white rounded-lg bg-maroon hover:bg-red-700"
             v-if="isEditing"
             @click="saveProfile"
           >
             Save
           </button>
           <button
-            class="bg-maroon rounded-lg px-5 py-2 text-white hover:bg-red-700"
+            class="px-5 py-2 text-white rounded-lg bg-maroon hover:bg-red-700"
             v-else
             @click="toggleEdit"
           >
