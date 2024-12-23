@@ -221,7 +221,7 @@
 
         <!-- Sub-Designation for Administrative Staff -->
         <div v-if="selectedUser.designation === 'Administrative Staff'" class="mb-4">
-          <label class="block text-sm font-medium">Sub-Designation:</label>
+          <label class="block text-sm font-medium">Specify:</label>
           <input
             v-model="selectedUser.subDesignation"
             type="text"
