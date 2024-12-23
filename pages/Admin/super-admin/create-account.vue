@@ -134,7 +134,7 @@
 
 <script setup>
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { doc, getFirestore, setDoc, updateDoc } from "firebase/firestore";
 import { ref } from "vue";
 import * as yup from "yup";
 import { useRouter } from "vue-router";
@@ -223,22 +223,35 @@ const submitForm = async () => {
     );
     const user = userCredential.user;
 
-    // Assign designation and role based on title
-    const designation = isHeadDepartment.value ? "Department Head" : "None";
+    // Assign role based on title
     const role = isHeadDepartment.value ? "Head Admin" : "Faculty";
 
+    // Step 1: Add the user to the `users` collection with their global role
     const db = getFirestore();
     await setDoc(doc(db, "users", user.uid), {
       firstName: form.value.firstName,
       lastName: form.value.lastName,
       email: form.value.email,
-      title: form.value.title,
-      designation, // Automatically assigned designation
-      departmentId: isHeadDepartment.value ? form.value.departmentId : null,
-      role, // Role based on title
+      title: form.value.title, // Keeps the title for reference
+      departmentId: isHeadDepartment.value ? form.value.departmentId : null, // If head admin, add departmentId
+      role, // Global role: Head Admin or Faculty
       status: "active", // Default status as active
       createdAt: new Date(), // Optional: Store the creation timestamp
     });
+
+    // Step 2: Assign the user to the department (if they are a Head Admin)
+    if (isHeadDepartment.value) {
+      const departmentDocRef = doc(db, "college_faculty_staff", form.value.departmentId);
+      const newHeadAdmin = {
+        id: user.uid,
+        name: `${form.value.firstName} ${form.value.lastName}`,
+        designation: "Head Admin", // Department-specific designation
+        status: "active",
+      };
+      await updateDoc(departmentDocRef, {
+        departmentHead: newHeadAdmin,
+      });
+    }
 
     // Show success alert and reset form
     alert("Account created successfully!");
@@ -264,6 +277,7 @@ const submitForm = async () => {
     }
   }
 };
+
 </script>
 
 

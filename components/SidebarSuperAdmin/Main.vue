@@ -36,6 +36,17 @@
                 Manage News
               </NuxtLink>
             </li>
+
+            <li>
+              <NuxtLink
+                to="/admin/super-admin/manage_accounts"
+                class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+              >
+                Manage Accounts
+              </NuxtLink>
+            </li>
+
+
             <li>
               <NuxtLink
                 to="/admin/super-admin/manage_research"

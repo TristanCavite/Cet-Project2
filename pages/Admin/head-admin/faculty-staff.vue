@@ -43,7 +43,7 @@
             class="w-24 h-24 rounded-full object-cover mx-auto shadow-lg"
           />
           <p class="mt-2 font-bold text-lg">
-            {{ departmentStaff ? `${staff.firstName} ${staff.lastName}` : "No Staff Assigned" }}
+            {{ staff ? `${staff.firstName} ${staff.lastName}` : "No Staff Assigned" }}
           </p>
         </div>
       </div>
@@ -74,7 +74,7 @@
           <!-- Delete/Deactivate Button -->
           <div
             class="absolute top-0 right-0 cursor-pointer text-red-500 hover:text-red-700"
-            @click="flagUserAsInactive(selectedProfile)"
+            @click="removeUserFromDepartment(selectedProfile)"
           >
             <Trash class="w-6 h-6" />
           </div>
@@ -292,7 +292,6 @@ onMounted(async () => {
   }
 });
 
-// Real-time listener for department's faculty and staff
 const fetchDepartmentFacultyStaffRealTime = () => {
   if (!departmentId) {
     console.error("Department ID is not available.");
@@ -305,11 +304,23 @@ const fetchDepartmentFacultyStaffRealTime = () => {
     if (docSnap.exists()) {
       const data = docSnap.data();
 
-      // Filter out inactive department head
-      departmentHead.value = data.departmentHead?.status === "inactive" ? null : data.departmentHead;
+      // Ensure departmentHead has firstName and lastName
+      departmentHead.value = data.departmentHead?.status !== "inactive"
+        ? {
+            ...data.departmentHead,
+            firstName: data.departmentHead.firstName || data.departmentHead.name?.split(" ")[0] || "No",
+            lastName: data.departmentHead.lastName || data.departmentHead.name?.split(" ").slice(1).join(" ") || "Name",
+          }
+        : null;
 
-      // Filter out inactive staff
-      departmentStaff.value = (data.departmentStaff || []).filter((staff) => staff.status !== "inactive");
+      // Ensure each staff member in departmentStaff has firstName and lastName
+      departmentStaff.value = (data.departmentStaff || [])
+        .filter((staff) => staff.status !== "inactive")
+        .map((staff) => ({
+          ...staff,
+          firstName: staff.firstName || staff.name?.split(" ")[0] || "No",
+          lastName: staff.lastName || staff.name?.split(" ").slice(1).join(" ") || "Name",
+        }));
     } else {
       console.error("Department document not found.");
     }
@@ -332,26 +343,31 @@ const syncUserChangesToDepartment = () => {
     if (departmentDoc.exists()) {
       const departmentData = departmentDoc.data();
 
-      // Update department head if their data changes and is not inactive
-      if (departmentData.departmentHead?.id) {
-        const updatedHead = updatedUsers.find(
-          (user) => user.id === departmentData.departmentHead.id && user.status !== "inactive"
+      const syncWithPreservation = (entry) => {
+        const matchedUser = updatedUsers.find(
+          (user) => user.id === entry.id && user.status !== "inactive"
         );
-
-        if (updatedHead) {
-          await updateDoc(departmentDocRef, { departmentHead: updatedHead });
-        } else {
-          await updateDoc(departmentDocRef, { departmentHead: null }); // Remove inactive head
+        if (matchedUser) {
+          return {
+            ...entry, // Preserve department-specific fields like designation
+            name: `${matchedUser.firstName || ""} ${matchedUser.lastName || ""}`.trim(),
+            photo: matchedUser.photo || entry.photo,
+            email: matchedUser.email || entry.email,
+            specialization: matchedUser.specialization || entry.specialization,
+            status: matchedUser.status,
+          };
         }
+        return entry;
+      };
+
+      // Update department head
+      if (departmentData.departmentHead?.id) {
+        const updatedHead = syncWithPreservation(departmentData.departmentHead);
+        await updateDoc(departmentDocRef, { departmentHead: updatedHead });
       }
 
-      // Update department staff dynamically, excluding inactive users
-      const updatedStaff = (departmentData.departmentStaff || [])
-        .map((staff) =>
-          updatedUsers.find((user) => user.id === staff.id && user.status !== "inactive")
-        )
-        .filter(Boolean); // Remove undefined entries
-
+      // Update department staff
+      const updatedStaff = (departmentData.departmentStaff || []).map(syncWithPreservation);
       await updateDoc(departmentDocRef, { departmentStaff: updatedStaff });
     }
   });
@@ -372,21 +388,42 @@ const closeProfilePreviewModal = () => {
   showProfilePreviewModal.value = false;
 };
 
-// Function to flag user as inactive
-const flagUserAsInactive = async (user) => {
-  const userDocRef = doc(db, "users", user.id);
+const removeUserFromDepartment = async (user) => {
+  const departmentDocRef = doc(db, "college_faculty_staff", departmentId);
 
   try {
-    const confirm = window.confirm(`Are you sure you want to deactivate ${user.name}?`);
-    if (confirm) {
-      await updateDoc(userDocRef, { status: "inactive" });
-      alert(`${user.name} has been flagged as inactive.`);
+    const confirm = window.confirm(`Are you sure you want to remove ${user.name || "this user"}?`);
+    if (!confirm) return;
+
+    // Fetch the Department document
+    const departmentDoc = await getDoc(departmentDocRef);
+    if (!departmentDoc.exists()) {
+      alert("Department document not found.");
+      return;
     }
+
+    const departmentData = departmentDoc.data();
+
+    // Determine where to remove the user
+    if (departmentData.departmentHead?.id === user.id) {
+      // Remove department head
+      await updateDoc(departmentDocRef, { departmentHead: null });
+    } else if (departmentData.departmentStaff?.some((staff) => staff.id === user.id)) {
+      // Remove user from departmentStaff
+      const updatedStaff = departmentData.departmentStaff.filter((staff) => staff.id !== user.id);
+      await updateDoc(departmentDocRef, { departmentStaff: updatedStaff });
+    } else {
+      alert("User not found in the department.");
+      return;
+    }
+
+    alert(`${user.name || "User"} has been removed from the department.`);
   } catch (error) {
-    console.error("Error flagging user as inactive:", error);
-    alert("Failed to flag the user as inactive. Please try again.");
+    console.error("Error removing user from the department:", error);
+    alert("Failed to remove the user. Please try again.");
   }
 };
+
 
 // Filter users based on search query
 const filterUsers = () => {
@@ -421,21 +458,41 @@ const addFacultyOrStaff = async () => {
   const departmentDocRef = doc(db, "college_faculty_staff", departmentId);
 
   try {
-    // Update the user's designation in the `users` collection
-    await updateDoc(userDocRef, {
-      designation: selectedUser.value.designation || "No Designation",
-      departmentId,
+    // Fetch the user's data for synchronization
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      alert("Selected user does not exist in the database.");
+      return;
+    }
+
+    const userData = userDoc.data();
+
+    // Create a new member object with department-specific fields
+    const newMember = {
+      id: selectedUser.value.id,
+      name: `${userData.firstName || "No"} ${userData.lastName || "Name Assigned"}`.trim(),
+      designation: selectedUser.value.designation, // Department-specific designation
+      photo: userData.photo || "/placeholder.png",
+      email: userData.email || "N/A",
+      specialization: userData.specialization || "N/A",
       status: "active",
-    });
+    };
 
     // Add the user to the appropriate section in the department
     if (selectedUser.value.designation === "Department Head") {
-      await updateDoc(departmentDocRef, { departmentHead: selectedUser.value });
+      await updateDoc(departmentDocRef, { departmentHead: newMember });
     } else {
       await updateDoc(departmentDocRef, {
-        departmentStaff: arrayUnion(selectedUser.value),
+        departmentStaff: arrayUnion(newMember),
       });
     }
+
+    // Synchronize non-designation fields to ensure consistency
+    await updateDoc(userDocRef, {
+      departmentId, // Optional: Track which department the user belongs to
+      status: "active", // Update status if necessary
+    });
 
     resetModal();
     alert("Faculty/Staff successfully added!");
