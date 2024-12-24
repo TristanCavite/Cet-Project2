@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen p-28 bg-gray-50">
-    <div class="max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-2xl">
+  <main class="min-h-screen p-28 bg-gray-50">
+    <div class="max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-2xl ">
       <div class="p-6 text-center from-maroon bg-gradient-to-r to-red-600">
         <h1 class="text-3xl font-bold text-white">Faculty Profile</h1>
       </div>
       <div class="p-8">
         <div class="mb-8 text-center">
-          <div class="relative">
+          <div class="">
             <img
               :src="profilePhoto || 'https://via.placeholder.com/150'"
               alt="Profile Picture"
@@ -15,7 +15,7 @@
             <label
               v-if="isEditing"
               for="file-upload"
-              class="absolute bottom-0 right-0 p-2 text-white rounded-full cursor-pointer bg-maroon"
+              class="p-2 text-white rounded-full cursor-pointer bg-maroon"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -165,7 +165,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>
