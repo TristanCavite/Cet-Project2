@@ -6,7 +6,7 @@
       </div>
       <div class="p-8">
         <div class="mb-8 text-center">
-          <div class="relative">
+          <div class="">
             <img
               :src="profilePhoto || 'https://via.placeholder.com/150'"
               alt="Profile Picture"
@@ -15,7 +15,7 @@
             <label
               v-if="isEditing"
               for="file-upload"
-              class="absolute bottom-0 right-0 p-2 text-white rounded-full cursor-pointer bg-maroon"
+              class="p-2 text-white rounded-full cursor-pointer bg-maroon"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
