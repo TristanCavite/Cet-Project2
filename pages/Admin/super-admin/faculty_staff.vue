@@ -1,24 +1,24 @@
 <template>
-  <div class="p-8">
-    <h1 class="text-maroon mb-6 text-2xl font-bold">Offices and Administrator</h1>
+  <div class="pl-10 pr-10 pt-28">
+    <h1 class="mb-6 text-2xl font-bold text-maroon">Offices and Administrator</h1>
 
     <!-- Add Faculty/Staff Button -->
     <button
       @click="showAddModal = true"
-      class="bg-maroon rounded px-4 py-2 text-white shadow hover:bg-red-600"
+      class="px-4 py-2 text-white rounded shadow bg-maroon hover:bg-red-600"
     >
       + Add Faculty and Staff
     </button>
 
     <!-- College Dean Section -->
     <div class="mt-8" v-if="collegeDean">
-      <h2 class="mb-4 text-center text-xl font-semibold">College Dean</h2>
+      <h2 class="mb-4 text-xl font-semibold text-center">College Dean</h2>
       <div class="flex justify-center">
-        <div class="cursor-pointer text-center" @click="showProfilePreview(collegeDean)">
+        <div class="text-center cursor-pointer" @click="showProfilePreview(collegeDean)">
           <img
             :src="collegeDean.photo || '/placeholder.png'"
             alt="College Dean"
-            class="mx-auto h-32 w-32 rounded-full object-cover"
+            class="object-cover w-32 h-32 mx-auto rounded-full"
           />
           <p class="mt-2 text-lg font-bold">
             {{
@@ -34,13 +34,13 @@
 
     <!-- College Secretary Section -->
     <div class="mt-8" v-if="collegeSecretary">
-      <h2 class="mb-4 text-center text-xl font-semibold">College Secretary</h2>
+      <h2 class="mb-4 text-xl font-semibold text-center">College Secretary</h2>
       <div class="flex justify-center">
-        <div class="cursor-pointer text-center" @click="showProfilePreview(collegeSecretary)">
+        <div class="text-center cursor-pointer" @click="showProfilePreview(collegeSecretary)">
           <img
             :src="collegeSecretary.photo || '/placeholder.png'"
             alt="College Secretary"
-            class="mx-auto h-32 w-32 rounded-full object-cover"
+            class="object-cover w-32 h-32 mx-auto rounded-full"
           />
           <p class="mt-2 text-lg font-bold">
             {{
@@ -56,18 +56,18 @@
 
     <!-- Head Members Section -->
     <div class="mt-12" v-if="headAdmins.length">
-      <h2 class="mb-4 text-center text-xl font-semibold">Head Members</h2>
-      <div class="grid grid-cols-4 gap-6">
+      <h2 class="mb-4 text-xl font-semibold text-center">Head Members</h2>
+      <div class="grid grid-cols-4 gap-6 mt-12">
         <div
           v-for="head in headAdmins"
           :key="head.id"
-          class="cursor-pointer text-center"
+          class="text-center cursor-pointer"
           @click="showProfilePreview(head)"
         >
           <img
             :src="head.photo || '/placeholder.png'"
             alt="Head Member"
-            class="mx-auto h-24 w-24 rounded-full object-cover"
+            class="object-cover w-24 h-24 mx-auto rounded-full"
           />
           <p class="mt-2 text-lg font-bold">
             {{
@@ -83,18 +83,18 @@
 
     <!-- Administrative Staff Section -->
     <div class="mt-12" v-if="adminStaff.length">
-      <h2 class="mb-4 text-center text-xl font-semibold">Administrative Staff</h2>
-      <div class="grid grid-cols-4 gap-6">
+      <h2 class="mb-4 text-xl font-semibold text-center">Administrative Staff</h2>
+      <div class="grid grid-cols-4 gap-6 mt-12">
         <div
           v-for="staff in adminStaff"
           :key="staff.id"
-          class="cursor-pointer text-center"
+          class="text-center cursor-pointer"
           @click="showProfilePreview(staff)"
         >
           <img
             :src="staff.photo || '/placeholder.png'"
             alt="Administrative Staff"
-            class="mx-auto h-24 w-24 rounded-full object-cover"
+            class="object-cover w-24 h-24 mx-auto rounded-full"
           />
           <p class="mt-2 text-lg font-bold">
             {{ staff?.name ? staff.name : "No Staff Assigned" }}
@@ -111,16 +111,16 @@
       v-if="showProfilePreviewModal"
       class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
     >
-      <div class="w-2/3 max-w-3xl rounded-lg bg-white p-8 shadow-lg">
+      <div class="w-2/3 max-w-3xl p-8 bg-white rounded-lg shadow-lg">
         <div class="relative text-center">
           <!-- Profile Picture -->
           <img
             :src="selectedProfile?.photo || '/placeholder.png'"
             alt="Profile Picture"
-            class="mx-auto h-32 w-32 rounded-full object-cover shadow-lg"
+            class="object-cover w-32 h-32 mx-auto rounded-full shadow-lg"
           />
           <!-- Name -->
-          <h2 class="text-maroon mt-4 text-2xl font-bold">
+          <h2 class="mt-4 text-2xl font-bold text-maroon">
             {{
               selectedProfile?.firstName && selectedProfile?.lastName
                 ? `${selectedProfile.firstName} ${selectedProfile.lastName}`
@@ -134,10 +134,10 @@
 
           <!-- Delete/Deactivate Button -->
           <div
-            class="absolute right-0 top-0 cursor-pointer text-red-500 hover:text-red-700"
+            class="absolute top-0 right-0 text-red-500 cursor-pointer hover:text-red-700"
             @click="removeUserFromCollegeWide(selectedProfile)"
           >
-            <Trash class="h-6 w-6" />
+            <Trash class="w-6 h-6" />
           </div>
         </div>
 
@@ -145,24 +145,24 @@
         <div class="mt-6 space-y-4 text-lg">
           <!-- Specialization -->
           <div>
-            <p class="text-maroon font-semibold">Specialization:</p>
+            <p class="font-semibold text-maroon">Specialization:</p>
             <p>{{ selectedProfile?.specialization || "N/A" }}</p>
           </div>
           <!-- Email -->
           <div>
-            <p class="text-maroon font-semibold">Email:</p>
+            <p class="font-semibold text-maroon">Email:</p>
             <p>{{ selectedProfile?.email || "N/A" }}</p>
           </div>
           <!-- Highest Educational Attainment -->
           <div>
-            <p class="text-maroon font-semibold">Highest Educational Attainment:</p>
+            <p class="font-semibold text-maroon">Highest Educational Attainment:</p>
             <span class="prose text-black" v-html="selectedProfile?.education || 'N/A'"></span>
           </div>
         </div>
         <!-- Close Button -->
         <div class="mt-6 text-center">
           <button
-            class="bg-maroon rounded-lg px-6 py-2 text-white shadow hover:bg-red-700"
+            class="px-6 py-2 text-white rounded-lg shadow bg-maroon hover:bg-red-700"
             @click="closeProfilePreviewModal"
           >
             Close
@@ -176,7 +176,7 @@
       v-if="showAddModal"
       class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
     >
-      <div class="w-96 rounded bg-white p-8 shadow-lg">
+      <div class="p-8 bg-white rounded shadow-lg w-96">
         <h2 class="mb-4 text-lg font-bold">Add Faculty/Staff</h2>
 
         <!-- Search Bar with Suggestions -->
@@ -189,13 +189,13 @@
               @blur="hideDropdown"
               type="text"
               placeholder="Search Faculty"
-              class="w-full rounded border px-3 py-2 pl-10"
+              class="w-full px-3 py-2 pl-10 border rounded"
             />
-            <Search class="absolute left-3 top-2 h-5 w-5 text-gray-500" />
+            <Search class="absolute w-5 h-5 text-gray-500 left-3 top-2" />
           </div>
           <ul
             v-if="dropdownVisible && filteredUsers.length"
-            class="absolute z-10 mt-1 w-full rounded border bg-white shadow"
+            class="absolute z-10 w-full mt-1 bg-white border rounded shadow"
           >
             <li
               v-for="user in filteredUsers"
@@ -210,7 +210,7 @@
         <!-- Designation Dropdown -->
         <div class="mb-4">
           <label class="block text-sm font-medium">Designation:</label>
-          <select v-model="selectedUser.designation" class="w-full rounded border px-3 py-2">
+          <select v-model="selectedUser.designation" class="w-full px-3 py-2 border rounded">
             <option value="" disabled>Select Designation</option>
             <option value="College Dean">College Dean</option>
             <option value="College Secretary">College Secretary</option>
@@ -226,17 +226,17 @@
             v-model="selectedUser.subDesignation"
             type="text"
             placeholder="e.g., Administrative Aide IV"
-            class="w-full rounded border px-3 py-2"
+            class="w-full px-3 py-2 border rounded"
           />
         </div>
 
-        <div class="mt-4 flex justify-end space-x-2">
-          <button @click="resetModal" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">
+        <div class="flex justify-end mt-4 space-x-2">
+          <button @click="resetModal" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
             Cancel
           </button>
           <button
             @click="addFacultyOrStaff"
-            class="bg-maroon rounded px-4 py-2 text-white hover:bg-red-600"
+            class="px-4 py-2 text-white rounded bg-maroon hover:bg-red-600"
           >
             Add
           </button>
