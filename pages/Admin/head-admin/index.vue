@@ -309,7 +309,7 @@ const saveProfile = async () => {
       email: profile.value.email,
       websites: profile.value.websites.filter((url) => url.trim() !== ""),
     });
-
+/*
     // Update the college_faculty_staff collection
     const facultyDocRef = doc(db, "college_faculty_staff", "college-wide");
     const updatedData = {
@@ -332,7 +332,7 @@ const saveProfile = async () => {
       );
       await updateDoc(facultyDocRef, { adminStaff: updatedStaff });
     }
-
+    */
     profile.value.educationHtml = contentHtml;
     toggleEdit();
     alert("Profile updated successfully!");

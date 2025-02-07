@@ -81,7 +81,7 @@
             </li>
             <li>
               <NuxtLink
-                to="/admin/super-admin/department"
+                to="/admin/super-admin/manage_department"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
               >
                 Departments
