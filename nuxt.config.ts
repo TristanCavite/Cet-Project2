@@ -43,6 +43,11 @@ export default defineNuxtConfig({
     }],
   },
 
+  devServer: {
+    port: 4000 // 👈 Change Nuxt port to avoid conflict with backend
+  },
+
+
   vuefire: {
     auth: {
       enabled: true,
