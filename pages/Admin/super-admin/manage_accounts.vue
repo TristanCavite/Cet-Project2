@@ -18,7 +18,6 @@
           <thead>
             <tr class="bg-gray-100 border-b">
               <th class="px-6 py-4">Profile</th>
-              <th class="px-6 py-4">User Name</th>
               <th class="px-6 py-4">Email</th>
               <th class="px-6 py-4">Status</th>
               <th class="px-6 py-4">Actions</th>
@@ -37,10 +36,8 @@
                   alt="Profile"
                   class="h-10 w-10 rounded-full object-cover mr-3"
                 />
-                <span>{{ user.firstName }} {{ user.lastName }}</span>
+                <span>{{ user.fullName || "Unnamed" }}</span>
               </td>
-              <!-- Name -->
-              <td class="px-6 py-4">{{ user.firstName }} {{ user.lastName }}</td>
               <!-- Email -->
               <td class="px-6 py-4">{{ user.email }}</td>
               <!-- Status -->
@@ -73,17 +70,16 @@
   import { ref, onMounted, computed } from "vue";
   import { getFirestore, collection, onSnapshot, updateDoc, doc } from "firebase/firestore";
   
-  // Page Metadata
   definePageMeta({
-    middleware: "auth", // Protect this page
-    layout: "super-admin", // Use specific layout
+    middleware: "auth",
+    layout: "super-admin",
   });
   
   const db = getFirestore();
   const users = ref([]);
   const searchQuery = ref("");
   
-  // Fetch Users in Real-Time (Exclude Super Admin)
+  // ✅ Use fullName instead of firstName + lastName
   onMounted(() => {
     const usersCollection = collection(db, "users");
     onSnapshot(usersCollection, (snapshot) => {
@@ -92,22 +88,21 @@
           id: doc.id,
           ...doc.data(),
         }))
-        .filter((user) => user.role !== "Super Admin"); // Exclude super admin
+        .filter((user) => user.role !== "Super Admin");
     });
   });
   
-  // Filter Users Based on Search Query
+  // ✅ Updated search to check fullName instead of first/last separately
   const filteredUsers = computed(() => {
     const query = searchQuery.value.toLowerCase();
     return users.value.filter(
       (user) =>
-        user.firstName?.toLowerCase().includes(query) ||
-        user.lastName?.toLowerCase().includes(query) ||
+        user.fullName?.toLowerCase().includes(query) ||
         user.email?.toLowerCase().includes(query)
     );
   });
   
-  // Toggle User Status (Activate/Deactivate)
+  // ✅ Update alert message to use fullName
   const toggleStatus = async (user) => {
     const userDocRef = doc(db, "users", user.id);
     const newStatus = user.status === "active" ? "inactive" : "active";
@@ -115,7 +110,7 @@
     try {
       await updateDoc(userDocRef, { status: newStatus });
       alert(
-        `${user.firstName} ${user.lastName} has been ${
+        `${user.fullName} has been ${
           newStatus === "active" ? "activated" : "deactivated"
         }`
       );
