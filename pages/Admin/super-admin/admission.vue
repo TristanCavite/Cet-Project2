@@ -101,6 +101,7 @@
   };
 
   definePageMeta({
+    middleware: "auth",
     layout: "super-admin",
   });
 </script>

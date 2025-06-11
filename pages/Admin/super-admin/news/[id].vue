@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'super-admin' })
+definePageMeta({ middleware: "auth",layout: 'super-admin' })
 
 // Import Vue Router + Firebase helpers
 import { useRoute, useRouter } from 'vue-router'

@@ -154,7 +154,7 @@
   import { useRoute, useRouter } from "vue-router";
   import { useFirebaseStorage, useFirestore } from "vuefire";
 
-  definePageMeta({ layout: "super-admin" });
+  definePageMeta({ middleware: "auth",layout: "super-admin" });
 
   const route = useRoute(); // 🌟 For detecting edit mode via query
   const router = useRouter();
@@ -330,16 +330,19 @@ function addImage() {
     margin: 0.5rem 0;
   }
 
-  .ProseMirror {
-    outline: none !important; /* removes default focus outline */
-    border: none !important; /* removes any default border */
-    box-shadow: none !important; /* removes box-shadow if present */
-  }
-  .EditorContent {
-    border: 1px solid #e5e7eb; /* light gray */
-    border-radius: 0.375rem; /* rounded-md */
-    padding: 1rem;
-    min-height: 300px;
-    background-color: #ffffff;
-  }
+ /* Clean editor appearance like add_news.vue */
+.ProseMirror {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.EditorContent {
+  border: 1px solid #e5e7eb; /* Tailwind border-gray-300 */
+  border-radius: 0.375rem;   /* rounded-md */
+  padding: 1rem;
+  min-height: 300px;
+  background-color: #ffffff;
+}
+
 </style>
