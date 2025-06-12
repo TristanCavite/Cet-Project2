@@ -1,3 +1,4 @@
+//manage_about.vue
 <template>
   <div class="mx-auto max-w-6xl space-y-6 p-6">
     <!-- Header -->
@@ -58,9 +59,32 @@
       <div>
         <label class="mb-2 block font-semibold">Content</label>
         <div class="mb-4 flex flex-wrap items-center gap-2">
-          <button class="btn btn-sm" @click="editor?.chain().focus().toggleBold().run()">
-            <LucideBold class="h-4 w-4" />
-          </button>
+          <select
+            class="select select-bordered h-9 min-w-[120px] px-2 py-1 text-sm"
+            @change="setFontSize($event)"
+          >
+            <option disabled selected>Font Size</option>
+            <option value="12px">12px</option>
+            <option value="14px">14px</option>
+            <option value="16px">16px</option>
+            <option value="18px">18px</option>
+            <option value="24px">24px</option>
+            <option value="32px">32px</option>
+            <option value="48px">48px</option>
+          </select>
+
+          <input
+            type="color"
+            class="h-9 w-9 cursor-pointer rounded border p-0"
+            title="Choose text color"
+            @change="setTextColor"
+          />
+
+          <button class="btn btn-sm" @click="editor?.chain().focus().toggleCustomBold().run()">
+  <LucideBold class="h-4 w-4" />
+</button>
+
+
           <button class="btn btn-sm" @click="editor?.chain().focus().toggleItalic().run()">
             <LucideItalic class="h-4 w-4" />
           </button>
@@ -107,9 +131,9 @@
           </button>
         </div>
         <EditorContent
-  :editor="editor"
-  class="prose max-w-none min-h-[300px] w-full rounded border border-gray-300 bg-white p-4 shadow focus:outline-none"
-/>
+          :editor="editor"
+          class="prose min-h-[300px] w-full max-w-none rounded border border-gray-300 bg-white p-4 shadow focus:outline-none"
+        />
         <input
           ref="editorImageInput"
           type="file"
@@ -130,14 +154,17 @@
 </template>
 
 <script setup lang="ts">
+  import { CustomBold } from "@/extensions/CustomBold";
+  import { FontSize } from "@/extensions/FontSize";
+  import Color from "@tiptap/extension-color";
   import Image from "@tiptap/extension-image";
   import Link from "@tiptap/extension-link";
   import TextAlign from "@tiptap/extension-text-align";
+  import TextStyle from "@tiptap/extension-text-style";
   import Underline from "@tiptap/extension-underline";
   import StarterKit from "@tiptap/starter-kit";
   import { EditorContent, useEditor } from "@tiptap/vue-3";
-  import { doc, getDoc, setDoc } from "firebase/firestore"
-
+  import { doc, getDoc, setDoc } from "firebase/firestore";
   import { getDownloadURL, ref as storageRef, uploadBytes } from "firebase/storage";
   import {
     AlignCenter as LucideAlignCenter,
@@ -155,9 +182,9 @@
     Undo as LucideUndo,
   } from "lucide-vue-next";
   import ResizeImage from "tiptap-extension-resize-image";
-  import { ref, watch } from "vue";
+  import { computed, ref, watch } from "vue";
   import { useFirebaseStorage, useFirestore } from "vuefire";
-  import { computed } from "vue"
+
   const db = useFirestore();
   const storage = useFirebaseStorage();
   definePageMeta({ middleware: "auth", layout: "super-admin" });
@@ -168,23 +195,43 @@
   const form = ref({
     coverImageUrl: "",
     content: "",
-    videoUrl: "", // ✅ NEW: holds YouTube/Vimeo embed URL
+    videoUrl: "",
   });
 
-  // Initialize tiptap editor
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        bold: false, // ✅ disable default bold
+      }),
+      TextStyle, // ✅ required for color support
+      FontSize,
+      Color.configure({ types: ["textStyle", "customBold"] }),
+      CustomBold, // ✅ replaces native Bold
       Underline,
       Link,
       Image,
-      ResizeImage.configure({ allowBase64: true }),
+      ResizeImage.configure({
+        allowBase64: true,
+        inline: false,
+        HTMLAttributes: { class: "resizable-image" },
+      }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
     content: "<p>Start editing content here...</p>",
   });
 
-  // Load section from Firestore on selection
+  function setFontSize(event: Event) {
+    const size = (event.target as HTMLSelectElement).value;
+    if (!size) return;
+    editor.value?.chain().focus().setFontSize(size).run();
+  }
+
+  function setTextColor(event: Event) {
+    const color = (event.target as HTMLInputElement).value;
+    if (!color) return;
+    editor.value?.chain().focus().setColor(color).run();
+  }
+
   watch(selectedSection, async (id) => {
     if (!id) return;
     const snap = await getDoc(doc(db, "about_sections", id));
@@ -192,12 +239,11 @@
       const data = snap.data();
       form.value.coverImageUrl = data.coverImageUrl || "";
       form.value.content = data.content || "";
-      form.value.videoUrl = data.videoUrl || ""; // ✅ Load videoUrl if exists
+      form.value.videoUrl = data.videoUrl || "";
       editor.value?.commands.setContent(data.content || "<p></p>");
     }
   });
 
-  // Upload cover image
   async function handleImage(e: Event) {
     const file = (e.target as HTMLInputElement)?.files?.[0];
     if (!file || !selectedSection.value) return;
@@ -208,7 +254,6 @@
     form.value.coverImageUrl = url;
   }
 
-  // Upload inline images in tiptap
   async function handleEditorImageUpload(e: Event) {
     const file = (e.target as HTMLInputElement)?.files?.[0];
     if (!file) return;
@@ -220,7 +265,6 @@
     if (editorImageInput.value) editorImageInput.value.value = "";
   }
 
-  // Tiptap helpers
   function addImage() {
     editorImageInput.value?.click();
   }
@@ -231,43 +275,31 @@
     editor.value?.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   }
 
-  // Save to Firestore
   async function saveSection() {
     if (!selectedSection.value) return;
-
     const payload: Record<string, any> = {
       coverImageUrl: form.value.coverImageUrl,
       content: editor.value?.getHTML() || "",
     };
-
-    // ✅ Save video URL only for the_college
     if (selectedSection.value === "the_college") {
       payload.videoUrl = form.value.videoUrl;
     }
-
-   await setDoc(doc(db, "about_sections", selectedSection.value), payload);
+    await setDoc(doc(db, "about_sections", selectedSection.value), payload);
     alert("Section updated!");
   }
 
-
   const embedVideoUrl = computed(() => {
-  const url = form.value.videoUrl.trim()
-
-  // YouTube short link
-  if (url.includes("youtu.be")) {
-    const videoId = url.split("/").pop()?.split("?")[0]
-    return `https://www.youtube.com/embed/${videoId}`
-  }
-
-  // YouTube watch link
-  if (url.includes("youtube.com/watch")) {
-    const videoId = new URL(url).searchParams.get("v")
-    return `https://www.youtube.com/embed/${videoId}`
-  }
-
-  // Already embed link or valid Vimeo
-  return url
-})
+    const url = form.value.videoUrl.trim();
+    if (url.includes("youtu.be")) {
+      const videoId = url.split("/").pop()?.split("?")[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    if (url.includes("youtube.com/watch")) {
+      const videoId = new URL(url).searchParams.get("v");
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    return url;
+  });
 </script>
 
 <style>
@@ -275,5 +307,27 @@
     background-color: #740505;
   }
 
-  
+  .ProseMirror {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .EditorContent {
+    border: 1px solid #e5e7eb; /* Tailwind border-gray-300 */
+    border-radius: 0.375rem; /* rounded-md */
+    padding: 1rem;
+    min-height: 300px;
+    background-color: #ffffff;
+  }
+  .resizable-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0.5rem 0;
+  }
+
+  .EditorContent span[style*="font-size"] {
+    display: inline-block;
+  }
 </style>
