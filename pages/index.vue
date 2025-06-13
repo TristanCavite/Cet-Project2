@@ -1,14 +1,20 @@
 <template>
   <main class="overflow-hidden"> 
-   <div class="relative w-full overflow-hidden h-192"> 
+   <div class="relative w-full overflow-hidden h-128 my-7"> 
      <!-- arrows-->
-     <button class="absolute z-10 flex items-center justify-center transform -translate-y-1/2 bg-red-900 h-28 right-4 top-1/2" @click="nextSlide">
-       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" lucide lucide-chevron-right size-12"><path d="m9 18 6-6-6-6"/></svg>
-     </button>
-     <button class="absolute z-10 flex items-center justify-center transform -translate-y-1/2 bg-red-900 left-4 top-1/2 h-28" @click="prevSlide">
-       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left size-12"><path d="m15 18-6-6 6-6"/></svg>
-     </button>
-     
+   <!-- Right Arrow Button -->
+<button class="absolute z-10 flex items-center justify-center transform -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 h-28 right-4 top-1/2 rounded-xl shadow-lg transition hover:bg-white/20" @click="nextSlide">
+  <svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-chevron-right size-12 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+</button>
+
+<!-- Left Arrow Button -->
+<button class="absolute z-10 flex items-center justify-center transform -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 h-28 left-4 top-1/2 rounded-xl shadow-lg transition hover:bg-white/20" @click="prevSlide">
+  <svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-chevron-left size-12 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path d="m15 18-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+</button>
      <!-- dots indicator-->
      <div class="absolute z-10 flex space-x-2 transform -translate-x-1/2 bottom-4 left-1/2">
        <span
@@ -22,11 +28,10 @@
 
      <!-- image container-->
      <div class="flex transition-transform ease-in-out duration-2000" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-       <!-- slides -->
-       <div v-for="(image, index) in images" :key="index" class="flex-shrink-0 w-full">
-         <img :src="image.src" alt="" class="object-cover w-full h-192" loading="lazy">
-       </div>
-     </div>
+    <div v-for="(image, index) in images" :key="index" class="flex-shrink-0 w-full h-full">
+      <img :src="image.src" alt="" class="object-contain w-full h-full mx-auto bg-black" loading="lazy">
+    </div>
+  </div>
    </div>
 
     <!--EVENTS-->
