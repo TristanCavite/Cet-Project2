@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-5xl mx-auto px-4 py-8">
+  <div class="max-w-5xl mx-auto px-4 py-8 my-7">
     <h1 class="text-3xl font-bold text-maroon mb-8">College News</h1>
 
     <!-- News List -->
