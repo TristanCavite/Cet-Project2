@@ -16,6 +16,7 @@
     "@morev/vue-transitions": "^3.0.5",
     "@nuxt/fonts": "^0.0.1",
     "@tiptap/extension-color": "^2.14.0",
+    "@tiptap/extension-font-family": "^2.14.0",
     "@tiptap/extension-image": "^2.12.0",
     "@tiptap/extension-link": "^2.12.0",
     "@tiptap/extension-text-align": "^2.12.0",
