@@ -1,3 +1,4 @@
+//CustomBold.ts
 import { Mark, mergeAttributes } from '@tiptap/core'
 
 declare module '@tiptap/core' {

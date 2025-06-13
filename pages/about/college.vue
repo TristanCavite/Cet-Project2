@@ -12,12 +12,22 @@
       </div>
     </div>
 
-    <!-- Main Card -->
+    <!-- Main Content Container -->
     <div class="h-auto mx-auto mt-16 mb-16 border-2 shadow-2xl w-304 bg-neutral-50">
-      <!-- Video -->
+      <!-- Video Section -->
       <div class="mx-auto mt-4 h-128 w-288">
+        <!-- YouTube Embed -->
+        <iframe
+          v-if="aboutData?.videoUrl && aboutData.videoUrl.includes('youtube.com')"
+          :src="getYoutubeEmbedUrl(aboutData.videoUrl)"
+          frameborder="0"
+          allowfullscreen
+          class="w-full h-full"
+        ></iframe>
+
+        <!-- Fallback for direct video URLs (e.g., .mp4 from Firebase Storage) -->
         <video
-          v-if="aboutData?.videoUrl"
+          v-else-if="aboutData?.videoUrl"
           :src="aboutData.videoUrl"
           controls
           preload="auto"
@@ -26,10 +36,11 @@
         ></video>
       </div>
 
-      <!-- Rich Content from Firestore -->
-      <div class="mt-10 mb-5 px-10 text-lg font-medium font-roboto">
-        <div v-html="aboutData?.content" />
-      </div>
+      <!-- Rich Text Content -->
+      <div
+        v-html="aboutData?.content"
+        class="mt-10 mb-5 px-10 text-gray-800 text-justify leading-relaxed space-y-4 font-roboto"
+      ></div>
     </div>
   </main>
 </template>
@@ -39,13 +50,24 @@ import { useDocument } from 'vuefire'
 import { doc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 
-// Firestore reference
+// Get Firestore instance
 const db = useFirestore()
 
-// Get the document from about_sections > the_college
+// Retrieve document from Firestore: about_sections > the_college
 const { data: aboutData } = useDocument(
   doc(db, 'about_sections', 'the_college')
 )
+
+// Function to convert normal YouTube links to embed format
+function getYoutubeEmbedUrl(url: string): string {
+  try {
+    const videoId = new URL(url).searchParams.get('v')
+    return `https://www.youtube.com/embed/${videoId}`
+  } catch (e) {
+    console.error('Invalid YouTube URL:', url)
+    return ''
+  }
+}
 </script>
 
 <script lang="ts">

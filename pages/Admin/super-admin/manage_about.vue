@@ -1,4 +1,3 @@
-//manage_about.vue
 <template>
   <div class="mx-auto max-w-6xl space-y-6 p-6">
     <!-- Header -->
@@ -35,7 +34,7 @@
         />
       </div>
 
-      <!-- ✅ College Promotional Video URL Field (Only for the_college) -->
+      <!-- College Promo Video -->
       <div v-if="selectedSection === 'the_college'">
         <label class="mb-1 block font-semibold">College Promotional Video (YouTube/Vimeo)</label>
         <input
@@ -55,133 +54,48 @@
         </div>
       </div>
 
-      <!-- Tiptap Toolbar + Editor -->
+      <!-- Content Section -->
       <div>
         <label class="mb-2 block font-semibold">Content</label>
-        <div class="mb-4 flex flex-wrap items-center gap-2">
-          <select
-            class="select select-bordered h-9 min-w-[120px] px-2 py-1 text-sm"
-            @change="setFontSize($event)"
-          >
-            <option disabled selected>Font Size</option>
-            <option value="12px">12px</option>
-            <option value="14px">14px</option>
-            <option value="16px">16px</option>
-            <option value="18px">18px</option>
-            <option value="24px">24px</option>
-            <option value="32px">32px</option>
-            <option value="48px">48px</option>
-          </select>
 
-          <input
-            type="color"
-            class="h-9 w-9 cursor-pointer rounded border p-0"
-            title="Choose text color"
-            @change="setTextColor"
-          />
-
-          <button class="btn btn-sm" @click="editor?.chain().focus().toggleCustomBold().run()">
-  <LucideBold class="h-4 w-4" />
-</button>
-
-
-          <button class="btn btn-sm" @click="editor?.chain().focus().toggleItalic().run()">
-            <LucideItalic class="h-4 w-4" />
-          </button>
-          <button class="btn btn-sm" @click="editor?.chain().focus().toggleUnderline().run()">
-            <LucideUnderline class="h-4 w-4" />
-          </button>
-          <button
-            class="btn btn-sm"
-            @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()"
-          >
-            H2
-          </button>
-          <button
-            class="btn btn-sm"
-            @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()"
-          >
-            H3
-          </button>
-          <button class="btn btn-sm" @click="editor?.chain().focus().toggleBulletList().run()">
-            <LucideList class="h-4 w-4" />
-          </button>
-          <button class="btn btn-sm" @click="editor?.chain().focus().toggleOrderedList().run()">
-            <LucideListOrdered class="h-4 w-4" />
-          </button>
-          <button class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('left').run()">
-            <LucideAlignLeft class="h-4 w-4" />
-          </button>
-          <button class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('center').run()">
-            <LucideAlignCenter class="h-4 w-4" />
-          </button>
-          <button class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('right').run()">
-            <LucideAlignRight class="h-4 w-4" />
-          </button>
-          <button class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('justify').run()">
-            <LucideAlignJustify class="h-4 w-4" />
-          </button>
-          <button class="btn btn-sm" @click="addLink"><LucideLink class="h-4 w-4" /></button>
-          <button class="btn btn-sm" @click="addImage"><LucideImage class="h-4 w-4" /></button>
-          <button class="btn btn-sm" @click="editor?.chain().focus().undo().run()">
-            <LucideUndo class="h-4 w-4" />
-          </button>
-          <button class="btn btn-sm" @click="editor?.chain().focus().redo().run()">
-            <LucideRedo class="h-4 w-4" />
-          </button>
+        <!-- Edit / Cancel button shown above the content -->
+        <div class="mb-4">
+          <UiButton class="bg-maroon text-white hover:opacity-90" @click="isEditing = !isEditing">
+            {{ isEditing ? "Cancel" : "Edit Content" }}
+          </UiButton>
         </div>
-        <EditorContent
-          :editor="editor"
-          class="prose min-h-[300px] w-full max-w-none rounded border border-gray-300 bg-white p-4 shadow focus:outline-none"
-        />
-        <input
-          ref="editorImageInput"
-          type="file"
-          accept="image/*"
-          class="hidden"
-          @change="handleEditorImageUpload"
-        />
-      </div>
 
-      <!-- Save Button -->
-      <div>
-        <UiButton class="bg-maroon text-white hover:opacity-90" @click="saveSection">
-          Save Changes
-        </UiButton>
+        <!-- Preview -->
+        <div
+          v-if="!isEditing"
+          class="prose max-w-none rounded border bg-white p-4 shadow"
+          v-html="form.content"
+        />
+
+        <!-- Editor -->
+        <UiTiptapEditor
+          v-else
+          v-model="form.content"
+          :editing="isEditing"
+          class="mt-2"
+          @image-upload="handleEditorImageUpload"
+        />
+
+        <!-- Save Button for everything -->
+        <div class="mt-4 flex justify-end">
+          <UiButton class="bg-maroon text-white hover:opacity-90" @click="saveSection">
+            Save Changes
+          </UiButton>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { CustomBold } from "@/extensions/CustomBold";
-  import { FontSize } from "@/extensions/FontSize";
-  import Color from "@tiptap/extension-color";
-  import Image from "@tiptap/extension-image";
-  import Link from "@tiptap/extension-link";
-  import TextAlign from "@tiptap/extension-text-align";
-  import TextStyle from "@tiptap/extension-text-style";
-  import Underline from "@tiptap/extension-underline";
-  import StarterKit from "@tiptap/starter-kit";
-  import { EditorContent, useEditor } from "@tiptap/vue-3";
+  import UiTiptapEditor from "@/components/UiTiptapEditor.vue";
   import { doc, getDoc, setDoc } from "firebase/firestore";
   import { getDownloadURL, ref as storageRef, uploadBytes } from "firebase/storage";
-  import {
-    AlignCenter as LucideAlignCenter,
-    AlignJustify as LucideAlignJustify,
-    AlignLeft as LucideAlignLeft,
-    AlignRight as LucideAlignRight,
-    Bold as LucideBold,
-    Image as LucideImage,
-    Italic as LucideItalic,
-    Link as LucideLink,
-    List as LucideList,
-    ListOrdered as LucideListOrdered,
-    Redo as LucideRedo,
-    Underline as LucideUnderline,
-    Undo as LucideUndo,
-  } from "lucide-vue-next";
-  import ResizeImage from "tiptap-extension-resize-image";
   import { computed, ref, watch } from "vue";
   import { useFirebaseStorage, useFirestore } from "vuefire";
 
@@ -189,48 +103,13 @@
   const storage = useFirebaseStorage();
   definePageMeta({ middleware: "auth", layout: "super-admin" });
 
+  const isEditing = ref(false);
   const selectedSection = ref("");
-  const editorImageInput = ref<HTMLInputElement | null>(null);
-
   const form = ref({
     coverImageUrl: "",
     content: "",
     videoUrl: "",
   });
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        bold: false, // ✅ disable default bold
-      }),
-      TextStyle, // ✅ required for color support
-      FontSize,
-      Color.configure({ types: ["textStyle", "customBold"] }),
-      CustomBold, // ✅ replaces native Bold
-      Underline,
-      Link,
-      Image,
-      ResizeImage.configure({
-        allowBase64: true,
-        inline: false,
-        HTMLAttributes: { class: "resizable-image" },
-      }),
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
-    ],
-    content: "<p>Start editing content here...</p>",
-  });
-
-  function setFontSize(event: Event) {
-    const size = (event.target as HTMLSelectElement).value;
-    if (!size) return;
-    editor.value?.chain().focus().setFontSize(size).run();
-  }
-
-  function setTextColor(event: Event) {
-    const color = (event.target as HTMLInputElement).value;
-    if (!color) return;
-    editor.value?.chain().focus().setColor(color).run();
-  }
 
   watch(selectedSection, async (id) => {
     if (!id) return;
@@ -240,7 +119,7 @@
       form.value.coverImageUrl = data.coverImageUrl || "";
       form.value.content = data.content || "";
       form.value.videoUrl = data.videoUrl || "";
-      editor.value?.commands.setContent(data.content || "<p></p>");
+      isEditing.value = false;
     }
   });
 
@@ -254,37 +133,24 @@
     form.value.coverImageUrl = url;
   }
 
-  async function handleEditorImageUpload(e: Event) {
-    const file = (e.target as HTMLInputElement)?.files?.[0];
-    if (!file) return;
+  async function handleEditorImageUpload(file: File) {
     const path = `editor_images/${Date.now()}-${file.name}`;
     const fileRef = storageRef(storage, path);
     const snap = await uploadBytes(fileRef, file);
-    const url = await getDownloadURL(snap.ref);
-    editor.value?.chain().focus().setImage({ src: url }).run();
-    if (editorImageInput.value) editorImageInput.value.value = "";
-  }
-
-  function addImage() {
-    editorImageInput.value?.click();
-  }
-
-  function addLink() {
-    const url = prompt("Enter the link URL:");
-    if (!url) return;
-    editor.value?.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+    return await getDownloadURL(snap.ref);
   }
 
   async function saveSection() {
     if (!selectedSection.value) return;
     const payload: Record<string, any> = {
       coverImageUrl: form.value.coverImageUrl,
-      content: editor.value?.getHTML() || "",
+      content: form.value.content,
     };
     if (selectedSection.value === "the_college") {
       payload.videoUrl = form.value.videoUrl;
     }
     await setDoc(doc(db, "about_sections", selectedSection.value), payload);
+    isEditing.value = false;
     alert("Section updated!");
   }
 
@@ -314,8 +180,8 @@
   }
 
   .EditorContent {
-    border: 1px solid #e5e7eb; /* Tailwind border-gray-300 */
-    border-radius: 0.375rem; /* rounded-md */
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
     padding: 1rem;
     min-height: 300px;
     background-color: #ffffff;
@@ -327,7 +193,8 @@
     margin: 0.5rem 0;
   }
 
-  .EditorContent span[style*="font-size"] {
+  .EditorContent span[style*="font-size"],
+  .EditorContent span[style*="color"] {
     display: inline-block;
   }
 </style>

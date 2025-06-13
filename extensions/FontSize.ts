@@ -18,7 +18,8 @@ export const FontSize = Mark.create<FontSizeOptions>({
 
   addOptions() {
     return {
-      types: ['textStyle'],
+      types: ['textStyle', 'paragraph', 'heading']
+
     }
   },
 
