@@ -30,7 +30,7 @@
             </li>
             <li>
               <NuxtLink
-                to="/admin/super-admin/manage_news"
+                to="/admin/super-admin/news"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
               >
                 Manage News
@@ -43,6 +43,15 @@
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
               >
                 Manage Accounts
+              </NuxtLink>
+            </li>
+
+               <li>
+              <NuxtLink
+                to="/admin/super-admin/manage_about"
+                class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+              >
+                Manage About
               </NuxtLink>
             </li>
 
