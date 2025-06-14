@@ -1,3 +1,4 @@
+//UiTiptapEditor.vue
 <template>
   <div>
     <!-- Toolbar -->
@@ -191,7 +192,7 @@ async function insertImages(e: Event) {
 
 </script>
 
-<style>
+<style scoped>
 .EditorContent {
   /* remove this if present */
   min-height: 300px;
@@ -204,5 +205,6 @@ async function insertImages(e: Event) {
   display: block;
   margin: 1rem 0;
 }
+
 
 </style>

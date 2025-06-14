@@ -239,9 +239,13 @@ const fetchDegreePrograms = async () => {
   }));
 
   const usersSnapshot = await getDocs(collection(db, 'users'));
-  users.value = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-    .filter(user => user.role === 'Faculty');
-  filterUsers();
+  users.value = usersSnapshot.docs
+  .map(doc => ({ id: doc.id, ...doc.data() }))
+  .filter(user =>
+    user.role !== 'Super Admin' && // ⛔ exclude Super Admins
+    user.isActive !== false // ✅ include only active users if applicable
+  );
+
 };
 
 const addDegreeProgram = async () => {

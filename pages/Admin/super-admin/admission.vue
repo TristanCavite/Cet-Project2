@@ -122,7 +122,14 @@
       form.value.content = data.content || "";
       form.value.videoUrl = data.videoUrl || "";
       isEditing.value = false;
-    }
+    }else {
+    // Reset the form if the section has no data
+    form.value.coverImageUrl = "";
+    form.value.content = "";
+    form.value.videoUrl = "";
+    originalContent.value = "";
+    isEditing.value = false;
+  }
   });
 
   async function handleImage(e: Event) {

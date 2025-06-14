@@ -21,6 +21,16 @@
                 Faculty and Staff
               </NuxtLink>
             </li>
+
+                  <!-- ✅ NEW Department Page -->
+          <li>
+            <NuxtLink
+              to="/admin/head-admin/department-page"
+              class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+            >
+              Department Page
+            </NuxtLink>
+          </li>
             <li>
               <NuxtLink
                 to="/admin/head-admin/degree-program"
