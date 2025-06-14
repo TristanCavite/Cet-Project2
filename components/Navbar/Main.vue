@@ -103,7 +103,54 @@
           </div>
         </div>
 
-        <!-- Admission Dropdown -->
+   <!-- ✅ Academics Dropdown -->
+<div class="relative group">
+  <TabsTrigger
+    value="academics"
+    class="flex items-center gap-1 font-semibold text-white border-b-2 border-transparent font-montserrat hover:border-red-800 hover:text-red-800"
+  >
+    Academics
+    <ChevronDown class="w-4 h-4 text-white group-hover:text-red-800" />
+  </TabsTrigger>
+
+  <!-- First-Level Dropdown -->
+  <div class="absolute hidden group-hover:block bg-[#342E2E] text-white shadow-lg z-50 min-w-[260px]">
+    <div class="flex flex-col">
+
+      <!-- 📁 Degree Program Dropdown -->
+      <div class="relative group/degree border-b border-gray-500 hover:bg-gray-700 px-4 py-2 cursor-pointer">
+        <div class="flex justify-between items-center">
+          <span>Degree Program</span>
+          <span class="text-yellow-500">▶</span>
+        </div>
+
+        <!-- Departments (Second-Level Dropdown) -->
+        <div class="absolute top-0 left-full hidden group-hover/degree:flex flex-col bg-[#342E2E] w-[300px] shadow-lg z-50">
+          <NuxtLink
+            v-for="dept in departments"
+            :key="dept.id"
+            :to="`/academics/departments/${dept.id}`"
+            class="px-4 py-2 border-b border-gray-500 hover:bg-gray-700"
+          >
+            {{ dept.name }}
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- 📅 Academic Calendar -->
+      <NuxtLink
+        to="/academics/academic_calendar"
+        class="block px-4 py-2 hover:bg-gray-700"
+      >
+        Academic Calendar
+      </NuxtLink>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Admission Dropdown -->
         <div class="relative group">
           <TabsTrigger
             value="admission"
@@ -125,24 +172,7 @@
           </div>
         </div>
 
-        <!-- Academics Dropdown -->
-        <div class="relative group">
-          <TabsTrigger
-            value="academics"
-            class="flex items-center gap-1 font-semibold text-white border-b-2 border-transparent font-montserrat group-hover:border-red-800 group-hover:text-red-800"
-          >
-            Academics
-            <ChevronDown class="w-4 h-4 text-white group-hover:text-red-800" />
-          </TabsTrigger>
-          <div class="absolute hidden w-56 bg-[#342E2E] text-white shadow-lg group-hover:block cursor-pointer z-50">
-            <NuxtLink to="/academics/degree_program" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
-              Degree Program
-            </NuxtLink>
-            <NuxtLink to="/academics/academic_calendar" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
-              Academic Calendar
-            </NuxtLink>
-          </div>
-        </div>
+
 
         <!-- Research -->
         <NuxtLink to="/research/" class="pb-0 font-semibold border-b-2 border-transparent hover:border-yellow-500 hover:text-yellow-500">
@@ -168,11 +198,17 @@ import ChevronDown from "@/components/Icons/ChevronDown.vue";
 import IconsSearch from "@/components/Icons/Search.vue";
 import { signOut } from "firebase/auth";
 import { onMounted, ref } from 'vue';
-
-
+import { collection, getDocs } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
 // Auth
 const user = useCurrentUser();
 const auth = useFirebaseAuth();
+const departmentRefs = ref<HTMLElement[]>([]);
+const programDirections = ref<Record<number, 'left' | 'right'>>({});
+
+const db = useFirestore()
+
+const departments = ref<any[]>([])
 
 const logout = async () => {
   if (auth) {
@@ -180,30 +216,31 @@ const logout = async () => {
     navigateTo("/");
   }
 };
-
-// Dropdown logic
-let degreeProgramTrigger: HTMLElement | null;
-let degreeProgramMenu: HTMLElement | null;
-
-onMounted(() => {
-  degreeProgramTrigger = document.querySelector('#departmentPersonel') as HTMLElement;
-  degreeProgramMenu = document.querySelector('#degreeProgramMenu') as HTMLElement;
-
-  if (degreeProgramTrigger && degreeProgramMenu) {
-    degreeProgramTrigger.addEventListener('mouseover', () => {
-      degreeProgramMenu?.classList.remove('hidden');
-    });
-    degreeProgramTrigger.addEventListener('mouseout', () => {
-      degreeProgramMenu?.classList.add('hidden');
-    });
-    degreeProgramMenu.addEventListener('mouseover', () => {
-      degreeProgramMenu?.classList.remove('hidden');
-    });
-    degreeProgramMenu.addEventListener('mouseout', () => {
-      degreeProgramMenu?.classList.add('hidden');
-    });
+onMounted(async () => {
+  try {
+    const snapshot = await getDocs(collection(db, 'departments'));
+    departments.value = snapshot.docs.map(doc => ({
+      id: doc.id,
+      name: doc.data().name || 'Unnamed Dept',
+    }));
+  } catch (err) {
+    console.error('🔥 Failed to load departments:', err);
   }
 });
+
+function getDropdownDirection(triggerEl: HTMLElement): 'left' | 'right' {
+  const { right } = triggerEl.getBoundingClientRect();
+  const spaceRight = window.innerWidth - right;
+  return spaceRight < 320 ? 'left' : 'right';
+}
+function setProgramDirection(index: number) {
+  const triggerEl = departmentRefs.value[index];
+  if (triggerEl) {
+    programDirections.value[index] = getDropdownDirection(triggerEl);
+  }
+}
+
+
 </script>
 
 <style scoped>
