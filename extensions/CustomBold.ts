@@ -53,4 +53,10 @@ export const CustomBold = Mark.create({
         },
     }
   },
+
+  addKeyboardShortcuts() {
+    return {
+      'Mod-b': () => this.editor.commands.toggleCustomBold(), // Ctrl+B or Cmd+B
+    }
+  },
 })

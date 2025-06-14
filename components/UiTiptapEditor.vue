@@ -18,8 +18,22 @@
         <option value="Roboto">Roboto</option>
       </select>
 
-      <!-- Text Color -->
-      <input type="color" class="h-9 w-9 rounded border" @change="setTextColor" />
+      <!-- Color Palette -->
+<div class="relative group">
+  <button class="btn btn-sm bg-white border" title="Text Color">
+    <div class="h-4 w-4 rounded" :style="{ backgroundColor: selectedColor }"></div>
+  </button>
+  <div class="absolute z-50 hidden group-hover:flex flex-wrap gap-1 p-2 bg-white border rounded shadow w-56">
+    <button
+      v-for="color in presetColors"
+      :key="color"
+      class="h-5 w-5 rounded border"
+      :style="{ backgroundColor: color }"
+      @click="applyColor(color)"
+    />
+  </div>
+</div>
+
 
       <!-- Toolbar Buttons -->
       <button class="btn btn-sm" @click="editor?.chain().focus().toggleCustomBold().run()"><LucideBold class="h-4 w-4" /></button>
@@ -87,6 +101,12 @@ const emit = defineEmits(["update:modelValue"])
 const imageInput = ref<HTMLInputElement | null>(null)
 const storage = useFirebaseStorage()
 const fontSizes = ["12px", "14px", "16px", "18px", "24px", "32px", "48px"]
+const selectedColor = ref("#000000");
+const presetColors = [
+  "#000000", "#808080", "#FFFFFF", "#FF0000", "#FFA500", "#FFFF00",
+  "#008000", "#00FFFF", "#0000FF", "#800080", "#FFC0CB", "#A52A2A",
+  "#B0E0E6", "#ADD8E6", "#90EE90", "#D3D3D3", "#FF69B4", "#9932CC",
+];
 
 const editor = useEditor({
   editable: props.editing,
@@ -120,9 +140,11 @@ function setFontFamily(event: Event) {
   editor.value?.chain().focus().setFontFamily(font).run()
 }
 
-function setTextColor(event: Event) {
-  const color = (event.target as HTMLInputElement).value
-  editor.value?.chain().focus().setColor(color).run()
+
+
+function applyColor(color: string) {
+  selectedColor.value = color;
+  editor.value?.chain().focus().setColor(color).run();
 }
 
 function addLink() {
