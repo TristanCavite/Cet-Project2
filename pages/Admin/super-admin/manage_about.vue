@@ -59,11 +59,12 @@
         <label class="mb-2 block font-semibold">Content</label>
 
         <!-- Edit / Cancel button shown above the content -->
-        <div class="mb-4">
-          <UiButton class="bg-maroon text-white hover:opacity-90" @click="isEditing = !isEditing">
-            {{ isEditing ? "Cancel" : "Edit Content" }}
-          </UiButton>
-        </div>
+        <UiButton
+          class="bg-maroon text-white hover:opacity-90"
+          @click="isEditing ? cancelEdit() : (isEditing = true)"
+        >
+          {{ isEditing ? "Cancel" : "Edit Content" }}
+        </UiButton>
 
         <!-- Preview -->
         <div
@@ -102,7 +103,7 @@
   const db = useFirestore();
   const storage = useFirebaseStorage();
   definePageMeta({ middleware: "auth", layout: "super-admin" });
-
+  const originalContent = ref("");
   const isEditing = ref(false);
   const selectedSection = ref("");
   const form = ref({
@@ -117,6 +118,7 @@
     if (snap.exists()) {
       const data = snap.data();
       form.value.coverImageUrl = data.coverImageUrl || "";
+      originalContent.value = data.content || ""; // save original for later reset
       form.value.content = data.content || "";
       form.value.videoUrl = data.videoUrl || "";
       isEditing.value = false;
@@ -166,6 +168,11 @@
     }
     return url;
   });
+
+  function cancelEdit() {
+    form.value.content = originalContent.value; // restore Firestore content
+    isEditing.value = false;
+  }
 </script>
 
 <style>
