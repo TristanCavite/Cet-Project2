@@ -47,7 +47,7 @@
         <!-- Home -->
         <NuxtLink
           to="/"
-          class="pb-0 font-semibold text-white border-b-2 border-transparent font-montserrat hover:border-red-800 hover:text-red-800"
+          class="pb-0 font-semibold text-white border-b-2 border-transparent font-montserrat hover:border-yellow-500 hover:text-yellow-500"
         >
           Home
         </NuxtLink>
@@ -56,10 +56,10 @@
         <div class="relative group">
           <TabsTrigger
             value="about"
-            class="flex items-center gap-1 pb-0 font-semibold text-white border-b-2 border-transparent font-montserrat group-hover:text-red-800 group-hover:border-red-800"
+            class="flex items-center gap-1 pb-0 font-semibold text-white border-b-2 border-transparent font-montserrat group-hover:text-yellow-500 group-hover:border-yellow-500"
           >
             About
-            <ChevronDown class="w-4 h-4 text-white group-hover:text-red-800" />
+            <ChevronDown class="w-4 h-4 text-white group-hover:text-yellow-500" />
           </TabsTrigger>
 
           <div class="absolute mt-1 hidden w-80 bg-[#342E2E] text-white shadow-lg group-hover:block z-50">
@@ -70,32 +70,35 @@
               Facilities
             </NuxtLink>
 
-            <div class="relative z-20 border-b border-gray-500 hover:bg-gray-700">
-              <NuxtLink to="/about/administration" class="flex justify-between px-4 py-2">
-                Offices and Administration <span class="text-yellow-500">▶</span>
-              </NuxtLink>
+           <div class="relative group/admin border-b border-gray-500 hover:bg-gray-700">
+  <div class="flex justify-between px-4 py-2 cursor-pointer">
+    <NuxtLink to="/about/administration" class="flex justify-between w-full">
+      Offices and Administration <span class="text-yellow-500">▶</span>
+    </NuxtLink>
+  </div>
 
-              <div class="absolute left-full top-0 w-100 bg-[#342E2E] text-white shadow-lg hidden z-30">
-                <NuxtLink to="/about/dept_personels/ABS" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
-                  Agricultural and Biosystem Engineering
-                </NuxtLink>
-                <NuxtLink to="/about/dept_personels/CE" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
-                  Civil Engineering
-                </NuxtLink>
-                <NuxtLink to="/about/dept_personels/CS" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
-                  Computer Science
-                </NuxtLink>
-                <NuxtLink to="/about/dept_personels/GE" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
-                  Geodetic Engineering
-                </NuxtLink>
-                <NuxtLink to="/about/dept_personels/ME" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
-                  Mechanical Engineering
-                </NuxtLink>
-                <NuxtLink to="/about/dept_personels/Met" class="block px-4 py-2 hover:bg-gray-700">
-                  Meteorology
-                </NuxtLink>
-              </div>
-            </div>
+  <!-- Second-level submenu -->
+  <div class="absolute left-full top-0 hidden group-hover/admin:block bg-[#342E2E] text-white shadow-lg w-[320px] z-30">
+    <NuxtLink to="/about/dept_personels/ABS" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
+      Agricultural and Biosystem Engineering
+    </NuxtLink>
+    <NuxtLink to="/about/dept_personels/CE" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
+      Civil Engineering
+    </NuxtLink>
+    <NuxtLink to="/about/dept_personels/CS" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
+      Computer Science
+    </NuxtLink>
+    <NuxtLink to="/about/dept_personels/GE" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
+      Geodetic Engineering
+    </NuxtLink>
+    <NuxtLink to="/about/dept_personels/ME" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
+      Mechanical Engineering
+    </NuxtLink>
+    <NuxtLink to="/about/dept_personels/Met" class="block px-4 py-2 hover:bg-gray-700">
+      Meteorology
+    </NuxtLink>
+  </div>
+</div>
 
             <NuxtLink to="/about/map" class="block px-4 py-2 hover:bg-gray-700">
               Map and Location
@@ -107,10 +110,10 @@
 <div class="relative group">
   <TabsTrigger
     value="academics"
-    class="flex items-center gap-1 font-semibold text-white border-b-2 border-transparent font-montserrat hover:border-red-800 hover:text-red-800"
+    class="flex items-center gap-1 font-semibold text-white border-b-2 border-transparent font-montserrat group-hover:border-yellow-500 group-hover:text-yellow-500"
   >
     Academics
-    <ChevronDown class="w-4 h-4 text-white group-hover:text-red-800" />
+    <ChevronDown class="w-4 h-4 text-white group-hover:text-yellow-500" />
   </TabsTrigger>
 
   <!-- First-Level Dropdown -->
@@ -154,10 +157,10 @@
         <div class="relative group">
           <TabsTrigger
             value="admission"
-            class="flex items-center gap-1 pb-0 font-semibold text-white border-b-2 border-transparent font-montserrat group-hover:border-red-800 group-hover:text-red-800"
+            class="flex items-center gap-1 pb-0 font-semibold text-white border-b-2 border-transparent font-montserrat group-hover:border-yellow-500 group-hover:text-yellow-500"
           >
             Admission
-            <ChevronDown class="w-4 h-4 text-white group-hover:text-red-800" />
+            <ChevronDown class="w-4 h-4 text-white group-hover:text-yellow-500" />
           </TabsTrigger>
           <div class="absolute mt-1 hidden w-56 bg-[#342E2E] text-white shadow-lg group-hover:block z-50">
             <NuxtLink to="/admission/why_choose_cet" class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700">
