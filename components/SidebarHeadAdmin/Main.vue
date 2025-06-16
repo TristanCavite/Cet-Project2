@@ -1,5 +1,5 @@
 <template>
-    <aside class="fixed w-64 h-full text-white bg-maroon">
+    <aside class="w-64 h-full text-white bg-maroon">
       <div class="p-4">
         <h2 class="mb-4 text-lg font-bold">Department Head</h2>
         <nav>
