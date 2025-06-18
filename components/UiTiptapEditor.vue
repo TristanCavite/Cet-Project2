@@ -26,20 +26,31 @@
   </button>
   <div class="absolute z-50 hidden group-hover:flex flex-wrap gap-1 p-2 bg-white border rounded shadow w-56">
     <button
-      v-for="color in presetColors"
-      :key="color"
-      class="h-5 w-5 rounded border"
-      :style="{ backgroundColor: color }"
-      @click="applyColor(color)"
-    />
+  type="button"
+  v-for="color in presetColors"
+  :key="color"
+  class="h-5 w-5 rounded border"
+  :style="{ backgroundColor: color }"
+  @click="applyColor(color)"
+/>
+
   </div>
 </div>
 
 
       <!-- Toolbar Buttons -->
-      <button class="btn btn-sm" @click="editor?.chain().focus().toggleCustomBold().run()"><LucideBold class="h-4 w-4" /></button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().toggleItalic().run()"><LucideItalic class="h-4 w-4" /></button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().toggleUnderline().run()"><LucideUnderline class="h-4 w-4" /></button>
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().toggleCustomBold().run()">
+  <LucideBold class="h-4 w-4" />
+</button>
+
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().toggleItalic().run()">
+  <LucideItalic class="h-4 w-4" />
+</button>
+
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().toggleUnderline().run()">
+  <LucideUnderline class="h-4 w-4" />
+</button>
+
       <button class="btn btn-sm" @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()">H2</button>
       <button class="btn btn-sm" @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()">H3</button>
       <button class="btn btn-sm" @click="editor?.chain().focus().toggleBulletList().run()"><LucideList class="h-4 w-4" /></button>
