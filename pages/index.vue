@@ -1,266 +1,344 @@
 <template>
-  <main class="overflow-hidden"> 
-   <div class="relative w-full overflow-hidden h-128 my-7"> 
-     <!-- arrows-->
-   <!-- Right Arrow Button -->
-<button class="absolute z-10 flex items-center justify-center transform -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 h-28 right-4 top-1/2 rounded-xl shadow-lg transition hover:bg-white/20" @click="nextSlide">
-  <svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-chevron-right size-12 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-    <path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
-  </svg>
-</button>
+  <main class="overflow-hidden">
+    <!-- 🔼 Hero Slider -->
+    <div class="relative my-7 h-128 w-full overflow-hidden">
+      <!-- Arrows -->
+      <button
+        class="absolute right-4 top-1/2 z-10 flex h-28 -translate-y-1/2 transform items-center justify-center rounded-xl border border-white/20 bg-white/10 shadow-lg backdrop-blur-md transition hover:bg-white/20"
+        @click="nextSlide"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="lucide lucide-chevron-right size-12 text-black"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
 
-<!-- Left Arrow Button -->
-<button class="absolute z-10 flex items-center justify-center transform -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 h-28 left-4 top-1/2 rounded-xl shadow-lg transition hover:bg-white/20" @click="prevSlide">
-  <svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-chevron-left size-12 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-    <path d="m15 18-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
-  </svg>
-</button>
-     <!-- dots indicator-->
-     <div class="absolute z-10 flex space-x-2 transform -translate-x-1/2 bottom-4 left-1/2">
-       <span
-         v-for="(image, index) in images"
-         :key="index"
-         class="w-3 h-3 bg-gray-400 rounded-full"
-         :class="{ 'bg-gray-800': currentIndex === index }"
-         @click="setCurrentSlide(index)"
-       ></span>
-     </div>
+      <button
+        class="absolute left-4 top-1/2 z-10 flex h-28 -translate-y-1/2 transform items-center justify-center rounded-xl border border-white/20 bg-white/10 shadow-lg backdrop-blur-md transition hover:bg-white/20"
+        @click="prevSlide"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="lucide lucide-chevron-left size-12 text-black"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="m15 18-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
 
-     <!-- image container-->
-     <div class="flex transition-transform ease-in-out duration-2000" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-    <div v-for="(image, index) in images" :key="index" class="flex-shrink-0 w-full h-full">
-      <img :src="image.src" alt="" class="object-contain w-full h-full mx-auto bg-black" loading="lazy">
+      <!-- Dots -->
+      <div class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 transform space-x-2">
+        <span
+          v-for="(image, index) in images"
+          :key="index"
+          class="h-3 w-3 rounded-full bg-gray-400"
+          :class="{ 'bg-gray-800': currentIndex === index }"
+          @click="setCurrentSlide(index)"
+        ></span>
+      </div>
+
+      <!-- Slides -->
+      <div
+        class="duration-2000 flex transition-transform ease-in-out"
+        :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
+      >
+        <div v-for="(image, index) in images" :key="index" class="h-full w-full flex-shrink-0">
+          <img
+            :src="image.src"
+            alt=""
+            class="mx-auto h-full w-full bg-black object-contain"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- 📰 Events + Right Panel -->
+<div class="w-full bg-stone-200">
+  <!-- 🏷 Section Title -->
+  <div class="pt-8 text-center">
+    <h2 class="text-maroon text-5xl font-extrabold uppercase tracking-wide">EVENTS</h2>
+  </div>
+
+  <div class="flex justify-center gap-8 px-6 lg:px-12">
+    <!-- 📅 Events or Empty State -->
+    <div class="flex flex-col items-center gap-10 pt-10 w-full max-w-screen-lg">
+      <template v-if="filteredEvents.length > 0">
+        <div
+          v-for="event in filteredEvents"
+          :key="event.id"
+          class="w-224 border-2 border-t-2 bg-neutral-50 p-10 shadow-xl"
+        >
+          <!-- Date -->
+          <span class="font-roboto text-2xl font-semibold text-red-800">
+            DAY
+            {{
+              new Date(event.date)
+                .toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" })
+                .toUpperCase()
+            }}
+          </span>
+
+          <!-- Carousel -->
+          <div class="relative overflow-hidden">
+            <div
+              class="flex pb-4 pt-4 transition-transform duration-500"
+              :style="{ transform: `translateX(-${event.currentSlide || 0}00%)` }"
+            >
+              <div v-for="(img, i) in event.coverImages" :key="i" class="w-full flex-shrink-0">
+                <img :src="img" alt="" class="h-128 w-208 object-cover" />
+              </div>
+            </div>
+
+            <!-- Arrows -->
+            <button
+              class="absolute right-3 top-1/2 z-10 h-10 w-10 -translate-y-1/2 transform rounded-full bg-white/80 text-gray-800 shadow-md transition hover:scale-105 hover:bg-white"
+              @click="event.currentSlide = (event.currentSlide + 1) % event.coverImages.length"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+            <button
+              class="absolute left-3 top-1/2 z-10 h-10 w-10 -translate-y-1/2 transform rounded-full bg-white/80 text-gray-800 shadow-md transition hover:scale-105 hover:bg-white"
+              @click="event.currentSlide = (event.currentSlide - 1 + event.coverImages.length) % event.coverImages.length"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+
+            <!-- Dots -->
+            <div class="absolute bottom-12 left-1/2 z-10 flex -translate-x-1/2 transform space-x-2">
+              <span
+                v-for="(img, i) in event.coverImages"
+                :key="i"
+                class="h-2 w-2 rounded-full bg-gray-400"
+                :class="{ 'bg-gray-800': (event.currentSlide || 0) === i }"
+                @click="event.currentSlide = i"
+              ></span>
+            </div>
+          </div>
+
+          <!-- Title & Description -->
+          <div class="pb-4 pt-2">
+            <span class="font-montserrat text-2xl font-semibold">{{ event.title }}</span>
+          </div>
+          <div class="font-roboto">
+            <p v-html="event.description"></p>
+          </div>
+          <router-link
+            :to="`/events/${event.id}`"
+            class="mt-4 inline-block rounded bg-red-800 px-5 py-2 text-sm font-semibold text-white shadow transition hover:bg-red-900"
+          >
+            Read more
+          </router-link>
+        </div>
+      </template>
+
+      <template v-else>
+        <!-- 🧼 Empty State -->
+        <div class="w-224 min-h-[300px] flex flex-col items-center justify-center rounded border-2 bg-white text-center text-gray-500 shadow">
+          <!-- Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="mb-5 h-16 w-16 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 2v2m8-2v2M3 8h18M5 8h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10a2 2 0 012-2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12l-6 6m0-6l6 6" />
+          </svg>
+          <p class="text-lg font-semibold">No events on this day.</p>
+          <p class="text-sm">Try selecting another date on the calendar.</p>
+
+          <button
+            v-if="selectedDate"
+            @click="selectedDate = null"
+            class="mt-4 w-fit self-center rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-400"
+          >
+            Show all events
+          </button>
+        </div>
+      </template>
+    </div>
+
+    <!-- 📅 Right Side -->
+    <div class="flex flex-col gap-10 pt-10">
+      <div class="shadow-xl">
+        <div class="flex justify-center">
+          <UiCalendar @dayclick="handleDayClick" />
+        </div>
+      </div>
+
+      <!-- Facebook Card -->
+      <div class="w-96 space-y-4 rounded-xl border border-neutral-200 bg-white p-6 font-roboto shadow-md">
+        <div class="flex items-center space-x-3 border-b border-neutral-300 pb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="text-maroon h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.99 3.66 9.13 8.44 9.88v-6.99H7.9v-2.89h2.54V9.9c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.89h-2.34v6.99C18.34 21.13 22 16.99 22 12z" />
+          </svg>
+          <h3 class="text-maroon text-lg font-semibold">Follow us on Facebook</h3>
+        </div>
+        <p class="text-sm text-gray-700">Get the latest updates and announcements straight from our official page.</p>
+        <a
+          href="https://www.facebook.com/cetseb"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="bg-maroon inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-white shadow transition hover:bg-red-900"
+        >
+          Visit Page
+        </a>
+      </div>
     </div>
   </div>
-   </div>
 
-    <!--EVENTS-->
-   <div class="flex justify-center pt-6 pb-6 font-sans text-5xl font-bold text-red-800">
-     <span>EVENTS</span>
-   </div>
-    <!-- background for event -->
-   <div class="w-full bg-stone-200">
-     <!--left side-->
-     <div class="flex justify-center">
-       <div class="items-center pt-4 pl-10 pr-10 m-10 border-2 border-t-2 shadow-xl pb-14 bg-neutral-50 w-224">
-         <!--event report-->
-           <span class="text-2xl font-semibold text-red-800 font-roboto">DAY 09 OCTOBER 2024</span>
-           <div class="relative overflow-hidden">
-             <!-- image container-->
-             <div class="flex pt-4 pb-4 transition-transform duration-500" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
-             <!-- slides -->
-               <div v-for="(image2, index) in images2" :key="index" class="flex-shrink-0 w-full">
-                 <img :src="image2.src" alt="" class="object-cover w-208 h-128">
-               </div>
-             </div>
-             <!-- arrows-->
-             <button class="absolute z-10 flex items-center justify-center h-20 transform -translate-y-1/2 bg-red-900 right-4 top-1/2" @click="nextSlide2">
-             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" lucide lucide-chevron-right size-12"><path d="m9 18 6-6-6-6"/></svg>
-             </button>
-             <button class="absolute z-10 flex items-center justify-center h-20 transform -translate-y-1/2 bg-red-900 left-4 top-1/2" @click="prevSlide2">
-               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left size-12"><path d="m15 18-6-6 6-6"/></svg>
-             </button>
-             <!-- dots indicator-->
-             <div class="absolute z-10 flex space-x-2 transform -translate-x-1/2 bottom-12 left-1/2">
-               <span
-                 v-for="(image2, index) in images2"
-                 :key="index"
-                 class="w-2 h-2 bg-gray-400 rounded-full"
-                 :class="{ 'bg-gray-800': currentSlide === index }"
-                 @click="setCurrentSlide(index)"
-               ></span>
-             </div>
-           </div>
-           <!-- information about the event-->
-           <div class="pb-4">
-             <span class="text-2xl font-semibold font-montserrat">1st General Assembly SY 2024-2025</span>
-           </div>
-           <div class="font-roboto">
-             <p><b>HAPPPENING NOW:</b> The first General Assembly of the College of Engineering and Technology-Supreme Student Council is in full swing! Exciting discussions and groundbreaking ideas are shaping the future of our college.</p>
-           </div>
-             
-       </div>
-           <!--right side-->
-         <div>
-           <div class="mt-10 shadow-xl">
-             <div class="flex justify-center">
-               <UiCalendar :attributes="attributes"/>
-             </div>
-           </div>
-           <div class="mt-10 shadow-xl bg-neutral-50 w-96 font-roboto">
-             <div class="pt-4 pb-4 mt-3 ml-3 mr-3 border-b-2 border-neutral-400">
-               <span class="text-3xl font-semibold">Facebook page</span>
-             </div>
-             <div class="mt-2 ml-3 mr-3">  
-               <span>Visit out facebook page</span>
-             </div>
-             <div class="pb-1">
-               <div class="flex items-center justify-center py-1 mt-3 mb-3 ml-3 rounded-lg cursor-pointer w-28 bg-neutral-300 hover:bg-neutral-500">
-                 <a href="https://www.facebook.com/cetseb">Click here</a>
-               </div>
-             </div>
-           </div>
-         </div>
-       </div>
-       <div class="pt-10 pb-10 pr-100">
-         <div class="flex justify-center w-full" v-if="isContentVisible">
-           <div class="flex items-center space-x-4">
-             <div class="space-y-24">
-               <UiSkeleton class="shadow-xl w-224 h-144" />
-               <UiSkeleton class="shadow-xl w-224 h-144" />
-             </div>
-           </div>
-         </div>
-         <button class="flex justify-center mx-auto text-lg text-red-800 shadow-lg hover:font-bold hover:text-xl font-roboto" 
-         :class="{ 'pt-1': !isContentVisible, 'mt-10': isContentVisible }"
-         @click="toggleContent"> {{ isContentVisible ? 'SEE LESS' : 'READ MORE' }} </button>
-       </div>
-     </div>
- </main>
+  <!-- Skeleton & Toggle -->
+  <div class="pb-10 pr-100 pt-10">
+    <div class="flex w-full justify-center" v-if="isContentVisible">
+      <div class="flex items-center space-x-4">
+        <div class="space-y-24">
+          <UiSkeleton class="h-144 w-224 shadow-xl" />
+          <UiSkeleton class="h-144 w-224 shadow-xl" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </main>
 </template>
 
 <script lang="ts" setup>
- import { ref, onMounted, onUnmounted } from 'vue'
- import { addDays, endOfMonth, startOfMonth, startOfToday } from "date-fns";
+  import { addDays, endOfMonth, isSameDay, parseISO, startOfMonth, startOfToday } from "date-fns";
+  import { collection, getDocs } from "firebase/firestore";
+  import { computed, onMounted, onUnmounted, ref } from "vue";
+  import { useFirestore } from "vuefire";
 
- const images = [
-   { src: '/images/cet.jpg', alt: 'Slide 1' },
-   { src: '/images/cet1.jpg', alt: 'Slide 2' },
-   { src: '/images/cet2.jpg', alt: 'Slide 3' },
-   { src: '/images/cet3.jpg', alt: 'Slide 4' }
- ];
+  const events = ref<any[]>([]);
+  // Filter selected date
+  const selectedDate = ref<Date | null>(null);
 
- //main slideshow
- const currentIndex = ref(0)
- let intervalId: ReturnType<typeof setInterval> | null = null;
-   
-   const nextSlide = () => {
-     currentIndex.value = (currentIndex.value + 1) % images.length
-   };
-   
-   const prevSlide = () => {
-     currentIndex.value = (currentIndex.value - 1 + images.length) % images.length
-   };
-   
-   const setCurrentSlide = (index: number) => {
-     currentIndex.value = index
-   };
-   
-   onMounted(() => {
-     Promise.all(
-     images.map(image => {
-       const img = new Image();
-       img.src = image.src;
-       return new Promise(resolve => {
-         img.onload = resolve;
-         img.onerror = resolve; // Resolve on error to avoid blocking
-       });
-     })
-     ).then(() => {
-       intervalId = setInterval(nextSlide, 3000);
-     });
-   });
-   
-   onUnmounted(() => {
-     if (intervalId) {
-       clearInterval(intervalId);
-     }
-   });
+  const loading = ref(true);
+  const slideIndices = ref<{ [eventId: string]: number }>({});
+  const db = useFirestore();
+  const images = [
+    { src: "/images/cet.jpg", alt: "Slide 1" },
+    { src: "/images/cet1.jpg", alt: "Slide 2" },
+    { src: "/images/cet2.jpg", alt: "Slide 3" },
+    { src: "/images/cet3.jpg", alt: "Slide 4" },
+  ];
 
-   //event slideshow
-   const images2 = [
-     {src:'/images/cet_assembly.jpg', alt: 'Slide 1'},
-     {src:'/images/cet_assembly1.jpg', alt: 'Slide 2'},
-     {src:'/images/cet_assembly2.jpg', alt: 'Slide 3'},
-     {src:'/images/cet_assembly3.jpg', alt: 'Slide 4'}
-   ];
- 
-   const currentSlide = ref(0)
-   
-   const nextSlide2 = () => {
-     currentSlide.value = (currentSlide.value +1) % images2.length
-   };
+  //main slideshow
+  const currentIndex = ref(0);
+  let intervalId: ReturnType<typeof setInterval> | null = null;
 
-   const prevSlide2 = () => {
-     currentSlide.value = (currentSlide.value - 1 + images2.length) % images2.length
-   };
+  const nextSlide = () => {
+    currentIndex.value = (currentIndex.value + 1) % images.length;
+  };
 
-   onMounted(() => {
-     intervalId = setInterval(nextSlide2, 3000);
-   });
-   
-   onUnmounted(() => {
-     if (intervalId) {
-       clearInterval(intervalId);
-     }
-   });
+  const prevSlide = () => {
+    currentIndex.value = (currentIndex.value - 1 + images.length) % images.length;
+  };
 
-   //calendar
-   const attributes = ref([
-   {
-     highlight: true,
-     popover: {
-       label: "Out of town bussiness trip",
-     },
-     dates: [{
-       start: startOfMonth(startOfToday()).toString(),
-       end: addDays(startOfMonth(startOfToday()), 3).toString(),
-     }],
-   },
-   {
-     popover: {
-       label: "Take the dog to the vet",
-     },
-     dot: "red",
-     dates: [{ start: addDays(startOfMonth(startOfToday()), 5).toString(), end: addDays(startOfMonth(startOfToday()), 5).toString() }],
-   },
-   {
-     bar: "green",
-     popover: {
-       label: "Dinner with friends",
-     },
-     dates: [{ start: addDays(startOfMonth(startOfToday()), 8).toString(), end: addDays(startOfMonth(startOfToday()), 8).toString() }],
-   },
-   {
-     dot: "purple",
-     popover: {
-       label: "Take the car to the mechanic",
-     },
-     dates: [{ start: addDays(startOfMonth(startOfToday()), 14).toString(), end: addDays(startOfMonth(startOfToday()), 14).toString() }],
-   },
-   {
-     highlight: true,
-     popover: {
-       label: "Family vacation in Ibiza",
-     },
-     dates: [{
-       start: addDays(startOfMonth(startOfToday()), 16).toString(),
-       end: addDays(startOfMonth(startOfToday()), 24).toString(),
-     }],
-   },
-   {
-     dot: true,
-     popover: {
-       label: "Take Noah to the football game",
-     },
-     dates: [{ start: addDays(startOfMonth(startOfToday()), 22).toString(), end: addDays(startOfMonth(startOfToday()), 22).toString() }],
-   },
-   {
-     highlight: true,
-     popover: {
-       label: "Visit the in-laws",
-     },
-     dates: [{ start: endOfMonth(startOfToday()).toString(), end: endOfMonth(startOfToday()).toString() }],
-   },
-   ]);
+  const setCurrentSlide = (index: number) => {
+    currentIndex.value = index;
+  };
 
-   //skeleton
+  onMounted(async () => {
+    const snap = await getDocs(collection(db, "events"));
+    events.value = snap.docs.map((doc) => ({
+      id: doc.id,
+      currentSlide: 0, // ✅ initialize currentSlide here
+      ...doc.data(),
+    }));
 
-   // State for toggling content visibility
-   const isContentVisible = ref(false);
+    loading.value = false;
+  });
 
-   // Toggle function for button click
-   const toggleContent = () => {
-     isContentVisible.value = !isContentVisible.value;
-   };
+  // Carousel controls
+  function nextImage(eventId: string) {
+    const event = events.value.find((e) => e.id === eventId);
+    if (!event || !event.coverImages) return;
+    slideIndices.value[eventId] = (slideIndices.value[eventId] + 1) % event.coverImages.length;
+  }
+
+  function prevImage(eventId: string) {
+    const event = events.value.find((e) => e.id === eventId);
+    if (!event || !event.coverImages) return;
+    slideIndices.value[eventId] =
+      (slideIndices.value[eventId] - 1 + event.coverImages.length) % event.coverImages.length;
+  }
+  onMounted(() => {
+    Promise.all(
+      images.map((image) => {
+        const img = new Image();
+        img.src = image.src;
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve; // Resolve on error to avoid blocking
+        });
+      })
+    ).then(() => {
+      intervalId = setInterval(nextSlide, 3000);
+    });
+  });
+
+  onUnmounted(() => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+  });
+
+  //event slideshow
+  const images2 = [
+    { src: "/images/cet_assembly.jpg", alt: "Slide 1" },
+    { src: "/images/cet_assembly1.jpg", alt: "Slide 2" },
+    { src: "/images/cet_assembly2.jpg", alt: "Slide 3" },
+    { src: "/images/cet_assembly3.jpg", alt: "Slide 4" },
+  ];
+
+  const currentSlide = ref(0);
+
+  const nextSlide2 = () => {
+    currentSlide.value = (currentSlide.value + 1) % images2.length;
+  };
+
+  const prevSlide2 = () => {
+    currentSlide.value = (currentSlide.value - 1 + images2.length) % images2.length;
+  };
+
+  onMounted(() => {
+    intervalId = setInterval(nextSlide2, 3000);
+  });
+
+  onUnmounted(() => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+  });
+
+  // State for toggling content visibility
+  const isContentVisible = ref(false);
+
+  // Toggle function for button click
+  const toggleContent = () => {
+    isContentVisible.value = !isContentVisible.value;
+  };
+
+  const filteredEvents = computed(() => {
+    if (!selectedDate.value) return events.value;
+
+    return events.value.filter((event) => {
+      const eventDate = parseISO(event.date);
+      return isSameDay(eventDate, selectedDate.value as Date);
+    });
+  });
+
+  function handleDayClick(day: any) {
+    selectedDate.value = new Date(day.date);
+  }
 </script>
