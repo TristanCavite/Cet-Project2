@@ -1,221 +1,226 @@
 <template>
-  <header>
-    <nav
-      class="scrolled fixed z-50 flex w-full flex-col items-center border-b-2 border-red-800 bg-gradient-to-b from-white via-red-100 to-red-200 py-0 text-red-800"
-    >
-      <!-- Header Bar with Search and Social Icons -->
-      <div class="mb-2 flex w-full items-center justify-between bg-red-800 px-2">
-        <!-- Left: Social Icons -->
-        <div class="flex items-center space-x-4">
-          <a
-            href="https://www.facebook.com/vsuengineering"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Facebook class="h-5 w-5 text-white hover:text-red-600" />
-          </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-            <Instagram class="h-5 w-5 text-white hover:text-red-600" />
-          </a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-            <Twitter class="h-5 w-5 text-white hover:text-red-600" />
-          </a>
-        </div>
-
-        <!-- Right: Search Bar -->
-        <div class="relative my-2 w-60">
-          <input
-            id="search"
-            type="text"
-            placeholder="Search"
-            class="h-10 w-full rounded-full bg-red-800 pl-10 font-montserrat text-sm text-white placeholder-white focus:outline-none"
-          />
-          <span class="absolute inset-y-0 left-3 flex items-center text-white">
-            <!-- Replace this with your search icon component if needed -->
-            <IconsSearch />
-          </span>
-        </div>
-      </div>
-      <!-- Logo (Center) -->
-      <NuxtLink to="/" class="my-2 flex items-center justify-center gap-3">
-        <img src="/logo.png" alt="College of Engineering and Technology Logo" class="h-12 w-72" />
-      </NuxtLink>
-
-      <!-- Login/Logout and Tabs (Bottom Section) -->
-      <div class="w-full">
-        <!-- Background full-width but content centered inside -->
-        <!-- Force background to span full width -->
-        <div class="w-full border border-white/10 bg-black/70 shadow-lg backdrop-blur-md">
-          <div class="mx-auto w-full max-w-screen-xl px-4">
-            <Tabs default-value="home">
-              <TabsList
-                class="flex cursor-pointer items-center justify-center gap-12 font-montserrat text-lg text-white"
-              >
-                <!-- Home -->
-                <NuxtLink
-                  to="/"
-                  class="border-b-2 border-transparent pb-0 font-montserrat font-semibold text-white hover:border-yellow-500 hover:text-yellow-500"
-                >
-                  Home
-                </NuxtLink>
-
-                <!-- About Dropdown -->
-                <div class="group relative">
-                  <TabsTrigger
-                    value="about"
-                    class="flex items-center gap-1 border-b-2 border-transparent pb-0 font-montserrat font-semibold text-white group-hover:border-yellow-500 group-hover:text-yellow-500"
-                  >
-                    About
-                    <ChevronDown class="h-4 w-4 text-white group-hover:text-yellow-500" />
-                  </TabsTrigger>
-
-                  <div
-                    class="absolute z-50 mt-1 hidden w-80 bg-[#342E2E] text-white shadow-lg group-hover:block"
-                  >
-                    <NuxtLink
-                      to="/about/college"
-                      class="block border-b border-gray-500 px-4 py-2 hover:bg-gray-700"
-                    >
-                      The College
-                    </NuxtLink>
-
-                    <NuxtLink
-                      to="/about/facilities"
-                      class="block border-b border-gray-500 px-4 py-2 hover:bg-gray-700"
-                    >
-                      Facilities
-                    </NuxtLink>
-
-                    <!-- 🏢 Offices and Administration with dynamic departments -->
-                    <div class="group/admin relative border-b border-gray-500 hover:bg-gray-700">
-                      <div class="flex cursor-pointer justify-between px-4 py-2">
-                        <NuxtLink to="/about/administration" class="flex w-full justify-between">
-                          Offices and Administration <span class="text-yellow-500">▶</span>
-                        </NuxtLink>
-                      </div>
-
-                      <!-- 2nd level submenu: departments -->
-                      <div
-                        class="absolute left-full top-0 z-30 hidden w-[320px] bg-[#342E2E] text-white shadow-lg group-hover/admin:block"
-                      >
-                        <NuxtLink
-                          v-for="dept in departments"
-                          :key="dept.id"
-                          :to="`/about/dept_personels/${dept.id}`"
-                          class="block border-b border-gray-500 px-4 py-2 hover:bg-gray-700"
-                        >
-                          {{ dept.name }}
-                        </NuxtLink>
-                      </div>
-                    </div>
-
-                    <NuxtLink to="/about/map" class="block px-4 py-2 hover:bg-gray-700">
-                      Map and Location
-                    </NuxtLink>
-                  </div>
-                </div>
-
-                <!-- ✅ Academics Dropdown -->
-                <div class="group relative">
-                  <TabsTrigger
-                    value="academics"
-                    class="flex items-center gap-1 border-b-2 border-transparent font-montserrat font-semibold text-white group-hover:border-yellow-500 group-hover:text-yellow-500"
-                  >
-                    Academics
-                    <ChevronDown class="h-4 w-4 text-white group-hover:text-yellow-500" />
-                  </TabsTrigger>
-
-                  <!-- First-Level Dropdown -->
-                  <div
-                    class="absolute z-50 hidden min-w-[260px] bg-[#342E2E] text-white shadow-lg group-hover:block"
-                  >
-                    <div class="flex flex-col">
-                      <!-- 📁 Degree Program Dropdown -->
-                      <div
-                        class="group/degree relative cursor-pointer border-b border-gray-500 px-4 py-2 hover:bg-gray-700"
-                      >
-                        <div class="flex items-center justify-between">
-                          <span>Degree Program</span>
-                          <span class="text-yellow-500">▶</span>
-                        </div>
-
-                        <!-- Departments (Second-Level Dropdown) -->
-                        <div
-                          class="absolute left-full top-0 z-50 hidden w-[300px] flex-col bg-[#342E2E] shadow-lg group-hover/degree:flex"
-                        >
-                          <NuxtLink
-                            v-for="dept in departments"
-                            :key="dept.id"
-                            :to="`/academics/departments/${dept.id}`"
-                            class="border-b border-gray-500 px-4 py-2 hover:bg-gray-700"
-                          >
-                            {{ dept.name }}
-                          </NuxtLink>
-                        </div>
-                      </div>
-
-                      <!-- 📅 Academic Calendar -->
-                      <NuxtLink
-                        to="/academics/academic_calendar"
-                        class="block px-4 py-2 hover:bg-gray-700"
-                      >
-                        Academic Calendar
-                      </NuxtLink>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Admission Dropdown -->
-                <div class="group relative">
-                  <TabsTrigger
-                    value="admission"
-                    class="flex items-center gap-1 border-b-2 border-transparent pb-0 font-montserrat font-semibold text-white group-hover:border-yellow-500 group-hover:text-yellow-500"
-                  >
-                    Admission
-                    <ChevronDown class="h-4 w-4 text-white group-hover:text-yellow-500" />
-                  </TabsTrigger>
-                  <div
-                    class="absolute z-50 mt-1 hidden w-56 bg-[#342E2E] text-white shadow-lg group-hover:block"
-                  >
-                    <NuxtLink
-                      to="/admission/why_choose_cet"
-                      class="block border-b border-gray-500 px-4 py-2 hover:bg-gray-700"
-                    >
-                      Why choose VSU?
-                    </NuxtLink>
-                    <NuxtLink
-                      to="/admission/undergraduate"
-                      class="block border-b border-gray-500 px-4 py-2 hover:bg-gray-700"
-                    >
-                      Undergraduate
-                    </NuxtLink>
-                    <NuxtLink to="/admission/graduate" class="block px-4 py-2 hover:bg-gray-700">
-                      Graduate
-                    </NuxtLink>
-                  </div>
-                </div>
-
-                <!-- Research -->
-                <NuxtLink
-                  to="/research/"
-                  class="border-b-2 border-transparent pb-0 font-semibold hover:border-yellow-500 hover:text-yellow-500"
-                >
-                  Research
-                </NuxtLink>
-
-                <!-- News -->
-                <NuxtLink
-                  to="/news/"
-                  class="border-b-2 border-transparent pb-0 font-semibold hover:border-yellow-500 hover:text-yellow-500"
-                >
-                  News
-                </NuxtLink>
-              </TabsList>
-            </Tabs>
-          </div>
-        </div>
-      </div>
-    </nav>
+  <header class="fixed z-50 w-full bg-white" :style="showHeader ? 'height: 160px;' : 'height: 30px;'">
+    <!-- Header Bar with Search and Social Icons -->
+     <transition name="fade-slide">
+       <div v-if="showHeader" class="header-bar-transition">
+         <div class="flex items-center justify-between w-full px-2 mb-2 bg-red-800">
+           <!-- Left: Social Icons -->
+           <div class="flex items-center space-x-4">
+             <a
+               href="https://www.facebook.com/vsuengineering"
+               target="_blank"
+               rel="noopener noreferrer"
+             >
+               <Facebook class="w-5 h-5 text-white hover:text-red-600" />
+             </a>
+             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+               <Instagram class="w-5 h-5 text-white hover:text-red-600" />
+             </a>
+             <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+               <Twitter class="w-5 h-5 text-white hover:text-red-600" />
+             </a>
+           </div>
+     
+           <!-- Right: Search Bar -->
+           <div class="relative my-2 w-60">
+             <input
+               id="search"
+               type="text"
+               placeholder="Search"
+               class="w-full h-10 pl-10 text-sm text-white placeholder-white bg-red-800 rounded-full font-montserrat focus:outline-none"
+             />
+             <span class="absolute inset-y-0 flex items-center text-white left-3">
+               <!-- Replace this with your search icon component if needed -->
+               <IconsSearch />
+             </span>
+           </div>
+         </div>
+         <!-- Logo (Center) -->
+         <NuxtLink to="/" class="flex justify-center mb-2">
+           <HeaderMain/>
+         </NuxtLink>
+       </div>
+     </transition>
+    
+    <!-- Navigation Bar -->
+     <transition name="nav-slide">
+       <nav class="flex flex-col items-center w-full bg-white" :class="['flex flex-col items-center w-full bg-white', { 'nav-fixed': !showHeader }]">
+         <!-- Login/Logout and Tabs (Bottom Section) -->
+         <div class="w-full">
+           <!-- Background full-width but content centered inside -->
+           <!-- Force background to span full width -->
+           <div class="w-full border shadow-lg border-white/10 bg-black/70 backdrop-blur-md">
+             <div class="w-full max-w-screen-xl px-4 mx-auto">
+               <Tabs default-value="home">
+                 <TabsList
+                   class="flex items-center justify-center gap-12 text-lg text-white cursor-pointer font-montserrat"
+                 >
+                   <!-- Home -->
+                   <NuxtLink
+                     to="/"
+                     class="pb-0 font-semibold text-white border-b-2 border-transparent font-montserrat hover:border-yellow-500 hover:text-yellow-500"
+                   >
+                     Home
+                   </NuxtLink>
+   
+                   <!-- About Dropdown -->
+                   <div class="relative group">
+                     <TabsTrigger
+                       value="about"
+                       class="flex items-center gap-1 pb-0 font-semibold text-white border-b-2 border-transparent font-montserrat group-hover:border-yellow-500 group-hover:text-yellow-500"
+                     >
+                       About
+                       <ChevronDown class="w-4 h-4 text-white group-hover:text-yellow-500" />
+                     </TabsTrigger>
+   
+                     <div
+                       class="absolute z-50 mt-1 hidden w-80 bg-[#342E2E] text-white shadow-lg group-hover:block"
+                     >
+                       <NuxtLink
+                         to="/about/college"
+                         class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700"
+                       >
+                         The College
+                       </NuxtLink>
+   
+                       <NuxtLink
+                         to="/about/facilities"
+                         class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700"
+                       >
+                         Facilities
+                       </NuxtLink>
+   
+                       <!-- 🏢 Offices and Administration with dynamic departments -->
+                       <div class="relative border-b border-gray-500 group/admin hover:bg-gray-700">
+                         <div class="flex justify-between px-4 py-2 cursor-pointer">
+                           <NuxtLink to="/about/administration" class="flex justify-between w-full">
+                             Offices and Administration <span class="text-yellow-500">▶</span>
+                           </NuxtLink>
+                         </div>
+   
+                         <!-- 2nd level submenu: departments -->
+                         <div
+                           class="absolute left-full top-0 z-30 hidden w-[320px] bg-[#342E2E] text-white shadow-lg group-hover/admin:block"
+                         >
+                           <NuxtLink
+                             v-for="dept in departments"
+                             :key="dept.id"
+                             :to="`/about/dept_personels/${dept.id}`"
+                             class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700"
+                           >
+                             {{ dept.name }}
+                           </NuxtLink>
+                         </div>
+                       </div>
+   
+                       <NuxtLink to="/about/map" class="block px-4 py-2 hover:bg-gray-700">
+                         Map and Location
+                       </NuxtLink>
+                     </div>
+                   </div>
+   
+                   <!-- ✅ Academics Dropdown -->
+                   <div class="relative group">
+                     <TabsTrigger
+                       value="academics"
+                       class="flex items-center gap-1 font-semibold text-white border-b-2 border-transparent font-montserrat group-hover:border-yellow-500 group-hover:text-yellow-500"
+                     >
+                       Academics
+                       <ChevronDown class="w-4 h-4 text-white group-hover:text-yellow-500" />
+                     </TabsTrigger>
+   
+                     <!-- First-Level Dropdown -->
+                     <div
+                       class="absolute z-50 hidden min-w-[260px] bg-[#342E2E] text-white shadow-lg group-hover:block"
+                     >
+                       <div class="flex flex-col">
+                         <!-- 📁 Degree Program Dropdown -->
+                         <div
+                           class="relative px-4 py-2 border-b border-gray-500 cursor-pointer group/degree hover:bg-gray-700"
+                         >
+                           <div class="flex items-center justify-between">
+                             <span>Degree Program</span>
+                             <span class="text-yellow-500">▶</span>
+                           </div>
+   
+                           <!-- Departments (Second-Level Dropdown) -->
+                           <div
+                             class="absolute left-full top-0 z-50 hidden w-[300px] flex-col bg-[#342E2E] shadow-lg group-hover/degree:flex"
+                           >
+                             <NuxtLink
+                               v-for="dept in departments"
+                               :key="dept.id"
+                               :to="`/academics/departments/${dept.id}`"
+                               class="px-4 py-2 border-b border-gray-500 hover:bg-gray-700"
+                             >
+                               {{ dept.name }}
+                             </NuxtLink>
+                           </div>
+                         </div>
+   
+                         <!-- 📅 Academic Calendar -->
+                         <NuxtLink
+                           to="/academics/academic_calendar"
+                           class="block px-4 py-2 hover:bg-gray-700"
+                         >
+                           Academic Calendar
+                         </NuxtLink>
+                       </div>
+                     </div>
+                   </div>
+   
+                   <!-- Admission Dropdown -->
+                   <div class="relative group">
+                     <TabsTrigger
+                       value="admission"
+                       class="flex items-center gap-1 pb-0 font-semibold text-white border-b-2 border-transparent font-montserrat group-hover:border-yellow-500 group-hover:text-yellow-500"
+                     >
+                       Admission
+                       <ChevronDown class="w-4 h-4 text-white group-hover:text-yellow-500" />
+                     </TabsTrigger>
+                     <div
+                       class="absolute z-50 mt-1 hidden w-56 bg-[#342E2E] text-white shadow-lg group-hover:block"
+                     >
+                       <NuxtLink
+                         to="/admission/why_choose_cet"
+                         class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700"
+                       >
+                         Why choose VSU?
+                       </NuxtLink>
+                       <NuxtLink
+                         to="/admission/undergraduate"
+                         class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700"
+                       >
+                         Undergraduate
+                       </NuxtLink>
+                       <NuxtLink to="/admission/graduate" class="block px-4 py-2 hover:bg-gray-700">
+                         Graduate
+                       </NuxtLink>
+                     </div>
+                   </div>
+   
+                   <!-- Research -->
+                   <NuxtLink
+                     to="/research/"
+                     class="pb-0 font-semibold border-b-2 border-transparent hover:border-yellow-500 hover:text-yellow-500"
+                   >
+                     Research
+                   </NuxtLink>
+   
+                   <!-- News -->
+                   <NuxtLink
+                     to="/news/"
+                     class="pb-0 font-semibold border-b-2 border-transparent hover:border-yellow-500 hover:text-yellow-500"
+                   >
+                     News
+                   </NuxtLink>
+                 </TabsList>
+               </Tabs>
+             </div>
+           </div>
+         </div>
+       </nav>
+     </transition>
   </header>
 </template>
 
@@ -225,7 +230,7 @@
   import { signOut } from "firebase/auth";
   import { collection, getDocs } from "firebase/firestore";
   import { Facebook, Instagram, Twitter } from "lucide-vue-next";
-  import { onMounted, ref } from "vue";
+  import { onMounted, ref, onBeforeUnmount } from "vue";
   import { useFirestore } from "vuefire";
 
   // Auth
@@ -267,6 +272,27 @@
       programDirections.value[index] = getDropdownDirection(triggerEl);
     }
   }
+
+  // to hide header on scroll down
+  const showHeader = ref(true);
+  let lastScrollY = window.scrollY;
+
+  function handleScroll() {
+    const currentScrollY = window.scrollY;
+    if (currentScrollY > lastScrollY && currentScrollY > 80) {
+      showHeader.value = false; // Hide when scrolling down
+    } else {
+      showHeader.value = true; // Show when scrolling up
+    }
+    lastScrollY = currentScrollY;
+  }
+
+  onMounted(() => {
+    window.addEventListener("scroll", handleScroll);
+  });
+  onBeforeUnmount(() => {
+    window.removeEventListener("scroll", handleScroll);
+  });
 </script>
 
 <style scoped>
@@ -293,4 +319,48 @@
   .absolute {
     margin: 0;
   }
+  
+  /* for header transition */
+  .fade-slide-enter-active,
+  .fade-slide-leave-active {
+    transition: opacity 0.1s  ease, transform 0.1s  ease;
+  }
+  .fade-slide-enter-from,
+  .fade-slide-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .fade-slide-enter-to,
+  .fade-slide-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+    
+  header {
+    transition: height 0.1s cubic-bezier(0.4,0,0.2,1);
+  }
+  .nav-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 50;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  animation: slideDown 0.5s;
+  animation: slideUp 0.5s;
+  }
+  .nav-slide-enter-active,
+  .nav-slide-leave-active {
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  @keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+  }
+  @keyframes slideUp {
+  from { transform: translateY(50px); }
+  to { transform: translateY(0); }
+}
 </style>
