@@ -1,9 +1,9 @@
 <template>
-  <header class="fixed z-50 w-full bg-white" :style="showHeader ? 'height: 160px;' : 'height: 30px;'">
+  <header class="fixed z-50 w-full bg-white" :style="showHeader ? 'height: 150px;' : 'height: 30px;'">
     <!-- Header Bar with Search and Social Icons -->
      <transition name="fade-slide">
        <div v-if="showHeader" class="header-bar-transition">
-         <div class="flex items-center justify-between w-full px-2 mb-2 bg-red-800">
+         <div class="flex items-center justify-between w-full px-4 bg-red-800 md:px-8">
            <!-- Left: Social Icons -->
            <div class="flex items-center space-x-4">
              <a
@@ -22,12 +22,12 @@
            </div>
      
            <!-- Right: Search Bar -->
-           <div class="relative my-2 w-60">
+           <div class="relative my-1 w-38">
              <input
                id="search"
                type="text"
                placeholder="Search"
-               class="w-full h-10 pl-10 text-sm text-white placeholder-white bg-red-800 rounded-full font-montserrat focus:outline-none"
+               class="w-full h-8 pl-10 text-sm text-white placeholder-white bg-red-800 rounded-full font-montserrat focus:outline-none"
              />
              <span class="absolute inset-y-0 flex items-center text-white left-3">
                <!-- Replace this with your search icon component if needed -->
@@ -36,7 +36,7 @@
            </div>
          </div>
          <!-- Logo (Center) -->
-         <NuxtLink to="/" class="flex justify-center mb-2">
+         <NuxtLink to="/" class="flex justify-center">
            <HeaderMain/>
          </NuxtLink>
        </div>
