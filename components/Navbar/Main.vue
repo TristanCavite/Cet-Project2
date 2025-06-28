@@ -1,5 +1,5 @@
 <template>
-  <header class="fixed z-50 w-full bg-white" :style="showHeader ? 'height: 150px;' : 'height: 30px;'">
+  <header class="fixed z-50 w-full bg-white" :style="showHeader ? 'height: 120px;' : 'height: 30px;'">
     <!-- Header Bar with Search and Social Icons -->
      <transition name="fade-slide">
        <div v-if="showHeader" class="header-bar-transition">

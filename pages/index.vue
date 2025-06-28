@@ -1,7 +1,7 @@
 <template>
   <main class="overflow-hidden">
     <!-- 🔼 Hero Slider -->
-    <div class="relative w-full overflow-hidden my-7 h-128">
+    <div class="relative w-full overflow-hidden h-128">
       <!-- Arrows -->
       <button
         class="absolute z-10 flex items-center justify-center transition transform -translate-y-1/2 border shadow-lg right-4 top-1/2 h-28 rounded-xl border-white/20 bg-white/10 backdrop-blur-md hover:bg-white/20"
@@ -197,7 +197,7 @@
     </div>
 
     <!-- Skeleton & Toggle -->
-    <div class="pt-10  pr-100">
+    <div class="pt-10 pr-100">
       <div class="flex justify-center w-full" v-if="isContentVisible">
         <div class="flex items-center space-x-4">
           <div class="space-y-24">
