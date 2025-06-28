@@ -36,7 +36,7 @@
         <transition name="nav-slide">
             <div v-if="showNav" class="relative flex items-center justify-between w-full px-4 bg-white border-b-2 border-red-800">
                 <button class=" md:hidden" aria-label="Open menu" @click="showMenuBox ? closeAll() : (showMenuBox = true)">
-                    <Menu class="text-red-800 cursor-pointer stroke-[3] size-8"/>
+                    <Menu class="text-red-800 cursor-pointer stroke-[2] size-8"/>
                 </button>
                  <NuxtLink to="/" class="pr-16">
                      <HeaderMain/>
