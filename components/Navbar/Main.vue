@@ -3,7 +3,7 @@
     <!-- Header Bar with Search and Social Icons -->
      <transition name="fade-slide">
        <div v-if="showHeader" class="header-bar-transition">
-         <div class="flex items-center justify-between w-full px-4 bg-red-800 md:px-8">
+         <div class="flex items-center justify-between w-full px-4 bg-red-900 md:px-8">
            <!-- Left: Social Icons -->
            <div class="flex items-center space-x-4">
              <a
@@ -22,12 +22,12 @@
            </div>
      
            <!-- Right: Search Bar -->
-           <div class="relative my-1 w-38">
-             <input
+           <div class="relative my-1 bg-red-900 w-38">
+             <UiInput
                id="search"
                type="text"
                placeholder="Search"
-               class="w-full h-8 pl-10 text-sm text-white placeholder-white bg-red-800 rounded-full font-montserrat focus:outline-none"
+               class="w-full h-8 pl-10 text-sm text-white bg-red-900 rounded-full placeholder:text-white font-montserrat focus:outline-none focus:ring-0"
              />
              <span class="absolute inset-y-0 flex items-center text-white left-3">
                <!-- Replace this with your search icon component if needed -->
@@ -296,17 +296,6 @@
 </script>
 
 <style scoped>
-  #search::placeholder {
-    color: white;
-    opacity: 1;
-    font-size: 0.8rem;
-    font-family: "Montserrat", sans-serif;
-  }
-
-  #search:focus {
-    outline: none;
-    box-shadow: none;
-  }
 
   .hover\:border-yellow-500:hover {
     border-bottom-color: #ffd700;

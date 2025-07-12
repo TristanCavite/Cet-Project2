@@ -98,6 +98,8 @@ module.exports = {
       width: {
         '82': '18rem', // Custom width
         '85': '19rem', // Custom width
+        '88': '20rem', // Custom width
+        '89': '21rem', // Custom width
         '90': '22rem', // Custom width
         '100': '26rem', // Custom width
         '128': '32rem', // Custom width

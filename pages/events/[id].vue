@@ -1,18 +1,18 @@
 <template>
   <!-- Full-page section with gray background -->
-  <section class="min-h-screen bg-gray-100 pt-28 px-4 pb-20">
+  <section class="min-h-screen px-2 pb-20 bg-gray-100 md:px-4 pt-28">
     <!-- White content box -->
-    <div class="max-w-5xl mx-auto bg-white p-10 rounded-xl shadow-md">
+    <div class="max-w-5xl p-5 mx-auto bg-white shadow-md md:p-10 rounded-xl">
       <!-- Title -->
-      <h1 class="text-3xl font-bold text-maroon mb-2">{{ event.title }}</h1>
+      <h1 class="mb-2 text-3xl font-bold text-maroon">{{ event.title }}</h1>
 
       <!-- Date -->
-      <p class="text-sm text-gray-600 mb-6">
+      <p class="mb-6 text-sm text-gray-600">
         {{ formatDate(event.date) }}
       </p>
 
       <!-- Carousel -->
-      <div v-if="coverImages.length" class="relative overflow-hidden rounded-xl mb-8">
+      <div v-if="coverImages.length" class="relative mb-8 overflow-hidden rounded-xl">
         <div
           class="flex transition-transform duration-700 ease-in-out"
           :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
@@ -24,7 +24,7 @@
           >
             <img
               :src="img"
-              class="w-full h-full object-cover"
+              class="object-cover w-full h-full"
               :alt="`Slide ${index + 1}`"
               loading="lazy"
             />
@@ -33,24 +33,24 @@
 
         <!-- Arrows -->
         <button
-          class="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white p-2 rounded-full shadow"
+          class="absolute z-10 p-2 transform -translate-y-1/2 rounded-full shadow left-4 top-1/2 bg-white/80 hover:bg-white"
           @click="prevSlide"
         >
-          <ChevronLeft class="w-6 h-6 text-maroon" />
+          <ChevronLeft class="md:size-6 size-4 text-maroon" />
         </button>
         <button
-          class="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white p-2 rounded-full shadow"
+          class="absolute z-10 p-2 transform -translate-y-1/2 rounded-full shadow right-4 top-1/2 bg-white/80 hover:bg-white"
           @click="nextSlide"
         >
-          <ChevronRight class="w-6 h-6 text-maroon" />
+          <ChevronRight class="md:size-6 size-4 text-maroon" />
         </button>
 
         <!-- Dots -->
-        <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+        <div class="absolute z-10 flex gap-2 transform -translate-x-1/2 bottom-3 left-1/2">
           <span
             v-for="(img, index) in coverImages"
             :key="index"
-            class="w-3 h-3 rounded-full"
+            class="rounded-full md:size-3 size-2"
             :class="currentSlide === index ? 'bg-maroon' : 'bg-gray-300'"
             @click="setSlide(index)"
           ></span>
@@ -58,7 +58,7 @@
       </div>
 
       <!-- Description -->
-      <p class="text-lg text-gray-800 mb-6">{{ event.description }}</p>
+      <p class="mb-6 text-lg text-gray-800">{{ event.description }}</p>
 
       <!-- Rich HTML Content -->
       <div
@@ -70,7 +70,7 @@
       <div class="mt-10">
         <NuxtLink
           to="/"
-          class="inline-block text-sm font-semibold text-white bg-maroon hover:bg-red-900 transition px-5 py-2 rounded shadow"
+          class="inline-block px-3 py-1 text-sm font-semibold text-white transition rounded shadow md:py-2 md:px-5 bg-maroon hover:bg-red-900"
         >
           Back to Home
         </NuxtLink>

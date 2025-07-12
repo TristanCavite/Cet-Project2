@@ -1,6 +1,6 @@
 <template>
     <header class="fixed top-0 left-0 z-50 w-full ">
-        <div class="flex items-center justify-between w-full px-4 bg-red-800">
+        <div class="flex items-center justify-between w-full px-4 bg-red-900">
            <!-- Left: Social Icons -->
            <div class="flex items-center space-x-4">
              <a
@@ -20,11 +20,11 @@
      
            <!-- Right: Search Bar -->
            <div class="relative w-32 my-2">
-             <input
+             <UiInput
                id="search"
                type="text"
                placeholder="Search"
-               class="w-full pl-10 text-sm text-white placeholder-white bg-red-800 rounded-full h-7 font-montserrat focus:outline-none"
+               class="w-full pl-10 text-sm text-white bg-red-900 rounded-full placeholder:text-white h-7 font-montserrat"
              />
              <span class="absolute inset-y-0 flex items-center text-white left-3">
                <!-- Replace this with your search icon component if needed -->
@@ -34,9 +34,9 @@
         </div>
          <!-- logo and navbar -->
         <transition name="nav-slide">
-            <div v-if="showNav" class="relative flex items-center justify-between w-full px-4 bg-white border-b-2 border-red-800">
+            <div v-if="showNav" class="relative flex items-center justify-between w-full px-4 bg-white border-b-2 border-red-900">
                 <button class=" md:hidden" aria-label="Open menu" @click="showMenuBox ? closeAll() : (showMenuBox = true)">
-                    <Menu class="text-red-800 cursor-pointer stroke-[2] size-8"/>
+                    <Menu class="text-red-900 cursor-pointer stroke-[2] size-8"/>
                 </button>
                  <NuxtLink to="/" class="pr-16">
                      <HeaderMain/>
