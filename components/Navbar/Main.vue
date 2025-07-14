@@ -89,6 +89,12 @@
                        >
                          Facilities
                        </NuxtLink>
+                       <NuxtLink
+                         to="/about/history"
+                         class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700"
+                       >
+                          History
+                       </NuxtLink>
    
                        <!-- 🏢 Offices and Administration with dynamic departments -->
                        <div class="relative border-b border-gray-500 group/admin hover:bg-gray-700">

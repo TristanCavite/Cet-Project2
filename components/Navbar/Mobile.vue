@@ -71,7 +71,7 @@
 
                                     <!-- Officess and Administration menu box -->
                                     <ul v-if="showOffAddSubmenu" class="h-auto pt-4 pb-3 pl-4 space-y-4 font-medium rounded-md left-full min-w-72">
-                                        <NuxtLink to="/about/administration">Offices and Administration</NuxtLink>
+                                        <NuxtLink to="/about/administration" @click="showMenuBox = false; showOffAddSubmenu = false">Offices and Administration</NuxtLink>
                                         <li v-for="dept in departments" :key="dept.id">
                                             <NuxtLink :to="`/about/dept_personels/${dept.id}`"  @click="showMenuBox = false; showOffAddSubmenu = false" class="flex items-center w-full ">
                                                 {{ dept.name }}
@@ -98,26 +98,26 @@
                                         {{ dept.name }}
                                     </NuxtLink>
                                 </li>
-                                <NuxtLink to="/academics/academic_calendar">Academic Calendar</NuxtLink>
+                                <NuxtLink to="/academics/academic_calendar" @click="showMenuBox = false; showAcademicsSubmenu = false">Academic Calendar</NuxtLink>
                              </ul>
                         </li>
 
                         <li>
                             <div class="flex items-center justify-between pr-3" :class="showAdmissionSubmenu ? 'bg-red-900 rounded-sm px-2 py-2' : ''" @click="showAdmissionSubmenu = !showAdmissionSubmenu">
                                 <button>
-                                    <span>admission</span>
+                                    <span>Admission</span>
                                 </button>
                                 <ChevronDown class="transition-transform size-6 stroke-[3] " :class="{ 'rotate-180': showAdmissionSubmenu }"/>
                             </div>
                             <ul  v-if="showAdmissionSubmenu" class="h-auto pt-4 pb-3 pl-4 space-y-4 font-semibold rounded-md left-full min-w-72">
-                                <li><NuxtLink to="/admission/graduate" class="flex items-center w-full"> Graduate</NuxtLink></li>
-                                <li><NuxtLink to="/admission/undergraduate" class="flex items-center w-full">Undergraduate</NuxtLink></li>
-                                <li><NuxtLink to="/admission/why_choose_cet" class="flex items-center w-full">Why Choose VSU-FE?</NuxtLink></li>
+                                <li><NuxtLink to="/admission/graduate" class="flex items-center w-full" @click="showMenuBox = false; showAdmissionSubmenu = false"> Graduate</NuxtLink></li>
+                                <li><NuxtLink to="/admission/undergraduate" class="flex items-center w-full"  @click="showMenuBox = false; showAdmissionSubmenu = false">Undergraduate</NuxtLink></li>
+                                <li><NuxtLink to="/admission/why_choose_cet" class="flex items-center w-full" @click="showMenuBox = false; showAdmissionSubmenu = false">Why Choose VSU-FE?</NuxtLink></li>
                             </ul>
                         </li>
 
-                        <li><NuxtLink to="/research" class="flex items-center w-full">Research</NuxtLink></li>
-                        <li><NuxtLink to="/news" class="flex items-center w-full">News</NuxtLink></li>
+                        <li><NuxtLink to="/research" class="flex items-center w-full" @click="showMenuBox = false">Research</NuxtLink></li>
+                        <li><NuxtLink to="/news" class="flex items-center w-full" @click="showMenuBox = false">News</NuxtLink></li>
                     </ul>
                 </div>
             </div>
