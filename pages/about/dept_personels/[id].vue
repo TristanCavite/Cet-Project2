@@ -3,8 +3,8 @@
     <!-- 🔒 Left-Aligned Title Cover Image Block -->
     <div class="relative flex items-center w-full border-b-2 font-playfair">
       <img src="/CET Faculty.jpg" alt="Department Cover" class="object-cover w-full h-44 md:h-128" />
-      <div class="absolute flex items-center top-28 md:top-40 left-6 md:left-[120px] h-auto w-auto md:h-28 md:w-96 bg-gray-700/90">
-        <span class="pl-2 pr-2 text-xl text-white  md:pl-5 md:text-6xl">
+      <div class="absolute flex items-center top-28 md:top-40 left-6 md:left-[120px] h-auto w-auto md:h-auto md:w-auto bg-gray-700/90">
+        <span class="p-2 text-xl text-white md:p-5 md:text-6xl">
           {{ dept?.name || "Department" }}
         </span>
       </div>
