@@ -1,15 +1,15 @@
 <template>
   <!-- Full-page section with gray background -->
-  <section class="min-h-screen px-2 pb-20 bg-gray-100 md:px-4 pt-28">
+  <section class="min-h-screen px-2 pt-20 pb-10 bg-neutral-100 md:px-4">
     <!-- White content box -->
-    <div class="max-w-5xl p-5 mx-auto bg-white shadow-md md:p-10 rounded-xl">
-      <!-- Title -->
-      <h1 class="mb-2 text-3xl font-bold text-maroon">{{ event.title }}</h1>
+    <div class="max-w-5xl p-5 mx-auto bg-white shadow-xl md:p-10 rounded-xl">
+      <div class="flex flex-col items-center">
+        <!-- Title -->
+        <span class="mb-2 font-sans text-3xl font-bold text-red-900"> {{ event.title }} </span>
 
-      <!-- Date -->
-      <p class="mb-6 text-sm text-gray-600">
-        {{ formatDate(event.date) }}
-      </p>
+        <!-- Date -->
+        <span class="mb-6 font-serif text-xs text-gray-600"> {{ formatDate(event.date) }} </span>
+      </div>
 
       <!-- Carousel -->
       <div v-if="coverImages.length" class="relative mb-8 overflow-hidden rounded-xl">
@@ -36,13 +36,13 @@
           class="absolute z-10 p-2 transform -translate-y-1/2 rounded-full shadow left-4 top-1/2 bg-white/80 hover:bg-white"
           @click="prevSlide"
         >
-          <ChevronLeft class="md:size-6 size-4 text-maroon" />
+          <ChevronLeft class="text-red-900 md:size-6 size-4" />
         </button>
         <button
           class="absolute z-10 p-2 transform -translate-y-1/2 rounded-full shadow right-4 top-1/2 bg-white/80 hover:bg-white"
           @click="nextSlide"
         >
-          <ChevronRight class="md:size-6 size-4 text-maroon" />
+          <ChevronRight class="text-red-900 md:size-6 size-4" />
         </button>
 
         <!-- Dots -->
@@ -50,30 +50,34 @@
           <span
             v-for="(img, index) in coverImages"
             :key="index"
-            class="rounded-full md:size-3 size-2"
-            :class="currentSlide === index ? 'bg-maroon' : 'bg-gray-300'"
+            class="rounded-full size-2"
+            :class="currentSlide === index ? 'bg-red-900' : 'bg-gray-300'"
             @click="setSlide(index)"
           ></span>
         </div>
       </div>
 
-      <!-- Description -->
-      <p class="mb-6 text-lg text-gray-800">{{ event.description }}</p>
+      <div class="flex flex-col items-center">
+        <!-- Description -->
+        <span class="mb-6 text-lg text-gray-800">{{ event.description }}</span>
+  
+        <!-- Rich HTML Content -->
+        <div
+          v-html="event.content"
+          class="prose max-w-none prose-img:rounded prose-p:text-justify"
+        />
+      </div>
 
-      <!-- Rich HTML Content -->
-      <div
-        v-html="event.content"
-        class="prose max-w-none prose-img:rounded prose-p:text-justify"
-      />
-
-      <!-- Back Button -->
-      <div class="mt-10">
-        <NuxtLink
-          to="/"
-          class="inline-block px-3 py-1 text-sm font-semibold text-white transition rounded shadow md:py-2 md:px-5 bg-maroon hover:bg-red-900"
-        >
-          Back to Home
-        </NuxtLink>
+      <div class="flex flex-col items-center mt-10">
+        <!-- Back Button -->
+        <div class="flex flex-row items-center justify-center pt-2 pb-2 pl-4 pr-4 bg-green-900 rounded-sm hover:bg-gray-300 w-fit">
+          <NuxtLink
+            to="/"
+            class="text-sm font-semibold text-gray-100 transition rounded"
+          >
+          <span>BACK</span>
+          </NuxtLink>
+        </div>
       </div>
     </div>
   </section>
@@ -86,6 +90,7 @@ import { useRoute } from 'vue-router'
 import { useFirestore } from 'vuefire'
 import { doc, getDoc } from 'firebase/firestore'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+
 
 definePageMeta({
     layout: "custom",
@@ -141,10 +146,4 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.text-maroon {
-  color: #740505;
-}
-.bg-maroon {
-  background-color: #740505;
-}
 </style>

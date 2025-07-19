@@ -1,7 +1,7 @@
 <template>
   <NavbarMobile v-if="isMobile" />
   <NavbarMain v-else/>
-  <main class="pt-[92px]"> <!-- Adjusted for the height of the navbar -->
+  <main class="pt-[135px]"> <!-- Adjusted for the height of the navbar -->
     <slot />
   </main>
   <FooterMobile v-if="isMobile"/>

@@ -1,56 +1,56 @@
 <template>
-  <header class="fixed z-50 w-full bg-white" :style="showHeader ? 'height: 120px;' : 'height: 30px;'">
+  <header class="fixed z-50 w-full " :style="hideNav ? 'height: 120px;' : 'height: 30px;'">
     <!-- Header Bar with Search and Social Icons -->
-     <transition name="fade-slide">
-       <div v-if="showHeader" class="header-bar-transition">
-         <div class="flex items-center justify-between w-full px-4 bg-red-900 md:px-8">
+     <transition name="header-sticky">
+       <div class="relative h-20 bg-white border-b-2 border-gray-200 header-bar-transition">
+         <div class="flex items-center justify-around w-full pt-2 gap-72 md:px-8">
            <!-- Left: Social Icons -->
-           <div class="flex items-center space-x-4">
+           <div class="flex items-center space-x-6">
              <a
                href="https://www.facebook.com/vsuengineering"
                target="_blank"
                rel="noopener noreferrer"
              >
-               <Facebook class="w-5 h-5 text-white hover:text-red-600" />
+               <Facebook class="text-red-900 size-5 md:size-6 fill-neutral-100" />
              </a>
              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-               <Instagram class="w-5 h-5 text-white hover:text-red-600" />
+               <Instagram class="text-red-900 size-5 md:size-6 fill-neutral-100" />
              </a>
              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-               <Twitter class="w-5 h-5 text-white hover:text-red-600" />
+               <Twitter class="text-red-900 size-5 md:size-6 fill-neutral-100 " />
              </a>
            </div>
      
            <!-- Right: Search Bar -->
-           <div class="relative my-1 bg-red-900 w-38">
+           <div class="relative my-1 w-38">
              <UiInput
                id="search"
                type="text"
                placeholder="Search"
-               class="w-full h-8 pl-10 text-sm text-white bg-red-900 rounded-full placeholder:text-white font-montserrat focus:outline-none focus:ring-0"
+               class="w-full h-10 pl-10 text-sm border-2 border-red-900 rounded-full bg-neutral-100 placeholder:text-black font-montserrat focus:outline-black focus:ring-0"
              />
-             <span class="absolute inset-y-0 flex items-center text-white left-3">
-               <!-- Replace this with your search icon component if needed -->
-               <IconsSearch />
+             <span class="absolute inset-y-0 flex items-center text-red-900 left-3">
+               <!-- Replace this with your search icon component if needed --> 
+               <IconsSearch class="fill-white" />
              </span>
            </div>
          </div>
          <!-- Logo (Center) -->
-         <NuxtLink to="/" class="flex justify-center">
+         <NuxtLink to="/" class="absolute z-10 transform -translate-x-1/2 left-1/2 top-7">
            <HeaderMain/>
          </NuxtLink>
        </div>
      </transition>
     
     <!-- Navigation Bar -->
-     <transition name="nav-slide">
-       <nav class="flex flex-col items-center w-full bg-white" :class="['flex flex-col items-center w-full bg-white', { 'nav-fixed': !showHeader }]">
+     <transition name="nav-fade-up">
+       <nav v-if="!hideNav" class="flex flex-col items-center w-full bg-red-900" :class="['flex flex-col items-center w-full', { 'nav-fixed': !hideNav }]">
          <!-- Login/Logout and Tabs (Bottom Section) -->
          <div class="w-full">
            <!-- Background full-width but content centered inside -->
            <!-- Force background to span full width -->
-           <div class="w-full border shadow-lg border-white/10 bg-black/70 backdrop-blur-md">
-             <div class="w-full max-w-screen-xl px-4 mx-auto">
+           <div class="w-full border shadow-lg">
+             <div class="w-full max-w-screen-xl py-3 mx-auto">
                <Tabs default-value="home">
                  <TabsList
                    class="flex items-center justify-center gap-12 text-lg text-white cursor-pointer font-montserrat"
@@ -280,15 +280,15 @@
   }
 
   // to hide header on scroll down
-  const showHeader = ref(true);
+  const hideNav = ref(false);
   let lastScrollY = window.scrollY;
 
   function handleScroll() {
     const currentScrollY = window.scrollY;
     if (currentScrollY > lastScrollY && currentScrollY > 80) {
-      showHeader.value = false; // Hide when scrolling down
+      hideNav.value = true; // Hide when scrolling down
     } else {
-      showHeader.value = true; // Show when scrolling up
+      hideNav.value = false; // Show when scrolling up
     }
     lastScrollY = currentScrollY;
   }
@@ -315,40 +315,41 @@
     margin: 0;
   }
   
-  /* for header transition */
-  .fade-slide-enter-active,
-  .fade-slide-leave-active {
-    transition: opacity 0.1s  ease, transform 0.1s  ease;
-  }
-  .fade-slide-enter-from,
-  .fade-slide-leave-to {
-    opacity: 0;
-    transform: translateY(10px);
-  }
+  /* HEADER (remains visible, no leave transition) */
+.header-sticky-enter-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.header-sticky-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.header-sticky-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* NO leave styles — it remains */
 
-  .fade-slide-enter-to,
-  .fade-slide-leave-from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-    
-  header {
-    transition: height 0.1s cubic-bezier(0.4,0,0.2,1);
-  }
-  .nav-fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  z-index: 50;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  animation: slideDown 0.5s;
-  animation: slideUp 0.5s;
-  }
-  .nav-slide-enter-active,
-  .nav-slide-leave-active {
-    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
-  }
+/* NAVBAR fade up and disappear */
+.nav-fade-up-enter-active,
+.nav-fade-up-leave-active {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.nav-fade-up-enter-from {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+.nav-fade-up-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+.nav-fade-up-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+.nav-fade-up-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
 
   @keyframes slideDown {
     from { transform: translateY(-100%); }
