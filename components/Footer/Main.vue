@@ -17,7 +17,7 @@
         <div class="flex justify-center">
           <img
             src="/FE_logo_wbg.png"
-            alt="College of Engineering and Technology Logo"
+            alt="Faculty of Engineering Logo"
             class="w-auto h-24"
           />
         </div>

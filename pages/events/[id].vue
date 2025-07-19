@@ -70,7 +70,7 @@
 
       <div class="flex flex-col items-center mt-10">
         <!-- Back Button -->
-        <div class="flex flex-row items-center justify-center pt-2 pb-2 pl-4 pr-4 bg-green-900 rounded-sm hover:bg-gray-300 w-fit">
+        <div class="flex flex-row items-center justify-center pt-2 pb-2 pl-5 pr-5 bg-green-900 rounded-sm hover:bg-gray-300 w-fit">
           <NuxtLink
             to="/"
             class="text-sm font-semibold text-gray-100 transition rounded"
