@@ -1,51 +1,51 @@
 <template>
-    <footer class="border-maroon border-t bg-white py-4">
-      <div class="container mx-auto grid grid-cols-3 items-center">
+    <footer class="w-full pl-32 pr-32 border-t bg-green-950">
+      <div class="grid items-center grid-cols-3 pt-8 pb-8 mx-auto border-b-2 border-gray-500">
         <!-- Left Section: VSU Logo -->
-        <div class="flex items-center justify-start space-x-2">
+        <div class="relative flex items-center justify-start ">
           <!-- VSU Brand Logo -->
-          <img src="/VSU Brand Logo 1.png" alt="Visayas State University Logo" class="h-24 w-auto" />
+           <div class="absolute z-10 left-32">
+             <img src="/vsu_brand_logo_wbg.png" alt="Visayas State University Logo" class=" size-32" />
+           </div>
           <!-- VSU Text Logo -->
-          <img src="/VSU Text Logo 2.png" alt="Visayas State University text" class="h-16 w-auto" />
+           <div class="absolute z-10 right-20">
+             <img src="/vsu_text_logo_wbg.png" alt="Visayas State University text" class="h-32 w-36" />
+           </div>
         </div>
   
         <!-- Center Section: CET Logo -->
         <div class="flex justify-center">
           <img
-            src="/CET Logo.png"
-            alt="College of Engineering and Technology Logo"
-            class="h-24 w-auto"
+            src="/FE_logo_wbg.png"
+            alt="Faculty of Engineering Logo"
+            class="w-auto h-24"
           />
         </div>
   
         <!-- Right Section: Vision and Mission -->
-        <div class="space-y-2 text-justify text-sm font-medium text-green">
-          <p>
-            <span class="font-bold">Vision:</span> A globally competitive university for science,
+        <div class="pl-4 space-y-2 font-sans font-medium text-justify text-green-200 border-l-2 border-gray-500">
+          <p class="text-xs">
+            <span class="font-bold text-white">Vision:</span> A globally competitive university for science,
             technology, and environmental conservation.
           </p>
-          <p>
-            <span class="font-bold">Mission:</span> Development of a highly competitive human
+          <p class="text-xs">
+            <span class="font-bold text-white">Mission:</span> Development of a highly competitive human
             resource, cutting-edge scientific knowledge, and innovative technologies for sustainable
             communities and environment.
           </p>
         </div>
       </div>
+      <div class="flex flex-row items-center justify-center pt-4 pb-4 space-x-2 text-xs"> 
+        <span class="font-bold text-white">© 2025</span>
+        <span class="text-green-200 font-base">Visayas State University - Faculty of Engineering.</span>
+        <span class="text-green-200 font-base">All rights reserved.</span>
+      </div>
     </footer>
   </template>
   
   <style scoped>
-    footer {
-      background-color: #fff;
-      border-top: 2px solid #800000; /* Maroon border */
-    }
-  
-  
-    .text-green {
-      color: #146939;
-    }
-    .container {
-      max-width: 1200px;
-    }
+    /* *{
+      outline: red solid 1px;
+    } */
   </style>
   

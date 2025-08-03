@@ -1,19 +1,19 @@
 <template>
-  <div class="max-w-5xl mx-auto px-4 py-8 my-7">
-    <h1 class="text-3xl font-bold text-maroon mb-8">College News</h1>
+  <div class="max-w-5xl px-4 pt-5 pb-8 mx-auto md:py-8 md:my-7">
+    <h1 class="pb-4 text-2xl font-bold text-red-900 md:pb-8 md:text-5xl font-playfair">College News</h1>
 
     <!-- News List -->
     <div v-if="newsList?.length" class="space-y-10">
       <div
         v-for="news in newsList"
         :key="news.id"
-        class="bg-white border border-gray-200 rounded shadow p-6 space-y-4"
+        class="p-6 space-y-4 bg-white border border-gray-200 shadow-xl rounded-xl"
       >
         <!-- Title -->
         <h2 class="text-2xl font-bold text-maroon">{{ news.title }}</h2>
 
         <!-- Author and Date -->
-        <div class="text-sm text-gray-600 flex flex-wrap items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3 text-sm text-gray-600">
           <span class="inline-flex items-center gap-1">
             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
               viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -39,15 +39,15 @@
         />
 
         <!-- Description -->
-        <p class="text-gray-700 text-justify">{{ news.description }}</p>
+        <p class="text-justify text-gray-700">{{ news.description }}</p>
 
         <!-- Read More Button -->
         <div class="pt-2">
           <button
             @click="readMore(news.id)"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-maroon text-white font-semibold rounded hover:opacity-90"
+            class="inline-flex items-center gap-2 px-2 py-1 font-semibold text-white rounded-lg md:py-2 md:px-4 bg-maroon hover:opacity-90"
           >
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="size-3 md-size-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"
                 d="M10.293 15.707a1 1 0 010-1.414L13.586 11H4a1 1 0 110-2h9.586l-3.293-3.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
@@ -61,7 +61,7 @@
     </div>
 
     <!-- No news fallback -->
-    <p v-else class="text-center text-gray-500 mt-10">No news found.</p>
+    <p v-else class="mt-10 text-center text-gray-500">No news found.</p>
   </div>
 </template>
 

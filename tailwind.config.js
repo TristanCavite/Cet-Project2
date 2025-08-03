@@ -6,6 +6,10 @@ const forms = require("@tailwindcss/forms");
 module.exports = {
   darkMode: false,
   prefix: "",
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}", // Make sure this matches your project files
+  ],
   
   theme: {
     container: {
@@ -92,6 +96,11 @@ module.exports = {
         '288': '110rem', // Another custom height
       },
       width: {
+        '82': '18rem', // Custom width
+        '85': '19rem', // Custom width
+        '88': '20rem', // Custom width
+        '89': '21rem', // Custom width
+        '90': '22rem', // Custom width
         '100': '26rem', // Custom width
         '128': '32rem', // Custom width
         '144': '36rem', // Another custom width

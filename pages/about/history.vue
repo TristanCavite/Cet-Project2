@@ -1,16 +1,16 @@
 <template>
     <main class="pb-4 bg-stone-200">
         <div class="relative flex items-center w-full border-b-2 font-playfair ">
-            <img src="/images/cet_history.jpg" alt="" class="object-cover w-full h-128">
-            <div class="absolute flex items-center left-[120px] h-28 w-96 bg-gray-700 bg-opacity-90">
-                <span class="pl-5 text-6xl text-white">History</span>
+            <img src="/images/cet_history.jpg" alt="" class="object-cover w-full h-44 md:h-128">
+            <div class="absolute flex items-center top-28 md:top-40 left-6 md:left-[120px] h-10 w-40 md:h-28 md:w-96 bg-gray-700/90 ">
+                <span class="pl-2 text-xl text-white md:pl-5 md:text-6xl">History</span>
             </div>
         </div>
-        <div class="h-auto mx-auto mt-16 mb-16 border-2 shadow-2xl w-304 bg-neutral-50">
-            <div class="pb-5 mt-16 ml-10 border-b-4 w-144">
-                <span class="text-5xl font-bold text-red-800 font-playfair">The History of CET</span>
+        <div class="w-full h-auto mx-auto mt-10 mb-12 border-2 shadow-2xl md:mt-16 md:w-304 bg-neutral-50">
+            <div class="pt-10 pb-5 ml-10 border-b-4 md:pt-16 w-80 md:w-144">
+                <span class="text-2xl font-bold text-red-900 md:text-5xl font-playfair">The History of CET</span>
             </div>
-            <div class="m-10 text-lg font-medium font-roboto">
+            <div class="m-8 text-base font-medium md:m-10 md:text-lg font-roboto">
                 <p>
                 The College of Engineering started as the Department of Agricultural Engineering and Applied Mathematics (DAEAM) when President Ferdinand E. Marcos signed Presidential Decree (P.D.) 470 on 24 May 1974 (amended by P.D. 700 on 12 May 1975) converting the then Visayas Agricultural College (VAC) into the Visayas State College of Agriculture (ViSCA) to expand VAC’s curricular programs in agriculture and technology.  
                 </p>
