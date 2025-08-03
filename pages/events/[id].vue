@@ -1,18 +1,18 @@
 <template>
   <!-- Full-page section with gray background -->
-  <section class="min-h-screen bg-gray-100 pt-28 px-4 pb-20">
+  <section class="min-h-screen px-2 pt-20 pb-10 bg-neutral-100 md:px-4">
     <!-- White content box -->
-    <div class="max-w-5xl mx-auto bg-white p-10 rounded-xl shadow-md">
-      <!-- Title -->
-      <h1 class="text-3xl font-bold text-maroon mb-2">{{ event.title }}</h1>
+    <div class="max-w-5xl p-5 mx-auto bg-white shadow-xl md:p-10 rounded-xl">
+      <div class="flex flex-col items-center">
+        <!-- Title -->
+        <span class="mb-2 font-sans text-3xl font-bold text-red-900"> {{ event.title }} </span>
 
-      <!-- Date -->
-      <p class="text-sm text-gray-600 mb-6">
-        {{ formatDate(event.date) }}
-      </p>
+        <!-- Date -->
+        <span class="mb-6 font-serif text-xs text-gray-600"> {{ formatDate(event.date) }} </span>
+      </div>
 
       <!-- Carousel -->
-      <div v-if="coverImages.length" class="relative overflow-hidden rounded-xl mb-8">
+      <div v-if="coverImages.length" class="relative mb-8 overflow-hidden rounded-xl">
         <div
           class="flex transition-transform duration-700 ease-in-out"
           :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
@@ -24,7 +24,7 @@
           >
             <img
               :src="img"
-              class="w-full h-full object-cover"
+              class="object-cover w-full h-full"
               :alt="`Slide ${index + 1}`"
               loading="lazy"
             />
@@ -33,47 +33,51 @@
 
         <!-- Arrows -->
         <button
-          class="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white p-2 rounded-full shadow"
+          class="absolute z-10 p-2 transform -translate-y-1/2 rounded-full shadow left-4 top-1/2 bg-white/80 hover:bg-white"
           @click="prevSlide"
         >
-          <ChevronLeft class="w-6 h-6 text-maroon" />
+          <ChevronLeft class="text-red-900 md:size-6 size-4" />
         </button>
         <button
-          class="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white p-2 rounded-full shadow"
+          class="absolute z-10 p-2 transform -translate-y-1/2 rounded-full shadow right-4 top-1/2 bg-white/80 hover:bg-white"
           @click="nextSlide"
         >
-          <ChevronRight class="w-6 h-6 text-maroon" />
+          <ChevronRight class="text-red-900 md:size-6 size-4" />
         </button>
 
         <!-- Dots -->
-        <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+        <div class="absolute z-10 flex gap-2 transform -translate-x-1/2 bottom-3 left-1/2">
           <span
             v-for="(img, index) in coverImages"
             :key="index"
-            class="w-3 h-3 rounded-full"
-            :class="currentSlide === index ? 'bg-maroon' : 'bg-gray-300'"
+            class="rounded-full size-2"
+            :class="currentSlide === index ? 'bg-red-900' : 'bg-gray-300'"
             @click="setSlide(index)"
           ></span>
         </div>
       </div>
 
-      <!-- Description -->
-      <p class="text-lg text-gray-800 mb-6">{{ event.description }}</p>
+      <div class="flex flex-col items-center">
+        <!-- Description -->
+        <span class="mb-6 text-lg text-gray-800">{{ event.description }}</span>
+  
+        <!-- Rich HTML Content -->
+        <div
+          v-html="event.content"
+          class="prose max-w-none prose-img:rounded prose-p:text-justify"
+        />
+      </div>
 
-      <!-- Rich HTML Content -->
-      <div
-        v-html="event.content"
-        class="prose max-w-none prose-img:rounded prose-p:text-justify"
-      />
-
-      <!-- Back Button -->
-      <div class="mt-10">
-        <NuxtLink
-          to="/"
-          class="inline-block text-sm font-semibold text-white bg-maroon hover:bg-red-900 transition px-5 py-2 rounded shadow"
-        >
-          Back to Home
-        </NuxtLink>
+      <div class="flex flex-col items-center mt-10">
+        <!-- Back Button -->
+        <div class="flex flex-row items-center justify-center pt-2 pb-2 pl-5 pr-5 bg-green-900 rounded-sm hover:bg-gray-300 w-fit">
+          <NuxtLink
+            to="/"
+            class="text-sm font-semibold text-gray-100 transition rounded"
+          >
+          <span>BACK</span>
+          </NuxtLink>
+        </div>
       </div>
     </div>
   </section>
@@ -86,6 +90,7 @@ import { useRoute } from 'vue-router'
 import { useFirestore } from 'vuefire'
 import { doc, getDoc } from 'firebase/firestore'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+
 
 definePageMeta({
     layout: "custom",
@@ -141,10 +146,4 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.text-maroon {
-  color: #740505;
-}
-.bg-maroon {
-  background-color: #740505;
-}
 </style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 useHead({
-  title: "College of Engineering and technology | Visayas State University",
+  title: "Faculty of Engineering | Visayas State University",
   link: [
     {
       rel: "icon",
@@ -13,7 +13,7 @@ useHead({
   meta: [
     {
       name: "description",
-      content: "College of Engineering and Technology website",
+      content: "Faculty of Engineering, Visayas State University",
     },
   ],
 });

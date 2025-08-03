@@ -1,214 +1,223 @@
 <template>
-  <main class="overflow-hidden">
-    <!-- 🔼 Hero Slider -->
-    <div class="relative my-7 h-128 w-full overflow-hidden">
-      <!-- Arrows -->
-      <button
-        class="absolute right-4 top-1/2 z-10 flex h-28 -translate-y-1/2 transform items-center justify-center rounded-xl border border-white/20 bg-white/10 shadow-lg backdrop-blur-md transition hover:bg-white/20"
-        @click="nextSlide"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="lucide lucide-chevron-right size-12 text-black"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
+  <main class=" bg-neutral-100">
+      <!-- 🔼 Hero Slider -->
+      <div class="relative w-full h-auto overflow-hidden">
+        <!-- Arrows -->
+        <button
+          class="absolute z-10 flex items-center justify-center h-16 transition transform -translate-y-1/2 bg-red-900 border shadow-lg right-20 top-1/2 md:h-28 rounded-xl"
+          @click="nextSlide"
         >
-          <path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="text-white lucide lucide-chevron-right size-5 md:size-10"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
 
-      <button
-        class="absolute left-4 top-1/2 z-10 flex h-28 -translate-y-1/2 transform items-center justify-center rounded-xl border border-white/20 bg-white/10 shadow-lg backdrop-blur-md transition hover:bg-white/20"
-        @click="prevSlide"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="lucide lucide-chevron-left size-12 text-black"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
+        <button
+          class="absolute z-10 flex items-center justify-center h-16 transition transform -translate-y-1/2 bg-red-900 border shadow-lg left-20 top-1/2 md:h-28 rounded-xl"
+          @click="prevSlide"
         >
-          <path d="m15 18-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="text-white lucide lucide-chevron-left size-5 md:size-10"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="m15 18-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
 
-      <!-- Dots -->
-      <div class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 transform space-x-2">
-        <span
-          v-for="(image, index) in images"
-          :key="index"
-          class="h-3 w-3 rounded-full bg-gray-400"
-          :class="{ 'bg-gray-800': currentIndex === index }"
-          @click="setCurrentSlide(index)"
-        ></span>
-      </div>
+        <!-- Dots -->
+        <div class="absolute z-10 flex space-x-2 transform -translate-x-1/2 bottom-2 md:bottom-4 left-1/2">
+          <span
+            v-for="(image, index) in images"
+            :key="index"
+            class="bg-gray-400 rounded-full size-2"
+            :class="{ 'bg-gray-800': currentIndex === index }"
+            @click="setCurrentSlide(index)"
+          ></span>
+        </div>
 
-      <!-- Slides -->
-      <div
-        class="duration-2000 flex transition-transform ease-in-out"
-        :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
-      >
-        <div v-for="(image, index) in images" :key="index" class="h-full w-full flex-shrink-0">
-          <img
-            :src="image.src"
-            alt=""
-            class="mx-auto h-full w-full bg-black object-contain"
-            loading="lazy"
-          />
+        <!-- view port -->
+        <div class="relative mx-auto w-[80%] overflow-hidden rounded-xl mt-4">
+          <!-- Slides Wrapper -->
+          <div
+            class="flex transition-transform duration-700 ease-in-out"
+            :style="{ transform: `translateX(-${currentIndex * (100 / images.length)}%)`, width: `${images.length * 100}%` }"
+          >
+            <!-- Each Slide -->
+            <div
+              v-for="(image, index) in images"
+              :key="index"
+              class="flex items-center justify-center flex-shrink-0 w-full h-128"
+              :style="{ flex: `0 0 ${100 / images.length}%` }"
+            >
+              <img
+                :src="image.src"
+                :alt="image.alt || `Slide ${index + 1}`"
+                class="object-cover w-full h-full rounded-xl"
+                loading="lazy"
+              />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- 📰 Events + Right Panel -->
-<div class="w-full bg-stone-200">
-  <!-- 🏷 Section Title -->
-  <div class="pt-8 text-center">
-    <h2 class="text-maroon text-5xl font-extrabold uppercase tracking-wide">EVENTS</h2>
-  </div>
+      <!-- 📰 Events -->
+      <div class="px-4 py-10 mx-auto max-w-7xl">
+        <!-- 🏷 Section Title -->
+        <div class="pt-4 text-center">
+          <span class="text-xl font-extrabold tracking-wide uppercase md:text-5xl text-maroon font-playfair">EVENTS</span>
+        </div>
 
-  <div class="flex justify-center gap-8 px-6 lg:px-12">
-    <!-- 📅 Events or Empty State -->
-    <div class="flex flex-col items-center gap-10 pt-10 w-full max-w-screen-lg">
-      <template v-if="filteredEvents.length > 0">
-        <div
-          v-for="event in filteredEvents"
-          :key="event.id"
-          class="w-224 border-2 border-t-2 bg-neutral-50 p-10 shadow-xl"
-        >
-          <!-- Date -->
-          <span class="font-roboto text-2xl font-semibold text-red-800">
-            DAY
-            {{
-              new Date(event.date)
-                .toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" })
-                .toUpperCase()
-            }}
-          </span>
+        <div class="flex flex-col justify-center px-10 md:flex-row ">
+          <!-- 📅 left side -->
+          <div class="flex flex-col w-full pt-5 space-y-6 md:w-3/4">
+            <template v-if="filteredEvents.length > 0">
+              <div
+                v-for="event in filteredEvents"
+                :key="event.id"
+                class="w-full p-5 bg-white shadow-2xl md:w-4/5 rounded-xl"
+              >
+                <!-- Date -->
+                <span class="font-semibold text-red-800 text-md md:text-2xl font-inter">
+                  DAY
+                  {{
+                    new Date(event.date)
+                      .toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" })
+                      .toUpperCase()
+                  }}
+                </span>
 
-          <!-- Carousel -->
-          <div class="relative overflow-hidden">
-            <div
-              class="flex pb-4 pt-4 transition-transform duration-500"
-              :style="{ transform: `translateX(-${event.currentSlide || 0}00%)` }"
-            >
-              <div v-for="(img, i) in event.coverImages" :key="i" class="w-full flex-shrink-0">
-                <img :src="img" alt="" class="h-128 w-208 object-cover" />
+                <!-- Image slide -->
+                <div class="relative mx-auto overflow-hidden">
+                  <div
+                    class="flex flex-shrink-0 pt-4 pb-4 transition-transform duration-500"
+                    :style="{ transform: `translateX(-${event.currentSlide || 0}00%)` }"
+                  >
+                    <div v-for="(img, i) in event.coverImages" :key="i" class="flex-shrink-0 w-full">
+                      <img :src="img" alt="" class="object-cover w-full h-48 md:h-60" />
+                    </div>
+                  </div>
+
+                  <!-- Arrows -->
+                  <button
+                    class="absolute z-10 text-red-900 transition transform -translate-y-1/2 rounded-full shadow-md md:size-10 size-8 right-3 bg-white/80 hover:scale-105 hover:bg-white top-36"
+                    @click="event.currentSlide = (event.currentSlide + 1) % event.coverImages.length"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto font-bold size-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                  <button
+                    class="absolute z-10 text-red-900 transition transform -translate-y-1/2 rounded-full shadow-md md:size-10 size-8 left-3 top-36 bg-white/80 hover:scale-105 hover:bg-white"
+                    @click="event.currentSlide = (event.currentSlide - 1 + event.coverImages.length) % event.coverImages.length"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto font-bold size-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+
+                  <!-- Dots -->
+                  <div class="absolute z-10 flex space-x-2 transform -translate-x-1/2 bottom-7 left-1/2">
+                    <span
+                      v-for="(img, i) in event.coverImages"
+                      :key="i"
+                      class="w-2 h-2 bg-gray-400 rounded-full"
+                      :class="{ 'bg-gray-800': (event.currentSlide || 0) === i }"
+                      @click="event.currentSlide = i"
+                    ></span>
+                  </div>
+                </div>
+
+                <!-- Title & Description -->
+                <div class="pb-2 md:pt-2">
+                  <span class="text-xl font-semibold md:text-2xl font-roboto">{{ event.title }}</span>
+                </div>
+                <div class="font-roboto">
+                  <p v-html="event.description"></p>
+                </div>
+                <router-link
+                  :to="`/events/${event.id}`"
+                  class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-300 rounded font-montserrat"
+                >
+                  Read more
+                </router-link>
+              </div>
+            </template>
+
+            <template v-else>
+              <!-- 🧼 Empty State -->
+              <div class="w-224 min-h-[300px] flex flex-col items-center justify-center rounded border-2 bg-white text-center text-gray-500 shadow">
+                <!-- Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 mb-5 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 2v2m8-2v2M3 8h18M5 8h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10a2 2 0 012-2z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12l-6 6m0-6l6 6" />
+                </svg>
+                <p class="text-lg font-semibold">No events on this day.</p>
+                <p class="text-sm">Try selecting another date on the calendar.</p>
+
+                <button
+                  v-if="selectedDate"
+                  @click="selectedDate = null"
+                  class="self-center px-4 py-2 mt-4 text-sm font-semibold text-gray-700 bg-gray-300 rounded w-fit hover:bg-gray-400"
+                >
+                  Show all events
+                </button>
+              </div>
+            </template>
+          </div>
+
+          <!--  Right Side -->
+          <div class="flex flex-col items-center pt-5 space-y-5">
+            <!-- Calendar -->
+            <div class="">
+              <div class="flex justify-center bg-white shadow-xl rounded-xl">
+                <UiCalendar @dayclick="handleDayClick" class="bg-neutral-100"/>
               </div>
             </div>
 
-            <!-- Arrows -->
-            <button
-              class="absolute right-3 top-1/2 z-10 h-10 w-10 -translate-y-1/2 transform rounded-full bg-white/80 text-gray-800 shadow-md transition hover:scale-105 hover:bg-white"
-              @click="event.currentSlide = (event.currentSlide + 1) % event.coverImages.length"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </button>
-            <button
-              class="absolute left-3 top-1/2 z-10 h-10 w-10 -translate-y-1/2 transform rounded-full bg-white/80 text-gray-800 shadow-md transition hover:scale-105 hover:bg-white"
-              @click="event.currentSlide = (event.currentSlide - 1 + event.coverImages.length) % event.coverImages.length"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </button>
-
-            <!-- Dots -->
-            <div class="absolute bottom-12 left-1/2 z-10 flex -translate-x-1/2 transform space-x-2">
-              <span
-                v-for="(img, i) in event.coverImages"
-                :key="i"
-                class="h-2 w-2 rounded-full bg-gray-400"
-                :class="{ 'bg-gray-800': (event.currentSlide || 0) === i }"
-                @click="event.currentSlide = i"
-              ></span>
+            <!-- Facebook Card -->
+            <div class="p-6 space-y-4 bg-white border shadow-xl w-96 rounded-xl border-neutral-200 font-roboto">
+              <div class="flex items-center pb-3 space-x-3 border-b border-neutral-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-maroon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.99 3.66 9.13 8.44 9.88v-6.99H7.9v-2.89h2.54V9.9c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.89h-2.34v6.99C18.34 21.13 22 16.99 22 12z" />
+                </svg>
+                <h3 class="text-lg font-semibold text-maroon">Follow us on Facebook</h3>
+              </div>
+              <p class="text-sm text-gray-700">Get the latest updates and announcements straight from our official page.</p>
+              <a
+                href="https://www.facebook.com/cetseb"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-300 rounded-sm font-montserrat"
+              >
+                Visit Page
+              </a>
             </div>
           </div>
+        </div>
 
-          <!-- Title & Description -->
-          <div class="pb-4 pt-2">
-            <span class="font-montserrat text-2xl font-semibold">{{ event.title }}</span>
+        <!-- Skeleton & Toggle -->
+        <div class="pt-10 pr-100">
+          <div class="flex justify-center w-full" v-if="isContentVisible">
+            <div class="flex items-center space-x-4">
+              <div class="space-y-24">
+                <UiSkeleton class="shadow-xl h-144 w-224" />
+                <UiSkeleton class="shadow-xl h-144 w-224" />
+              </div>
+            </div>
           </div>
-          <div class="font-roboto">
-            <p v-html="event.description"></p>
-          </div>
-          <router-link
-            :to="`/events/${event.id}`"
-            class="mt-4 inline-block rounded bg-red-800 px-5 py-2 text-sm font-semibold text-white shadow transition hover:bg-red-900"
-          >
-            Read more
-          </router-link>
-        </div>
-      </template>
-
-      <template v-else>
-        <!-- 🧼 Empty State -->
-        <div class="w-224 min-h-[300px] flex flex-col items-center justify-center rounded border-2 bg-white text-center text-gray-500 shadow">
-          <!-- Icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" class="mb-5 h-16 w-16 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 2v2m8-2v2M3 8h18M5 8h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10a2 2 0 012-2z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12l-6 6m0-6l6 6" />
-          </svg>
-          <p class="text-lg font-semibold">No events on this day.</p>
-          <p class="text-sm">Try selecting another date on the calendar.</p>
-
-          <button
-            v-if="selectedDate"
-            @click="selectedDate = null"
-            class="mt-4 w-fit self-center rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-400"
-          >
-            Show all events
-          </button>
-        </div>
-      </template>
-    </div>
-
-    <!-- 📅 Right Side -->
-    <div class="flex flex-col gap-10 pt-10">
-      <div class="shadow-xl">
-        <div class="flex justify-center">
-          <UiCalendar @dayclick="handleDayClick" />
         </div>
       </div>
-
-      <!-- Facebook Card -->
-      <div class="w-96 space-y-4 rounded-xl border border-neutral-200 bg-white p-6 font-roboto shadow-md">
-        <div class="flex items-center space-x-3 border-b border-neutral-300 pb-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="text-maroon h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.99 3.66 9.13 8.44 9.88v-6.99H7.9v-2.89h2.54V9.9c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.89h-2.34v6.99C18.34 21.13 22 16.99 22 12z" />
-          </svg>
-          <h3 class="text-maroon text-lg font-semibold">Follow us on Facebook</h3>
-        </div>
-        <p class="text-sm text-gray-700">Get the latest updates and announcements straight from our official page.</p>
-        <a
-          href="https://www.facebook.com/cetseb"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="bg-maroon inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-white shadow transition hover:bg-red-900"
-        >
-          Visit Page
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Skeleton & Toggle -->
-  <div class="pb-10 pr-100 pt-10">
-    <div class="flex w-full justify-center" v-if="isContentVisible">
-      <div class="flex items-center space-x-4">
-        <div class="space-y-24">
-          <UiSkeleton class="h-144 w-224 shadow-xl" />
-          <UiSkeleton class="h-144 w-224 shadow-xl" />
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
   </main>
 </template>
 
@@ -342,3 +351,9 @@
     selectedDate.value = new Date(day.date);
   }
 </script>
+
+<style>
+  /* *{
+    outline:red solid 1px;
+  } */
+</style>
