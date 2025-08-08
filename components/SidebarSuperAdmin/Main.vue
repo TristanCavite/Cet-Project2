@@ -1,5 +1,7 @@
 <template>
-    <aside class="fixed w-64 h-full text-white bg-maroon">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 h-full text-white bg-maroon">
       <div class="p-4">
         <h2 class="mb-4 text-lg font-bold">Admin Dashboard</h2>
         <nav>
@@ -30,13 +32,12 @@
             </li>
             <li>
               <NuxtLink
-                to="/admin/super-admin/manage_news"
+                to="/admin/super-admin/news"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
               >
                 Manage News
               </NuxtLink>
             </li>
-
             <li>
               <NuxtLink
                 to="/admin/super-admin/manage_accounts"
@@ -45,8 +46,14 @@
                 Manage Accounts
               </NuxtLink>
             </li>
-
-
+            <li>
+              <NuxtLink
+                to="/admin/super-admin/manage_about"
+                class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+              >
+                Manage About
+              </NuxtLink>
+            </li>
             <li>
               <NuxtLink
                 to="/admin/super-admin/manage_research"
@@ -73,7 +80,7 @@
             </li>
             <li>
               <NuxtLink
-                to="/admin/super-admin/manage_event"
+                to="/admin/super-admin/events"
                 class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
               >
                 Manage Events
@@ -99,8 +106,14 @@
         </nav>
       </div>
     </aside>
-  </template>
-  
+
+    <!-- Main content -->
+    <main class="flex-1 p-6 overflow-y-auto">
+      <slot />
+    </main>
+  </div>
+</template>
+
   <script setup>
   import { useFirebaseAuth } from "vuefire";
   import { signOut } from "firebase/auth";

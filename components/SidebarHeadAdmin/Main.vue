@@ -1,5 +1,5 @@
 <template>
-    <aside class="fixed w-64 h-full text-white bg-maroon">
+    <aside class="w-64 h-full text-white bg-maroon">
       <div class="p-4">
         <h2 class="mb-4 text-lg font-bold">Department Head</h2>
         <nav>
@@ -21,6 +21,16 @@
                 Faculty and Staff
               </NuxtLink>
             </li>
+
+                  <!-- ✅ NEW Department Page -->
+          <li>
+            <NuxtLink
+              to="/admin/head-admin/department-page"
+              class="block px-3 py-2 transition duration-300 rounded hover:text-yellow-400"
+            >
+              Department Page
+            </NuxtLink>
+          </li>
             <li>
               <NuxtLink
                 to="/admin/head-admin/degree-program"

@@ -1,7 +1,14 @@
 <template>
+  <div class="h-screen flex flex-col">
     <HeaderMain />
-    <SidebarHeadAdminMain />
-    <div class="ml-64"> <!-- Adjusted the width of sidebar -->
-      <slot />
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Sidebar -->
+      <SidebarHeadAdminMain />
+
+      <!-- Page Content -->
+      <div class="flex-1 p-6 overflow-y-auto">
+        <slot />
+      </div>
     </div>
+  </div>
 </template>

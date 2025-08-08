@@ -55,55 +55,14 @@
       </div>
     </div>
 
-    <!-- Profile Preview Modal -->
-    <div v-if="showProfilePreviewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-8 rounded-lg shadow-lg w-2/3 max-w-3xl">
-        <div class="text-center relative">
-          <img :src="selectedProfile?.photo || '/placeholder.png'" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover mx-auto shadow-lg" />
-          <h2 class="mt-4 text-2xl font-bold text-maroon">{{ selectedProfile?.name || "No Name Provided" }}</h2>
-          <p class="text-gray-500 text-lg font-semibold">{{ selectedProfile?.designation || "No Designation" }}</p>
-          <div class="absolute top-0 right-0 cursor-pointer text-red-500 hover:text-red-700" @click="removeUserFromCollege(selectedProfile)">
-            <Trash class="w-6 h-6" />
-          </div>
-        </div>
-        <div class="mt-6 space-y-4 text-lg">
-          <div>
-            <p class="font-semibold text-maroon">Specialization:</p>
-            <p>{{ selectedProfile?.specialization || "N/A" }}</p>
-          </div>
-          <div>
-            <p class="font-semibold text-maroon">Email:</p>
-            <p>{{ selectedProfile?.email || "N/A" }}</p>
-          </div>
-          <div>
-            <p class="font-semibold text-maroon">Highest Educational Attainment:</p>
-            <span class="prose text-black" v-html="selectedProfile?.education || 'N/A'"></span>
-          </div>
-
-          <!-- Websites -->
-          <div>
-            <p class="font-semibold text-maroon">Websites:</p>
-            <div>
-              <span v-if="selectedProfile?.websites?.length">
-                <span
-                  v-for="(website, index) in selectedProfile.websites"
-                  :key="index"
-                  class="block text-blue-500 underline"
-                >
-                  <a :href="website" target="_blank">{{ website }}</a>
-                </span>
-              </span>
-              <span v-else>No websites provided</span>
-            </div>
-          </div>
-        </div>
-        <div class="mt-6 text-center">
-          <button class="bg-maroon text-white px-6 py-2 rounded-lg shadow hover:bg-red-700" @click="closeProfilePreviewModal">Close</button>
-        </div>
-      </div>
-
-      
-    </div>
+        <!-- Profile Preview Modal -->
+        <ProfilePreviewModal
+      v-if="showProfilePreviewModal"
+      :profile="selectedProfile"
+      :showDelete="true"
+      @close="closeProfilePreviewModal"
+      @remove="removeUserFromCollege"
+    />
 
     <!-- Add Faculty/Staff Modal -->
     <div v-if="showAddModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -173,15 +132,14 @@ import { ref, onMounted } from "vue";
 import {
   getFirestore,
   doc,
-  collection,
   getDoc,
   updateDoc,
   onSnapshot,
   arrayUnion,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { collection } from "firebase/firestore";
 import Search from "@/components/Icons/Search.vue";
-import Trash from "@/components/Icons/trash.vue";
+import ProfilePreviewModal from '@/components/ProfilePreviewModal.vue';
 
 definePageMeta({
   middleware: "auth",
@@ -189,7 +147,7 @@ definePageMeta({
 });
 
 const db = getFirestore();
-const auth = getAuth();
+
 const collegeDean = ref(null);
 const collegeSecretary = ref(null);
 const departmentHeads = ref([]);
@@ -203,7 +161,6 @@ const searchQuery = ref("");
 const selectedUser = ref({});
 const dropdownVisible = ref(false);
 
-// Designations specific to the Super Admin
 const designations = [
   "College Dean",
   "College Secretary",
@@ -211,7 +168,6 @@ const designations = [
   "Administrative Staff",
 ];
 
-// Fetch the College-Wide document (real-time)
 const fetchCollegeFacultyStaff = () => {
   const docRef = doc(db, "college_faculty_staff", "college-wide");
   onSnapshot(docRef, (docSnap) => {
@@ -225,7 +181,6 @@ const fetchCollegeFacultyStaff = () => {
   });
 };
 
-// Synchronize changes from `users` to `college_faculty_staff` (except designation)
 const syncUserChangesToCollege = () => {
   const usersCollection = collection(db, "users");
   onSnapshot(usersCollection, async (snapshot) => {
@@ -245,7 +200,7 @@ const syncUserChangesToCollege = () => {
       if (matchedUser) {
         return {
           ...entry,
-          name: `${matchedUser.firstName} ${matchedUser.lastName}`.trim(),
+          name: matchedUser.fullName || entry.name,
           photo: matchedUser.photo || entry.photo,
           email: matchedUser.email || entry.email,
           specialization: matchedUser.specialization || entry.specialization,
@@ -267,27 +222,47 @@ const syncUserChangesToCollege = () => {
       await updateDoc(collegeDocRef, { collegeSecretary: updatedSecretary });
     }
 
-    const updatedDepartmentHeads = (collegeData.departmentHeads || []).map(syncUserData);
-    await updateDoc(collegeDocRef, { departmentHeads: updatedDepartmentHeads });
+    const updatedHeads = (collegeData.departmentHeads || []).map(syncUserData);
+    const updatedStaff = (collegeData.adminStaff || []).map(syncUserData);
 
-    const updatedAdminStaff = (collegeData.adminStaff || []).map(syncUserData);
-    await updateDoc(collegeDocRef, { adminStaff: updatedAdminStaff });
+    await updateDoc(collegeDocRef, {
+      departmentHeads: updatedHeads,
+      adminStaff: updatedStaff,
+    });
   });
 };
 
-// Show profile preview modal
-const showProfilePreview = (profile) => {
-  selectedProfile.value = profile;
+const showProfilePreview = async (profile) => {
+  const user = users.value.find(u => u.id === profile.id);
+
+  if (user?.role === "Head Admin" && user.departmentId) {
+    try {
+      const deptSnap = await getDoc(doc(db, "departments", user.departmentId));
+      if (deptSnap.exists()) {
+        selectedProfile.value = {
+          ...profile,
+          role: user.role,
+          departmentName: deptSnap.data().name || '',
+        };
+      } else {
+        selectedProfile.value = profile;
+      }
+    } catch (err) {
+      console.error("Error fetching department name:", err);
+      selectedProfile.value = profile;
+    }
+  } else {
+    selectedProfile.value = profile;
+  }
+
   showProfilePreviewModal.value = true;
 };
 
-// Close profile preview modal
 const closeProfilePreviewModal = () => {
   showProfilePreviewModal.value = false;
   selectedProfile.value = null;
 };
 
-// Remove user from College-Wide document
 const removeUserFromCollege = async (user) => {
   const collegeDocRef = doc(db, "college_faculty_staff", "college-wide");
   const collegeDoc = await getDoc(collegeDocRef);
@@ -307,10 +282,8 @@ const removeUserFromCollege = async (user) => {
   }
 
   await updateDoc(collegeDocRef, updates);
-  alert(`${user.name} has been removed from College-Wide.`);
 };
 
-// Search users
 const filterUsers = () => {
   const query = searchQuery.value.toLowerCase();
   filteredUsers.value = users.value.filter((user) =>
@@ -318,21 +291,18 @@ const filterUsers = () => {
   );
 };
 
-// Select user from search results
 const selectUser = (user) => {
   selectedUser.value = { ...user };
   searchQuery.value = user.name;
   filteredUsers.value = [];
 };
 
-// Reset modal
 const resetModal = () => {
   selectedUser.value = {};
   searchQuery.value = "";
   showAddModal.value = false;
 };
 
-// Add faculty or staff
 const addFacultyOrStaff = async () => {
   if (!selectedUser.value.id) {
     alert("Please select a valid user.");
@@ -347,7 +317,7 @@ const addFacultyOrStaff = async () => {
   const userData = userDoc.data();
   const newStaff = {
     id: selectedUser.value.id,
-    name: `${userData.firstName} ${userData.lastName}`.trim(),
+    name: userData.fullName || "Unnamed",
     designation: selectedUser.value.designation,
     photo: userData.photo || "/placeholder.png",
     email: userData.email || "N/A",
@@ -355,7 +325,6 @@ const addFacultyOrStaff = async () => {
     status: "active",
   };
 
-  // ✅ If the user is an Administrative Staff, store the sub-designation
   if (selectedUser.value.designation === "Administrative Staff") {
     newStaff.subDesignation = selectedUser.value.subDesignation || "N/A";
   }
@@ -370,26 +339,28 @@ const addFacultyOrStaff = async () => {
     await updateDoc(collegeDocRef, { adminStaff: arrayUnion(newStaff) });
   }
 
-  await updateDoc(userDocRef, { status: "active" });
+  // ✅ Flag user with college-wide reference
+  await updateDoc(userDocRef, {
+    status: "active",
+    collegeWide: true,
+  });
 
   resetModal();
-  alert("Faculty/Staff added successfully!");
 };
 
-// Hide search dropdown
 const hideDropdown = () => {
   dropdownVisible.value = false;
 };
 
-// Fetch users in real-time
 onMounted(() => {
   const usersCollection = collection(db, "users");
   onSnapshot(usersCollection, (snapshot) => {
     users.value = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-      name: `${doc.data().firstName || ""} ${doc.data().lastName || ""}`.trim(),
-    }));
+      name: doc.data().fullName || "Unnamed",
+    }))
+    .filter((user) => user.role !== "Super Admin");
     filterUsers();
   });
 
@@ -398,15 +369,6 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-.text-maroon {
-  color: #740505;
-}
-.bg-maroon {
-  background-color: #740505;
-}
-</style>
-
 
 <style scoped>
 .text-maroon {
@@ -416,3 +378,4 @@ onMounted(() => {
   background-color: #740505;
 }
 </style>
+

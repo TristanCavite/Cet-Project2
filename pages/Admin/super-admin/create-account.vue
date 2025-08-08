@@ -6,30 +6,17 @@
     <div class="mx-auto w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
       <h2 class="mb-4 text-center text-xl font-semibold text-gray-800">Create Account</h2>
       <form @submit.prevent="submitForm">
-        <!-- First Name -->
+        <!-- Full Name -->
         <div class="mb-4">
-          <label for="first_name" class="block text-sm font-medium text-gray-600">First Name</label>
+          <label for="full_name" class="block text-sm font-medium text-gray-600">Full Name</label>
           <input
-            v-model="form.firstName"
+            v-model="form.fullName"
             type="text"
-            id="first_name"
+            id="full_name"
             class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
-            placeholder="First Name"
+            placeholder="Full Name"
           />
-          <p v-if="errors.firstName" class="mt-1 text-xs text-red-500">{{ errors.firstName }}</p>
-        </div>
-
-        <!-- Last Name -->
-        <div class="mb-4">
-          <label for="last_name" class="block text-sm font-medium text-gray-600">Last Name</label>
-          <input
-            v-model="form.lastName"
-            type="text"
-            id="last_name"
-            class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
-            placeholder="Last Name"
-          />
-          <p v-if="errors.lastName" class="mt-1 text-xs text-red-500">{{ errors.lastName }}</p>
+          <p v-if="errors.fullName" class="mt-1 text-xs text-red-500">{{ errors.fullName }}</p>
         </div>
 
         <!-- Email -->
@@ -115,21 +102,35 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { doc, getFirestore, setDoc, updateDoc, getDocs, collection } from "firebase/firestore";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+} from "firebase/auth";
+import {
+  doc,
+  getFirestore,
+  setDoc,
+  updateDoc,
+  getDoc,
+  getDocs,
+  collection,
+} from "firebase/firestore";
 
-// Firestore
+definePageMeta({
+  layout: "super-admin",
+  middleware: "auth",
+});
+
 const db = getFirestore();
 const departments = ref([]);
 const form = ref({
-  firstName: "",
-  lastName: "",
+  fullName: "",
   email: "",
   title: "Faculty Member",
   departmentId: "",
   password: "",
   confirmPassword: "",
-  photo: "", // Add profile picture later
+  photo: "",
 });
 const errors = ref({});
 const isHeadDepartment = ref(false);
@@ -144,36 +145,54 @@ const fetchDepartments = async () => {
   }));
 };
 
-// Handle title changes
+// Handle dropdown change
 const handleTitleChange = () => {
   isHeadDepartment.value = form.value.title === "Chair/Head of Department";
 };
 
-// Form Submission
+// Form submit logic
 const submitForm = async () => {
   try {
+    // Validate head admin uniqueness
+    if (isHeadDepartment.value && form.value.departmentId) {
+      const departmentRef = doc(db, "departments", form.value.departmentId);
+      const departmentSnap = await getDoc(departmentRef);
+
+      if (departmentSnap.exists()) {
+        const data = departmentSnap.data();
+        if (data.headAdmin && data.headAdmin.id) {
+          alert("This department already has a Head Admin assigned.");
+          return;
+        }
+      }
+    }
+
+    // Create user in Firebase Auth
     const auth = getAuth();
-    const userCredential = await createUserWithEmailAndPassword(auth, form.value.email, form.value.password);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      form.value.email,
+      form.value.password
+    );
     const user = userCredential.user;
 
-    // Save User in 'users' collection
+    // Save to users collection
     await setDoc(doc(db, "users", user.uid), {
-      firstName: form.value.firstName,
-      lastName: form.value.lastName,
+      fullName: form.value.fullName,
       email: form.value.email,
       role: isHeadDepartment.value ? "Head Admin" : "Faculty",
       departmentId: isHeadDepartment.value ? form.value.departmentId : null,
       status: "active",
-      photo: form.value.photo || "", // Placeholder for profile picture
+      photo: form.value.photo || "",
     });
 
-    // Assign Head Admin to department's "headAdmin" map
+    // Update department document if Head Admin
     if (isHeadDepartment.value) {
       const departmentRef = doc(db, "departments", form.value.departmentId);
       await updateDoc(departmentRef, {
         headAdmin: {
           id: user.uid,
-          name: `${form.value.firstName} ${form.value.lastName}`,
+          name: form.value.fullName,
           email: form.value.email,
           designation: "Head Admin",
           photo: form.value.photo || "",
@@ -191,6 +210,7 @@ const submitForm = async () => {
 
 onMounted(fetchDepartments);
 </script>
+
 
 <style scoped>
 .text-red-500 {

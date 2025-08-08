@@ -1,9 +1,15 @@
-const animate = require("tailwindcss-animate")
+const animate = require("tailwindcss-animate");
 const typography = require("@tailwindcss/typography");
+const forms = require("@tailwindcss/forms");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: false,
   prefix: "",
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}", // Make sure this matches your project files
+  ],
   
   theme: {
     container: {
@@ -15,6 +21,7 @@ module.exports = {
     },
     extend: {
       colors: {
+        maroon: '#740505',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -89,6 +96,11 @@ module.exports = {
         '288': '110rem', // Another custom height
       },
       width: {
+        '82': '18rem', // Custom width
+        '85': '19rem', // Custom width
+        '88': '20rem', // Custom width
+        '89': '21rem', // Custom width
+        '90': '22rem', // Custom width
         '100': '26rem', // Custom width
         '128': '32rem', // Custom width
         '144': '36rem', // Another custom width
@@ -156,5 +168,5 @@ module.exports = {
       }),
     },
   },
-  plugins: [animate, typography],
+  plugins: [animate, typography,forms],
 }
