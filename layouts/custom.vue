@@ -1,11 +1,13 @@
 <template>
-    <NavbarMobile v-if="isMobile" />
-    <NavbarMain v-else/>
-    <main class="pt-[92px] "> <!-- Adjusted for the height of the navbar -->
-        <slot />
-    </main>
-    <FooterMobile v-if="isMobile"/>
-    <FooterSecondaryFooter v-else/>
+    <div class="flex flex-col min-h-screen">
+        <NavbarMobile v-if="isMobile" />
+        <NavbarMain v-else/>
+        <main class="pt-[92px] flex-1"> <!-- Adjusted for the height of the navbar -->
+            <slot />
+        </main>
+        <FooterSecondaryFooterMobile v-if="isMobile"/>
+        <FooterSecondaryFooter v-else/>
+    </div>
 </template>
 
 <script setup lang="ts">
