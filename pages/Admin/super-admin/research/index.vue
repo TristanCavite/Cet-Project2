@@ -2,12 +2,12 @@
   <div class="p-6 max-w-7xl mx-auto space-y-6">
     <!-- Header -->
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold">Manage Events</h1>
+      <h1 class="text-2xl font-bold">Manage Researches</h1>
       <UiButton
         class="bg-maroon text-white hover:opacity-90"
-        @click="$router.push('/admin/super-admin/events/add_event')"
+        @click="$router.push('/admin/super-admin/research/add_research')"
       >
-        + Add Event
+        + Add Research
       </UiButton>
     </div>
 
@@ -26,10 +26,10 @@
       </select>
     </div>
 
-    <!-- Filtered Event List -->
-    <div v-if="filteredEvents.length" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Filtered Research List -->
+    <div v-if="filteredResearches.length" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
-        v-for="item in filteredEvents"
+        v-for="item in filteredResearches"
         :key="item.id"
         class="relative pt-8 bg-white border rounded shadow hover:shadow-md transition p-4 space-y-2"
       >
@@ -57,6 +57,12 @@
           <span>{{ formatDate(item.date) }}</span>
         </div>
 
+        <!-- Department + Researchers -->
+        <div class="text-sm text-gray-700">
+          <div><span class="font-medium">Department:</span> {{ departmentName(item.departmentId) || '—' }}</div>
+          <div><span class="font-medium">Researchers:</span> {{ item.researchers || '—' }}</div>
+        </div>
+
         <!-- Description -->
         <p class="text-sm text-gray-700">{{ item.description }}</p>
 
@@ -73,28 +79,28 @@
 
     <!-- Placeholder -->
     <div v-else class="text-center text-gray-500 mt-10 border rounded p-10">
-      No events yet. Click “+ Add Event” to create your first one.
+      No researches yet. Click “+ Add Research” to create your first one.
     </div>
 
     <!-- 🧾 Delete Confirmation Modal -->
     <UiModal v-if="showDeleteModal" @close="showDeleteModal = false">
-      <template #header>Delete Event</template>
+      <template #header>Delete Research</template>
 
       <template #default>
         Are you sure you want to delete
-        <span class="font-semibold text-maroon">{{ selectedEvent?.title }}</span>?
+        <span class="font-semibold text-maroon">{{ selectedResearch?.title }}</span>?
       </template>
 
       <template #footer>
         <UiButton class="bg-gray-200" @click="showDeleteModal = false">Cancel</UiButton>
-        <UiButton class="bg-red-600 text-white" @click="deleteEvent">Delete</UiButton>
+        <UiButton class="bg-red-600 text-white" @click="deleteResearch">Delete</UiButton>
       </template>
     </UiModal>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'super-admin', middleware: 'auth' })
+definePageMeta({ layout: 'super-admin' })
 
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -113,39 +119,60 @@ import type { DocumentData } from 'firebase/firestore'
 
 const db = useFirestore()
 const router = useRouter()
-const events = ref<any[]>([])
+const researches = ref<any[]>([])
 
-const selectedEvent = ref<any>(null)
+const selectedResearch = ref<any>(null)
 const showDeleteModal = ref(false)
 
 const selectedYear = ref('')
+
+/* Department ID -> Name map */
+const departmentNames = ref<Record<string, string>>({})
+
+function departmentName(id?: string) {
+  return (id && departmentNames.value[id]) || ''
+}
+
 const availableYears = computed(() => {
   const years = new Set<number>()
-  events.value.forEach((item) => {
+  researches.value.forEach((item) => {
     const year = item.date ? new Date(item.date).getFullYear() : null
     if (year !== null) years.add(year)
   })
   return Array.from(years).sort((a, b) => (b ?? 0) - (a ?? 0))
 })
 
-const filteredEvents = computed(() => {
-  return events.value.filter((item) => {
-    const eventYear = item.date ? new Date(item.date).getFullYear() : null
-    return !selectedYear.value || eventYear === parseInt(selectedYear.value)
+const filteredResearches = computed(() => {
+  return researches.value.filter((item) => {
+    const y = item.date ? new Date(item.date).getFullYear() : null
+    return !selectedYear.value || y === parseInt(selectedYear.value)
   })
 })
 
 onMounted(async () => {
-  const q = query(collection(db, 'events'), orderBy('date', 'desc'))
-  const snap = await getDocs(q)
-  events.value = snap.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
+  // Fetch researches (mirror events: order by 'date' desc)
+  const q = query(collection(db, 'researches'), orderBy('date', 'desc'))
+  const [researchSnap, deptSnap] = await Promise.all([
+    getDocs(q),
+    getDocs(collection(db, 'departments')),
+  ])
+
+  researches.value = researchSnap.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
     id: doc.id,
     ...doc.data()
   }))
+
+  // Build department map
+  const map: Record<string, string> = {}
+  deptSnap.docs.forEach((d) => {
+    const data: any = d.data()
+    map[d.id] = data?.name ?? data?.departmentName ?? data?.title ?? 'Unnamed Department'
+  })
+  departmentNames.value = map
 })
 
 function readMore(id: string) {
-  router.push(`/Admin/super-admin/events/${id}`)
+  router.push(`/Admin/super-admin/research/${id}`)
 }
 
 function formatDate(isoDate: string) {
@@ -158,27 +185,21 @@ function formatDate(isoDate: string) {
 }
 
 function confirmDelete(item: any) {
-  selectedEvent.value = item
+  selectedResearch.value = item
   showDeleteModal.value = true
 }
 
-async function deleteEvent() {
-  if (!selectedEvent.value) return
-  await deleteDoc(doc(db, 'events', selectedEvent.value.id))
-  events.value = events.value.filter((e) => e.id !== selectedEvent.value.id)
-  selectedEvent.value = null
+async function deleteResearch() {
+  if (!selectedResearch.value) return
+  await deleteDoc(doc(db, 'researches', selectedResearch.value.id))
+  researches.value = researches.value.filter((r) => r.id !== selectedResearch.value.id)
+  selectedResearch.value = null
   showDeleteModal.value = false
 }
 </script>
 
 <style scoped>
-.bg-maroon {
-  background-color: #740505;
-}
-.text-maroon {
-  color: #740505;
-}
-.border-maroon {
-  border-color: #740505;
-}
+.bg-maroon { background-color: #740505; }
+.text-maroon { color: #740505; }
+.border-maroon { border-color: #740505; }
 </style>
