@@ -222,135 +222,96 @@
 </template>
 
 <script lang="ts" setup>
-  import { addDays, endOfMonth, isSameDay, parseISO, startOfMonth, startOfToday } from "date-fns";
-  import { collection, getDocs } from "firebase/firestore";
-  import { computed, onMounted, onUnmounted, ref } from "vue";
-  import { useFirestore } from "vuefire";
+import { isSameDay, parseISO } from "date-fns";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useFirestore } from "vuefire";
 
-  const events = ref<any[]>([]);
-  // Filter selected date
-  const selectedDate = ref<Date | null>(null);
+const events = ref<any[]>([]);
+const selectedDate = ref<Date | null>(null);
 
-  const loading = ref(true);
-  const slideIndices = ref<{ [eventId: string]: number }>({});
-  const db = useFirestore();
-  const images = [
-    { src: "/images/cet.jpg", alt: "Slide 1" },
-    { src: "/images/cet1.jpg", alt: "Slide 2" },
-    { src: "/images/cet2.jpg", alt: "Slide 3" },
-    { src: "/images/cet3.jpg", alt: "Slide 4" },
-  ];
+const db = useFirestore();
 
-  //main slideshow
-  const currentIndex = ref(0);
-  let intervalId: ReturnType<typeof setInterval> | null = null;
+/** Firestore-driven homepage images */
+const images = ref<Array<{ src: string; alt?: string }>>([]);
 
-  const nextSlide = () => {
-    currentIndex.value = (currentIndex.value + 1) % images.length;
-  };
+/** main slideshow */
+const currentIndex = ref(0);
+let intervalId: ReturnType<typeof setInterval> | null = null;
 
-  const prevSlide = () => {
-    currentIndex.value = (currentIndex.value - 1 + images.length) % images.length;
-  };
+const nextSlide = () => {
+  const len = images.value.length || 1;
+  currentIndex.value = (currentIndex.value + 1) % len;
+};
+const prevSlide = () => {
+  const len = images.value.length || 1;
+  currentIndex.value = (currentIndex.value - 1 + len) % len;
+};
+const setCurrentSlide = (index: number) => {
+  currentIndex.value = index;
+};
 
-  const setCurrentSlide = (index: number) => {
-    currentIndex.value = index;
-  };
+onMounted(async () => {
+  // Load events
+  const snap = await getDocs(collection(db, "events"));
+  events.value = snap.docs.map((doc) => ({
+    id: doc.id,
+    currentSlide: 0,
+    ...doc.data(),
+  }));
+});
 
-  onMounted(async () => {
-    const snap = await getDocs(collection(db, "events"));
-    events.value = snap.docs.map((doc) => ({
-      id: doc.id,
-      currentSlide: 0, // ✅ initialize currentSlide here
-      ...doc.data(),
-    }));
+onMounted(async () => {
+  // Load homepage gallery
+  const q = query(collection(db, "homepage_gallery"), orderBy("createdAt", "desc"));
+  const snap = await getDocs(q);
+  images.value = snap.docs
+    .map((d) => {
+      const data: any = d.data();
+      return { src: data?.imageUrl || "", alt: data?.caption || "Homepage slide" };
+    })
+    .filter((i) => !!i.src);
 
-    loading.value = false;
-  });
-
-  // Carousel controls
-  function nextImage(eventId: string) {
-    const event = events.value.find((e) => e.id === eventId);
-    if (!event || !event.coverImages) return;
-    slideIndices.value[eventId] = (slideIndices.value[eventId] + 1) % event.coverImages.length;
+  if (images.value.length === 0) {
+    images.value = [
+      { src: "/images/cet.jpg", alt: "Slide 1" },
+      { src: "/images/cet1.jpg", alt: "Slide 2" },
+      { src: "/images/cet2.jpg", alt: "Slide 3" },
+      { src: "/images/cet3.jpg", alt: "Slide 4" },
+    ];
   }
 
-  function prevImage(eventId: string) {
-    const event = events.value.find((e) => e.id === eventId);
-    if (!event || !event.coverImages) return;
-    slideIndices.value[eventId] =
-      (slideIndices.value[eventId] - 1 + event.coverImages.length) % event.coverImages.length;
-  }
-  onMounted(() => {
-    Promise.all(
-      images.map((image) => {
-        const img = new Image();
-        img.src = image.src;
-        return new Promise((resolve) => {
-          img.onload = resolve;
-          img.onerror = resolve; // Resolve on error to avoid blocking
-        });
-      })
-    ).then(() => {
-      intervalId = setInterval(nextSlide, 3000);
-    });
-  });
+  await Promise.all(
+    images.value.map((image) => {
+      const img = new Image();
+      img.src = image.src;
+      return new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    })
+  );
 
-  onUnmounted(() => {
-    if (intervalId) {
-      clearInterval(intervalId);
-    }
-  });
+  intervalId = setInterval(nextSlide, 3000);
+});
 
-  //event slideshow
-  const images2 = [
-    { src: "/images/cet_assembly.jpg", alt: "Slide 1" },
-    { src: "/images/cet_assembly1.jpg", alt: "Slide 2" },
-    { src: "/images/cet_assembly2.jpg", alt: "Slide 3" },
-    { src: "/images/cet_assembly3.jpg", alt: "Slide 4" },
-  ];
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId);
+});
 
-  const currentSlide = ref(0);
+/** skeleton visibility (template still uses it) */
+const isContentVisible = ref(false);
 
-  const nextSlide2 = () => {
-    currentSlide.value = (currentSlide.value + 1) % images2.length;
-  };
+const filteredEvents = computed(() => {
+  if (!selectedDate.value) return events.value;
+  return events.value.filter((event) => isSameDay(parseISO(event.date), selectedDate.value as Date));
+});
 
-  const prevSlide2 = () => {
-    currentSlide.value = (currentSlide.value - 1 + images2.length) % images2.length;
-  };
-
-  onMounted(() => {
-    intervalId = setInterval(nextSlide2, 3000);
-  });
-
-  onUnmounted(() => {
-    if (intervalId) {
-      clearInterval(intervalId);
-    }
-  });
-
-  // State for toggling content visibility
-  const isContentVisible = ref(false);
-
-  // Toggle function for button click
-  const toggleContent = () => {
-    isContentVisible.value = !isContentVisible.value;
-  };
-
-  const filteredEvents = computed(() => {
-    if (!selectedDate.value) return events.value;
-
-    return events.value.filter((event) => {
-      const eventDate = parseISO(event.date);
-      return isSameDay(eventDate, selectedDate.value as Date);
-    });
-  });
-
-  function handleDayClick(day: any) {
-    selectedDate.value = new Date(day.date);
-  }
+function handleDayClick(day: any) {
+  selectedDate.value = new Date(day.date);
+}
 </script>
+
 
 <style>
   /* *{
