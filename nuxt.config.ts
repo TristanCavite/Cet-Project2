@@ -51,6 +51,7 @@ export default defineNuxtConfig({
   routeRules: {
     '/**':       { ssr: false },           // SPA everywhere
     '/news/**':  { ssr: true, isr: 600 },  // SSR only for news (cache 10 min)
+    '/events/**': { ssr: true, isr: 600 },
   },
 
   vuefire: {

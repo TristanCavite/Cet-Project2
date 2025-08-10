@@ -1,149 +1,143 @@
 <template>
-  <!-- Full-page section with gray background -->
-  <section class="min-h-screen px-2 pt-20 pb-10 bg-neutral-100 md:px-4">
-    <!-- White content box -->
-    <div class="max-w-5xl p-5 mx-auto bg-white shadow-xl md:p-10 rounded-xl">
-      <div class="flex flex-col items-center">
-        <!-- Title -->
-        <span class="mb-2 font-sans text-3xl font-bold text-red-900"> {{ event.title }} </span>
+  <div class="p-6 max-w-4xl mx-auto space-y-6">
+    <UiButton
+      class="mb-4 text-maroon bg-white border border-maroon hover:bg-maroon hover:text-white transition duration-150"
+      @click="goBack"
+    >
+      ← Back to Events
+    </UiButton>
 
-        <!-- Date -->
-        <span class="mb-6 font-serif text-xs text-gray-600"> {{ formatDate(event.date) }} </span>
-      </div>
+    <img
+      v-if="heroImage"
+      :src="heroImage"
+      class="w-full max-h-[400px] object-cover rounded"
+      alt="Event cover image"
+    />
 
-      <!-- Carousel -->
-      <div v-if="coverImages.length" class="relative mb-8 overflow-hidden rounded-xl">
-        <div
-          class="flex transition-transform duration-700 ease-in-out"
-          :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
-        >
-          <div
-            v-for="(img, index) in coverImages"
-            :key="index"
-            class="flex-shrink-0 w-full h-[400px]"
-          >
-            <img
-              :src="img"
-              class="object-cover w-full h-full"
-              :alt="`Slide ${index + 1}`"
-              loading="lazy"
-            />
-          </div>
-        </div>
+    <h1 class="text-3xl font-bold text-maroon">{{ event?.title }}</h1>
 
-        <!-- Arrows -->
-        <button
-          class="absolute z-10 p-2 transform -translate-y-1/2 rounded-full shadow left-4 top-1/2 bg-white/80 hover:bg-white"
-          @click="prevSlide"
-        >
-          <ChevronLeft class="text-red-900 md:size-6 size-4" />
-        </button>
-        <button
-          class="absolute z-10 p-2 transform -translate-y-1/2 rounded-full shadow right-4 top-1/2 bg-white/80 hover:bg-white"
-          @click="nextSlide"
-        >
-          <ChevronRight class="text-red-900 md:size-6 size-4" />
-        </button>
-
-        <!-- Dots -->
-        <div class="absolute z-10 flex gap-2 transform -translate-x-1/2 bottom-3 left-1/2">
-          <span
-            v-for="(img, index) in coverImages"
-            :key="index"
-            class="rounded-full size-2"
-            :class="currentSlide === index ? 'bg-red-900' : 'bg-gray-300'"
-            @click="setSlide(index)"
-          ></span>
-        </div>
-      </div>
-
-      <div class="flex flex-col items-center">
-        <!-- Description -->
-        <span class="mb-6 text-lg text-gray-800">{{ event.description }}</span>
-  
-        <!-- Rich HTML Content -->
-        <div
-          v-html="event.content"
-          class="prose max-w-none prose-img:rounded prose-p:text-justify"
-        />
-      </div>
-
-      <div class="flex flex-col items-center mt-10">
-        <!-- Back Button -->
-        <div class="flex flex-row items-center justify-center pt-2 pb-2 pl-5 pr-5 bg-green-900 rounded-sm hover:bg-gray-300 w-fit">
-          <NuxtLink
-            to="/"
-            class="text-sm font-semibold text-gray-100 transition rounded"
-          >
-          <span>BACK</span>
-          </NuxtLink>
-        </div>
-      </div>
+    <div class="text-sm text-gray-500">
+      <span>{{ formatDate(event?.date as any) }}</span>
+      <template v-if="event?.location"> • <span>{{ event.location }}</span></template>
     </div>
-  </section>
+
+    <p class="text-lg text-gray-700">{{ event?.description }}</p>
+
+    <div class="prose max-w-none" v-html="event?.content" />
+  </div>
 </template>
 
-
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
+definePageMeta({ layout: 'custom' })
+
+import { useRoute, useRouter } from 'vue-router'
 import { useFirestore } from 'vuefire'
-import { doc, getDoc } from 'firebase/firestore'
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { doc, getDoc, Timestamp } from 'firebase/firestore'
+import { computed } from 'vue'
 
-
-definePageMeta({
-    layout: "custom",
-});
-const db = useFirestore()
-const route = useRoute()
-
-const event = ref<any>({})
-const coverImages = ref<string[]>([])
-const currentSlide = ref(0)
-let intervalId: ReturnType<typeof setInterval> | null = null
-
-const loadEvent = async () => {
-  const id = route.params.id as string
-  const snap = await getDoc(doc(db, 'events', id))
-  if (snap.exists()) {
-    event.value = snap.data()
-    coverImages.value = event.value.coverImages || []
-  }
+interface EventDoc {
+  id: string
+  title?: string
+  description?: string
+  content?: string
+  date?: string | Date | Timestamp | { seconds: number; nanoseconds?: number }
+  location?: string
+  imageUrl?: string
+  coverImages?: string[]
+  createdAt?: Timestamp | { seconds: number; nanoseconds: number } | Date
 }
 
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString('en-US', {
-    weekday: 'long',
+const route = useRoute()
+const router = useRouter()
+const db = useFirestore()
+const id = route.params.id as string
+
+// Fetch event ON THE SERVER so OG tags are in the HTML
+const { data: event } = await useAsyncData<EventDoc | null>(
+  `event-${id}`,
+  async () => {
+    const snap = await getDoc(doc(db, 'events', id))
+    if (!snap.exists()) return null
+    const d = snap.data() as any
+    return { id: snap.id, ...d } as EventDoc
+  },
+  { server: true, lazy: false }
+)
+
+// Absolute URL helper (same pattern as news)
+const runtime = useRuntimeConfig()
+const base =
+  (runtime.public?.SITE_URL as string) ||
+  (process.env.NUXT_PUBLIC_SITE_URL as string) ||
+  'https://cet-project2.vercel.app'
+const absoluteUrl = (path: string) =>
+  /^https?:\/\//i.test(path) ? path : base + path
+
+// Prefer imageUrl, else first coverImages, else a default share image
+const heroImage = computed(() =>
+  event.value?.imageUrl || event.value?.coverImages?.[0] || ''
+)
+const ogImage = absoluteUrl(heroImage.value || '/images/og-default.jpg')
+
+// Head / OG (mirrors news)
+useHead(() => {
+  const e = event.value
+  const title = e?.title ?? 'Event'
+  const description =
+    e?.description ??
+    (e?.content ? (e.content as string).replace(/<[^>]*>/g, '').slice(0, 200) : '')
+  const url = absoluteUrl(`/events/${id}`)
+
+  return {
+    title,
+    meta: [
+      { name: 'description', content: description },
+
+      // Open Graph
+      { property: 'og:type', content: 'article' }, // or 'event'
+      { property: 'og:site_name', content: 'College of Engineering' },
+      { property: 'og:url', content: url },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: description },
+      { property: 'og:image', content: ogImage },
+      { property: 'og:image:secure_url', content: ogImage },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+
+      // Twitter
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: title },
+      { name: 'twitter:description', content: description },
+      { name: 'twitter:image', content: ogImage },
+    ],
+    link: [{ rel: 'canonical', href: url }],
+  }
+})
+
+function goBack() {
+  router.push('/events')
+}
+
+function formatDate(ts?: Timestamp | { seconds: number } | Date | string | null) {
+  if (!ts) return ''
+  let d: Date
+  if (typeof ts === 'string') d = new Date(ts)
+  else if (ts instanceof Date) d = ts
+  else if ('toDate' in (ts as any)) d = (ts as any).toDate()
+  else d = new Date((ts as any).seconds * 1000)
+
+  return d.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
+    weekday: 'long',
   })
-
-const nextSlide = () => {
-  if (coverImages.value.length)
-    currentSlide.value = (currentSlide.value + 1) % coverImages.value.length
 }
-
-const prevSlide = () => {
-  if (coverImages.value.length)
-    currentSlide.value =
-      (currentSlide.value - 1 + coverImages.value.length) % coverImages.value.length
-}
-
-const setSlide = (index: number) => {
-  currentSlide.value = index
-}
-
-onMounted(() => {
-  loadEvent()
-  intervalId = setInterval(nextSlide, 4000)
-})
-
-onUnmounted(() => {
-  if (intervalId) clearInterval(intervalId)
-})
 </script>
 
+
 <style scoped>
+.text-maroon { color: #740505; }
+.border-maroon { border-color: #740505; }
+.bg-maroon { background-color: #740505; }
 </style>
