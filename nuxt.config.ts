@@ -47,7 +47,11 @@ export default defineNuxtConfig({
     port: 4000 // 👈 Change Nuxt port to avoid conflict with backend
   },
 
-  ssr: false,
+  ssr: true,                               // enable SSR capability
+  routeRules: {
+    '/**':       { ssr: false },           // SPA everywhere
+    '/news/**':  { ssr: true, isr: 600 },  // SSR only for news (cache 10 min)
+  },
 
   vuefire: {
     auth: {

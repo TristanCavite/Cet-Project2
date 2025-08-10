@@ -56,8 +56,7 @@
 
       <!-- Tiptap Editor -->
       <div>
-        <label class="mb-1 block text-sm font-medium text-gray-700">Content</label>
-        <!-- Tiptap Editor -->
+  
         <div @click.capture="suppressButtonSubmit">
           <label class="mb-1 block text-sm font-medium text-gray-700">Content</label>
           <UiTiptapEditor
