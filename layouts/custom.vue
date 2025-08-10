@@ -2,7 +2,7 @@
     <div class="flex flex-col min-h-screen">
         <NavbarMobile v-if="isMobile" />
         <NavbarMain v-else/>
-        <main class="pt-[92px] flex-1"> <!-- Adjusted for the height of the navbar -->
+        <main class="pt-[135px] flex-1"> <!-- Adjusted for the height of the navbar -->
             <slot />
         </main>
         <FooterSecondaryFooterMobile v-if="isMobile"/>
