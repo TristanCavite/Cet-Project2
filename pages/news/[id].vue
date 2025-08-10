@@ -67,25 +67,34 @@ const runtime = useRuntimeConfig()
 const absoluteUrl = (path: string) =>
   (runtime.public?.SITE_URL || process.env.NUXT_PUBLIC_SITE_URL || 'https://cet-project2.vercel.app') + path
 
-// Set SEO / OG tags from the fetched doc (runs during SSR)
+// Prefer the document image, else a local default share image in /public
+const ogImage = absoluteUrl(news.value?.imageUrl || '/images/og-default.jpg')
+
 useHead(() => {
   const n = news.value
   const title = n?.title ?? 'News'
   const description = n?.description ?? ''
   const url = absoluteUrl(`/news/${id}`)
-  const img = n?.imageUrl
 
   return {
     title,
     meta: [
       { name: 'description', content: description },
+
+      // Open Graph (explicit, absolute)
       { property: 'og:title', content: title },
       { property: 'og:description', content: description },
       { property: 'og:type', content: 'article' },
       { property: 'og:url', content: url },
-      ...(img ? [{ property: 'og:image', content: img }] : []),
-      { name: 'twitter:card', content: img ? 'summary_large_image' : 'summary' },
-      ...(img ? [{ name: 'twitter:image', content: img }] : []),
+      { property: 'og:image', content: ogImage },
+      // Optional but recommended for FB
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { property: 'og:image:secure_url', content: ogImage },
+
+      // Twitter
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:image', content: ogImage },
     ],
     link: [{ rel: 'canonical', href: url }],
   }
