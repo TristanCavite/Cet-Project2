@@ -12,6 +12,7 @@
         <option disabled value="">-- Choose section --</option>
         <option value="the_college">The College</option>
         <option value="facilities">Facilities</option>
+        <option value="history">History</option>
         <option value="map_location">Map and Location</option>
       </select>
     </div>

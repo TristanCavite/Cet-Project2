@@ -21,7 +21,7 @@
 
       <!-- Meta (Date • Department • Researchers) -->
       <div class="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600">
-        <span>{{ formatDate(research.date) }}</span>
+        <span v-if="research.date">{{ formatDate(research.date as any) }}</span>
 
         <template v-if="deptName">
           <span class="text-gray-400">•</span>
@@ -83,7 +83,9 @@
       </div>
 
       <!-- Description -->
-      <p class="mb-6 text-lg text-gray-800">{{ research.description }}</p>
+      <p v-if="research.description" class="mb-6 text-lg text-gray-800">
+        {{ research.description }}
+      </p>
 
       <!-- Rich Content -->
       <div
@@ -97,82 +99,139 @@
 </template>
 
 <script setup lang="ts">
-// Public page — use default layout (no auth). If your site uses a custom public layout,
-// you can set it here, e.g. definePageMeta({ layout: 'public' })
+definePageMeta({ layout: 'custom' })
 
-import { ref, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useFirestore } from 'vuefire'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, Timestamp } from 'firebase/firestore'
 import { ArrowLeft, ChevronRight, ChevronLeft } from 'lucide-vue-next'
+
+interface ResearchDoc {
+  id: string
+  title?: string
+  description?: string
+  content?: string
+  date?: string | Date | Timestamp | { seconds: number, nanoseconds?: number }
+  coverImages?: string[]
+  imageUrl?: string
+  researchers?: string
+  departmentId?: string
+  deptName?: string
+}
 
 const db = useFirestore()
 const route = useRoute()
 const router = useRouter()
+const id = route.params.id as string
 
-const research = ref<any>(null)
-const coverImages = ref<string[]>([])
+/** 1) Fetch on the SERVER so OG meta can be rendered */
+const { data: research } = await useAsyncData<ResearchDoc | null>(
+  `research-${id}`,
+  async () => {
+    const snap = await getDoc(doc(db, 'researches', id))
+    if (!snap.exists()) return null
+    const data = snap.data() as any
+
+    // resolve department name (optional)
+    let deptName = ''
+    if (data?.departmentId) {
+      try {
+        const dsnap = await getDoc(doc(db, 'departments', data.departmentId))
+        if (dsnap.exists()) {
+          const d = dsnap.data() as any
+          deptName = d?.name ?? d?.departmentName ?? d?.title ?? ''
+        }
+      } catch {}
+    }
+
+    return { id: snap.id, deptName, ...data } as ResearchDoc
+  },
+  { server: true, lazy: false }
+)
+
+/** 2) Derived UI state */
+const coverImages = computed<string[]>(() => research.value?.coverImages ?? [])
+const deptName   = computed(() => research.value?.deptName || '')
+
 const currentSlide = ref(0)
-const deptName = ref<string>('') // resolved department name
 let intervalId: ReturnType<typeof setInterval> | null = null
 
-async function loadDepartmentName(departmentId?: string) {
-  if (!departmentId) return
-  const snap = await getDoc(doc(db, 'departments', departmentId))
-  if (snap.exists()) {
-    const data: any = snap.data()
-    deptName.value = data?.name ?? data?.departmentName ?? data?.title ?? ''
-  }
-}
-
-async function loadResearch() {
-  const id = route.params.id as string
-  const snap = await getDoc(doc(db, 'researches', id))
-  if (!snap.exists()) {
-    // If not found, go back to list
-    router.push('/research')
-    return
-  }
-  research.value = snap.data()
-  coverImages.value = research.value.coverImages || []
-  await loadDepartmentName(research.value.departmentId)
-}
-
-function formatDate(iso: string) {
-  if (!iso) return ''
-  return new Date(iso).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
-
 function nextSlide() {
-  if (coverImages.value.length) {
-    currentSlide.value = (currentSlide.value + 1) % coverImages.value.length
-  }
+  const len = coverImages.value.length
+  if (len) currentSlide.value = (currentSlide.value + 1) % len
 }
 function prevSlide() {
-  if (coverImages.value.length) {
-    currentSlide.value =
-      (currentSlide.value - 1 + coverImages.value.length) % coverImages.value.length
-  }
+  const len = coverImages.value.length
+  if (len) currentSlide.value = (currentSlide.value - 1 + len) % len
 }
 function setSlide(index: number) {
   currentSlide.value = index
 }
 
-function goBack() {
-  router.push('/research')
+function goBack() { router.push('/research') }
+
+function formatDate(ts?: Timestamp | { seconds: number } | Date | string | null) {
+  if (!ts) return ''
+  let d: Date
+  if (typeof ts === 'string') d = new Date(ts)
+  else if (ts instanceof Date) d = ts
+  else if ('toDate' in (ts as any)) d = (ts as any).toDate()
+  else d = new Date((ts as any).seconds * 1000)
+  return d.toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  })
 }
 
-onMounted(() => {
-  loadResearch()
-  intervalId = setInterval(nextSlide, 4000)
-})
-onUnmounted(() => {
-  if (intervalId) clearInterval(intervalId)
+/** 3) Auto-advance carousel (client only) */
+onMounted(() => { intervalId = setInterval(nextSlide, 4000) })
+onUnmounted(() => { if (intervalId) clearInterval(intervalId) })
+
+/** 4) Social meta (Open Graph/Twitter) */
+const runtime = useRuntimeConfig()
+const base =
+  (runtime.public?.SITE_URL as string) ||
+  (process.env.NUXT_PUBLIC_SITE_URL as string) ||
+  'https://cet-project2.vercel.app'
+const absoluteUrl = (p: string) => (/^https?:\/\//i.test(p) ? p : base + p)
+
+const heroImage = computed(() =>
+  research.value?.imageUrl || coverImages.value[0] || '/images/og-default.jpg'
+)
+const ogImage = computed(() => absoluteUrl(heroImage.value))
+
+useHead(() => {
+  const r = research.value
+  const title = r?.title ?? 'Research'
+  const description =
+    r?.description ??
+    (r?.content ? (r.content as string).replace(/<[^>]*>/g, '').slice(0, 200) : '')
+  const url = absoluteUrl(`/research/${id}`)
+
+  return {
+    title,
+    meta: [
+      { name: 'description', content: description },
+
+      // Open Graph
+      { property: 'og:type', content: 'article' },
+      { property: 'og:site_name', content: 'College of Engineering' },
+      { property: 'og:url', content: url },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: description },
+      { property: 'og:image', content: ogImage.value },
+      { property: 'og:image:secure_url', content: ogImage.value },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+
+      // Twitter
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: title },
+      { name: 'twitter:description', content: description },
+      { name: 'twitter:image', content: ogImage.value },
+    ],
+    link: [{ rel: 'canonical', href: url }],
+  }
 })
 </script>
 
