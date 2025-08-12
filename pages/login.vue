@@ -16,42 +16,67 @@
       <!-- Form -->
       <form @submit.prevent="submit">
         <fieldset class="grid gap-4">
+          <!-- EMAIL -->
           <div>
             <label for="email" class="block text-sm font-medium text-gray-600">Email</label>
             <input
               v-model="email"
               type="email"
               id="email"
+              autocomplete="email"
+              required
               class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
               placeholder="sample.rani@valid.com"
             />
           </div>
 
+          <!-- PASSWORD -->
           <div>
             <label for="password" class="block text-sm font-medium text-gray-600">Password</label>
             <input
               v-model="password"
               type="password"
               id="password"
+              autocomplete="current-password"
+              required
               class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
               placeholder="******"
             />
           </div>
 
+          <!-- REMEMBER + FORGOT -->
           <div class="flex items-center justify-between mt-2">
             <label class="flex items-center">
-              <input type="checkbox" class="rounded border-gray-300 text-red-600 focus:ring-red-600" />
+              <!-- Remember me affects Firebase Auth persistence -->
+              <input
+                v-model="rememberMe"
+                type="checkbox"
+                class="rounded border-gray-300 text-red-600 focus:ring-red-600"
+              />
               <span class="ml-2 text-sm text-gray-600">Remember me</span>
             </label>
-            <a href="#" class="text-sm font-medium underline text-red-600">Forgot password?</a>
+
+            <!-- Opens the Forgot Password modal -->
+            <button
+              type="button"
+              class="text-sm font-medium underline text-red-600"
+              @click="forgotOpen = true"
+            >
+              Forgot password?
+            </button>
           </div>
 
+          <!-- SUBMIT -->
           <button
             type="submit"
-            class="w-full mt-4 rounded-md bg-red-800 py-2 text-white font-semibold shadow-md transition hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-600"
+            :disabled="loading"
+            class="w-full mt-4 rounded-md bg-red-800 py-2 text-white font-semibold shadow-md transition hover:bg-red-700 disabled:opacity-60 focus:outline-none focus:ring focus:ring-red-600"
           >
-            Log In
+            <span v-if="!loading">Log In</span>
+            <span v-else>Signing in…</span>
           </button>
+
+          <!-- CANCEL -->
           <button
             type="button"
             @click="cancel"
@@ -63,76 +88,121 @@
       </form>
     </div>
   </div>
+
+  <ForgotPasswordModal
+  v-model="forgotOpen"
+  :prefill="email"
+  redirect-path="/auth/reset-password"
+  @sent="onResetSent"
+/>
 </template>
+
 <script setup>
-import { ref } from 'vue';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
-import { useRouter } from 'vue-router';
+/**
+ * Nuxt 3 + Firebase Auth + Firestore (JavaScript version)
+ * - No TypeScript syntax here (avoids the errors you saw)
+ * - No email verification required
+ * - Remember me toggles auth persistence (local vs session)
+ * - Ensures a user doc exists; routes by role
+ */
 
-definePageMeta({
-  layout: "no-navbar-footer"
-});
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const email = ref('');
-const password = ref('');
-const auth = getAuth();
-const db = getFirestore();
-const router = useRouter();
+// Firebase Auth
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence,   // persists after browser restart (Remember ON)
+  browserSessionPersistence, // clears on tab close (Remember OFF)
+} from 'firebase/auth'
 
+// Firestore
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
+
+definePageMeta({ layout: 'no-navbar-footer' })
+
+// ----------------- STATE -----------------
+const email = ref('')
+const password = ref('')
+const rememberMe = ref(true)
+const loading = ref(false)
+const forgotOpen = ref(false) // controls the modal
+
+const auth = getAuth()
+const db = getFirestore()
+const router = useRouter()
+
+// ----------------- ACTIONS -----------------
 const submit = async () => {
+  if (!email.value.trim() || !password.value.trim()) return
+
+  loading.value = true
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email.value.trim(), password.value.trim());
-    const user = userCredential.user;
+    // Apply persistence based on Remember me
+    await setPersistence(
+      auth,
+      rememberMe.value ? browserLocalPersistence : browserSessionPersistence
+    )
 
-    console.log('Logged in successfully:', user);
+    // Sign in (no email verification checks)
+    const cred = await signInWithEmailAndPassword(
+      auth,
+      email.value.trim(),
+      password.value.trim()
+    )
+    const user = cred.user
 
-    // Check Firestore for user document
-    const userDocRef = doc(db, 'users', user.uid);
-    const userDoc = await getDoc(userDocRef);
+    // Ensure a user document exists
+    const userDocRef = doc(db, 'users', user.uid)
+    let snap = await getDoc(userDocRef)
 
-    if (!userDoc.exists()) {
-      // Automatically create a user document if not found
-      console.log('No user document found. Creating one...');
+    if (!snap.exists()) {
       await setDoc(userDocRef, {
         email: user.email,
-        role: 'Faculty', // Default role
+        role: 'Faculty',     // default role
         departmentId: null,
-        status: 'active', // Default to active
-      });
-      console.log('User document created successfully.');
+        status: 'active',    // default status
+        createdAt: new Date(),
+      })
+      snap = await getDoc(userDocRef) // re-fetch newly created data
     }
 
-    const userData = userDoc.exists() ? userDoc.data() : { status: 'inactive' };
-    const role = userData?.role || 'Faculty';
-    const status = userData?.status;
+    const data = snap.data() || {}
+    const role = data.role || 'Faculty'
+    const status = data.status || 'active'
 
-    // Allow "Super Admin" to log in regardless of status
+    // Block inactive accounts except Super Admin
     if (role !== 'Super Admin' && status !== 'active') {
-      alert('Your account is inactive. Please contact the administrator.');
-      return;
+      alert('Your account is inactive. Please contact the administrator.')
+      return
     }
 
-    // Redirect based on role
-    if (role === 'Super Admin') {
-      router.push('/admin/super-admin');
-    } else if (role === 'Head Admin') {
-      router.push('/admin/head-admin');
-    } else if (role === 'Faculty') {
-      router.push('/admin/faculty');
-    } else {
-      console.error('Unknown role:', role);
-      alert('User role is not recognized.');
+    // Route by role
+    if (role === 'Super Admin') router.push('/admin/super-admin')
+    else if (role === 'Head Admin') router.push('/admin/head-admin')
+    else if (role === 'Faculty') router.push('/admin/faculty')
+    else {
+      console.error('Unknown role:', role)
+      alert('User role is not recognized.')
     }
-  } catch (error) {
-    console.error('Login failed:', error.message);
-    alert('Invalid email or password.');
+  } catch (err) {
+    // No TS cast; log safely for JS
+    const msg = err && err.message ? err.message : String(err)
+    console.error('Login failed:', msg)
+    alert('Invalid email or password.')
+  } finally {
+    loading.value = false
   }
-};
+}
 
 const cancel = () => {
-  router.push("/", { replace: true });
-};
+  router.push('/', { replace: true })
+}
+
+const onResetSent = (targetEmail) => {
+  // Optional: toast/analytics hook
+  // console.log('Password reset email attempted for:', targetEmail)
+}
 </script>
-
-
