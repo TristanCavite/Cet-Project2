@@ -115,7 +115,7 @@ useHead(() => {
 })
 
 function goBack() {
-  router.push('/events')
+  router.push('/')
 }
 
 function formatDate(ts?: Timestamp | { seconds: number } | Date | string | null) {
