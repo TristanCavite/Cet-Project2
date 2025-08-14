@@ -59,7 +59,6 @@
         </div>
       </div>
     </div>
-
     <!-- No news fallback -->
     <p v-else class="mt-10 text-center text-gray-500">No news found.</p>
   </div>

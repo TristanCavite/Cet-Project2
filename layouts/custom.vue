@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen flex-col">
+  <div class="flex flex-col min-h-screen">
     <!-- Wrapping in ClientOnly avoids any SSR hydration mismatch
          when the initial server guess differs from the client width -->
     <ClientOnly>
@@ -12,6 +12,7 @@
     </ClientOnly>
 
     <main class="flex-1 pt-[135px]">
+      <BackToTop />
       <slot />
     </main>
 
