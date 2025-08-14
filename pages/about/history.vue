@@ -1,5 +1,5 @@
 <template>
-  <main class="pb-4 bg-stone-200">
+  <main class="pb-4 bg-white">
     <!-- ▸ Hero with dynamic cover image from Firestore -->
     <div class="relative flex items-center w-full border-b-2 font-playfair ">
       <!-- ✅ Use Firestore cover image; fallback to previous static asset -->
@@ -18,18 +18,15 @@
     </div>
 
     <!-- ▸ Content card -->
-    <div
-      class="w-full h-auto mx-auto mt-10 mb-12 border-2 shadow-2xl md:mt-16 md:w-304 bg-neutral-50"
-    >
-    
+    <div class="w-full h-auto pt-10 pb-10 mx-auto md:w-3/4">
       <!-- ✅ Render rich HTML from Firestore -->
       <div
-        class="m-8 text-base font-medium md:m-10 md:text-lg font-roboto prose max-w-none"
+        class="text-base font-medium prose text-justify md:m-5 md:text-lg font-roboto max-w-none"
         v-html="contentHtml"
       />
 
       <!-- (Optional) Tiny fallback when not yet loaded and no content -->
-      <div v-if="!contentHtml" class="m-8 md:m-10 text-gray-500">
+      <div v-if="!contentHtml" class="m-5 text-gray-500">
         Loading…
       </div>
     </div>
