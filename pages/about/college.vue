@@ -7,13 +7,13 @@
         alt="The College Cover"
         class="object-cover w-full h-44 md:h-128"
       />
-      <div class="absolute flex items-center top-28 md:top-40 left-6 md:left-[120px] h-10 w-40 md:h-28 md:w-96 bg-gray-700/90 ">
-        <span class="pl-2 text-xl text-white md:pl-5 md:text-6xl">The College</span>
+      <div class="absolute top-28 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90">
+        <span class="text-xl text-white md:text-6xl">The College</span>
       </div>
     </div>
 
     <!-- Main Content Container -->
-    <div class="w-3/4 h-auto mx-auto mt-10 mb-12 md:mt-16 md:w-30">
+    <div class="w-3/4 h-auto mx-auto mt-10 mb-12">
       <!-- Video Section -->
       <div class="w-full h-auto p-2 md:mx-auto md:h-128 md:w-3/4 rounded-xl">
         <!-- YouTube Embed -->

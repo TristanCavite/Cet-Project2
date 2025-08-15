@@ -2,8 +2,8 @@
     <main class="relative pb-4 bg-neutral-100">
         <div class="relative flex items-center w-full border-b-2 font-playfair">
             <img src="/images/cet_administration.jpg" alt="" class="object-cover w-full h-44 md:h-128">
-            <div class="absolute flex items-center top-28 md:top-40 left-6 md:left-[120px] h-10 w-72 md:h-28 md:w-auto bg-gray-700/90 ">
-                <span class="pl-2 pr-2 text-xl text-white md:pl-5 md:pr-5 md:text-6xl">Facilities And Administration</span>
+            <div class="absolute top-28 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90">
+                <span class="text-xl text-white md:text-6xl">Facilities And Administration</span>
             </div>
         </div>
         <!-- main content -->

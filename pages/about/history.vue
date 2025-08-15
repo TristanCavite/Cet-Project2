@@ -11,9 +11,9 @@
 
       <!-- Title overlay kept as-is -->
       <div
-        class="absolute flex items-center top-28 md:top-40 left-6 md:left-[120px] h-10 w-40 md:h-28 md:w-96 bg-gray-700/90 "
+        class="absolute top-28 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90"
       >
-        <span class="pl-2 text-xl text-white md:pl-5 md:text-6xl">History</span>
+        <span class="text-xl text-white md:text-6xl">History</span>
       </div>
     </div>
 

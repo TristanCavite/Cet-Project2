@@ -2,7 +2,7 @@
     <main class="pb-4 bg-white">
         <div class="relative flex items-center w-full font-playfair ">
             <img src="/images/cet_map.jpg" alt="" class="object-cover w-full h-44 md:h-128">
-            <div class="absolute flex items-center top-28 md:top-40 left-6 md:left-[120px] w-auto bg-gray-700/90 py-4 px-4">
+            <div class="absolute top-28 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90">
                 <span class="text-xl text-white md:text-6xl">Map & Location</span>
             </div>
         </div>
