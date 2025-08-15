@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-neutral-100">
     <!-- 🔒 Left-Aligned Title Cover Image Block -->
-    <div class="relative flex items-center w-full border-b-2 font-playfair">
+    <div class="relative flex items-center w-full font-playfair">
       <img src="/CET Faculty.jpg" alt="Department Cover" class="object-cover w-full h-44 md:h-128" />
       <div class="absolute top-28 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90">
         <span class="text-xl text-white md:text-6xl">

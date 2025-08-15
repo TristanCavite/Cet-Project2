@@ -43,19 +43,12 @@
 
         <!-- Read More Button -->
         <div class="pt-2">
-          <button
+          <UiButton
             @click="readMore(news.id)"
-            class="inline-flex items-center gap-2 px-2 py-1 font-semibold text-white rounded-lg md:py-2 md:px-4 bg-maroon hover:opacity-90"
-          >
-            <svg class="size-3 md-size-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M10.293 15.707a1 1 0 010-1.414L13.586 11H4a1 1 0 110-2h9.586l-3.293-3.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            Read more
-          </button>
+            class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-300 rounded font-montserrat hover:scale-105"
+          >   
+            Read more...
+          </UiButton>
         </div>
       </div>
     </div>
@@ -71,6 +64,7 @@ import { useFirestore, useCollection } from 'vuefire'
 import { collection, query, where, orderBy } from 'firebase/firestore'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { UiButton } from '#components'
 
 // Firestore setup
 const db = useFirestore()

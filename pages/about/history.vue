@@ -1,7 +1,7 @@
 <template>
   <main class="pb-4 bg-white">
     <!-- ▸ Hero with dynamic cover image from Firestore -->
-    <div class="relative flex items-center w-full border-b-2 font-playfair ">
+    <div class="relative flex items-center w-full font-playfair ">
       <!-- ✅ Use Firestore cover image; fallback to previous static asset -->
       <img
         :src="coverImage"

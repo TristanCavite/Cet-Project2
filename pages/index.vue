@@ -1,5 +1,5 @@
 <template>
-  <main class=" bg-neutral-100">
+  <main class="bg-white ">
       <!-- 🔼 Hero Slider -->
       <div class="relative w-full h-auto overflow-hidden">
         <!-- Arrows -->
@@ -147,7 +147,7 @@
                 </div>
                 <router-link
                   :to="`/events/${event.id}`"
-                  class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-300 rounded font-montserrat hover:scale-105"
+                  class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
                 >
                   Read more...
                 </router-link>
@@ -198,7 +198,7 @@
                 href="https://www.facebook.com/cetseb"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-300 rounded-sm font-montserrat"
+                class="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded-sm font-montserrat hover:bg-gray-300 hover:scale-105"
               >
                 Visit Page
               </a>
