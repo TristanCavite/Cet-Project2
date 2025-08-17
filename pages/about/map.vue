@@ -1,23 +1,23 @@
 <template>
-    <main class="pb-4 bg-white">
+    <main class="bg-white">
         <div class="relative flex items-center w-full font-playfair ">
             <img src="/images/cet_map.jpg" alt="" class="object-cover w-full h-44 md:h-128">
-            <div class="absolute top-28 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90">
+            <div class="absolute top-16 md:top-40 left-6 md:left-[120px] md:px-4 md:py-4 px-2 py-2 bg-gray-700/90">
                 <span class="text-xl text-white md:text-6xl">Map & Location</span>
             </div>
         </div>
-        <div class="flex flex-col items-center w-full mx-auto mt-10 mb-10 md:w-3/4">
-            <div class="pb-5 ml-5 text-center md:ml-10 w-80 md:w-144">
+        <div class="flex flex-col items-center w-full mx-auto mt-10 md:w-3/4">
+            <div class="text-center">
                 <span class="text-2xl font-bold text-red-900 md:text-5xl font-playfair">MAP AND LOCATION</span>
             </div>
-            <div class="w-full pl-4 pr-4 mt-8 cursor-pointer md:w-3/4 md:mt-14">
+            <div class="w-full mt-8 cursor-pointer md:w-3/4 md:mt-14">
                 <iframe
                     width="100%" height="450" style="border:0"
                     src="https://maps.google.com/maps?q=10.7470925,124.7950265&z=19&output=embed"
                     allowfullscreen loading="lazy" class="w-full rounded">
                 </iframe>
             </div>
-            <div class="m-6 md:m-10 font-roboto">
+            <div class="p-10 font-roboto">
                 <span class="text-3xl font-bold">Direction to VSU</span>
                 <br>
                 <br>
@@ -36,7 +36,7 @@
 </script>
 
 <style scoped>
-* {
+/* * {
     outline: 1px solid red;
-}
+} */
 </style>

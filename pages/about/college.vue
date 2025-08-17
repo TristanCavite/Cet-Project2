@@ -13,7 +13,7 @@
     </div>
 
     <!-- Main Content Container -->
-    <div class="w-full h-auto mx-auto mt-10 mb-12 md:w-3/4">
+    <div class="w-full h-auto mx-auto mt-10 md:w-3/4">
       <!-- Video Section -->
       <div class="w-full h-auto p-2 md:mx-auto md:h-128 md:w-3/4 rounded-xl">
         <!-- YouTube Embed -->
@@ -39,7 +39,7 @@
       <!-- Rich Text Content -->
       <div
         v-html="aboutData?.content"
-        class="px-10 mt-5 mb-5 space-y-4 leading-relaxed"
+        class="p-10 leading-relaxed"
       ></div>
     </div>
   </main>

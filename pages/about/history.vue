@@ -1,5 +1,5 @@
 <template>
-  <main class="pb-4 bg-white">
+  <main class="bg-white">
     <!-- ▸ Hero with dynamic cover image from Firestore -->
     <div class="relative flex items-center w-full font-playfair ">
       <!-- ✅ Use Firestore cover image; fallback to previous static asset -->
@@ -10,18 +10,16 @@
       />
 
       <!-- Title overlay kept as-is -->
-      <div
-        class="absolute top-28 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90"
-      >
+      <div class="absolute top-16 md:top-40 left-6 md:left-[120px] md:px-4 md:py-4 px-2 py-2 bg-gray-700/90">
         <span class="text-xl text-white md:text-6xl">History</span>
       </div>
     </div>
 
     <!-- ▸ Content card -->
-    <div class="pt-10 pb-10 mx-auto md:w-3/4">
+    <div class="p-10 mx-auto md:w-3/4">
       <!-- ✅ Render rich HTML from Firestore -->
       <div
-        class="m-2 prose md:m-5 max-w-none"
+        class="leading-relaxed prose max-w-none"
         v-html="contentHtml"
       />
 
