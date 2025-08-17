@@ -1,10 +1,11 @@
 <template>
-  <div class="p-6 max-w-4xl mx-auto space-y-6">
+  <div class="max-w-4xl p-6 mx-auto space-y-6">
     <UiButton
-      class="mb-4 text-maroon bg-white border border-maroon hover:bg-maroon hover:text-white transition duration-150"
+      class="flex flex-row px-2 py-1 text-sm font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
       @click="goBack"
     >
-      ← Back to News
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left-icon lucide-move-left size-5"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg>
+       Back to News
     </UiButton>
 
     <img

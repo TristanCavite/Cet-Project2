@@ -1,30 +1,33 @@
 <template>
-  <div class="p-6 max-w-4xl mx-auto space-y-6">
-    <UiButton
-      class="mb-4 text-maroon bg-white border border-maroon hover:bg-maroon hover:text-white transition duration-150"
-      @click="goBack"
-    >
-      ← Back to Events
-    </UiButton>
-
-    <img
-      v-if="heroImage"
-      :src="heroImage"
-      class="w-full max-h-[400px] object-cover rounded"
-      alt="Event cover image"
-    />
-
-    <h1 class="text-3xl font-bold text-maroon">{{ event?.title }}</h1>
-
-    <div class="text-sm text-gray-500">
-      <span>{{ formatDate(event?.date as any) }}</span>
-      <template v-if="event?.location"> • <span>{{ event.location }}</span></template>
+  <main class="relative">
+    <div class="max-w-5xl pt-3 pb-4 mx-auto space-y-3">
+      <UiButton
+        class="flex flex-row text-sm font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
+        @click="goBack"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left-icon lucide-move-left size-5"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg>
+        Back to Events
+      </UiButton>
+  
+      <img
+        v-if="heroImage"
+        :src="heroImage"
+        class="w-full max-h-[400px] object-cover rounded"
+        alt="Event cover image"
+      />
+  
+      <h1 class="text-3xl font-bold text-red-900">{{ event?.title }}</h1>
+  
+      <div class="text-sm text-gray-500">
+        <span>{{ formatDate(event?.date as any) }}</span>
+        <template v-if="event?.location"> • <span>{{ event.location }}</span></template>
+      </div>
+  
+      <p class="text-lg text-gray-700">{{ event?.description }}</p>
+  
+      <div class="prose max-w-none" v-html="event?.content" />
     </div>
-
-    <p class="text-lg text-gray-700">{{ event?.description }}</p>
-
-    <div class="prose max-w-none" v-html="event?.content" />
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
@@ -135,9 +138,3 @@ function formatDate(ts?: Timestamp | { seconds: number } | Date | string | null)
 }
 </script>
 
-
-<style scoped>
-.text-maroon { color: #740505; }
-.border-maroon { border-color: #740505; }
-.bg-maroon { background-color: #740505; }
-</style>
