@@ -10,7 +10,8 @@
       </template>
     </ClientOnly>
 
-    <main class="flex-1 pt-[135px]">
+    <main class="flex-1 md:pt-[152px] pt-24">
+      div class="cet-content">
       <BackToTop />
       <slot />
     </main>
