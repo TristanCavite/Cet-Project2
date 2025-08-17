@@ -2,7 +2,7 @@
     <main class="relative pb-4 bg-neutral-100">
         <div class="relative flex items-center w-full border-b-2 font-playfair">
             <img src="/images/cet_administration.jpg" alt="" class="object-cover w-full h-44 md:h-128">
-            <div class="absolute top-28 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90">
+            <div class="absolute top-16 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90">
                 <span class="text-xl text-white md:text-6xl">Facilities And Administration</span>
             </div>
         </div>
@@ -16,8 +16,8 @@
             <!-- College Dean Section -->
             <div class="flex flex-col items-center justify-center mt-16 space-y-4 md:mt-20" v-if="collegeDean">
                 <span class="text-xl font-bold text-green-950 md:text-3xl font-roboto_condensed">COLLEGE DEAN</span>
-                <div class="flex flex-col items-center justify-center p-5 space-y-2 bg-white shadow-xl cursor-pointer border-1 rounded-xl" @click="showProfilePreview(collegeDean)">
-                    <img :src="collegeDean.photo || '/placeholder.png'" class="transition rounded-full object-fit hover:scale-105 md:size-64">
+                <div class="flex flex-col items-center justify-center p-5 space-y-2 bg-white border shadow-xl cursor-pointer rounded-xl" @click="showProfilePreview(collegeDean)">
+                    <img :src="collegeDean.photo || '/placeholder.png'" class="object-cover transition rounded-full hover:scale-105 md:size-64 size-28 shrink-0">
                     <span class="text-base font-medium">{{ collegeDean.name || "No Dean Assigned" }}</span>
                 </div>
             </div>
@@ -25,8 +25,8 @@
             <!-- College Secretary Section -->
             <div class="flex flex-col items-center justify-center mt-16 space-y-4 md:mt-20" v-if="collegeSecretary">
                 <span class="text-xl font-bold text-green-950 md:text-3xl font-roboto_condensed">COLLEGE SECRETARY</span>
-                <div class="flex flex-col items-center justify-center p-5 space-y-2 bg-white shadow-xl cursor-pointer border-1 rounded-xl" @click="showProfilePreview(collegeSecretary)">
-                    <img :src="collegeSecretary.photo || '/placeholder.png'" class="transition rounded-full object-fit md:size-64 hover:scale-105">
+                <div class="flex flex-col items-center justify-center p-5 space-y-2 bg-white border shadow-xl cursor-pointer rounded-xl" @click="showProfilePreview(collegeSecretary)">
+                    <img :src="collegeSecretary.photo || '/placeholder.png'" class="object-cover transition rounded-full md:size-64 hover:scale-105 size-28 shrink-0">
                     <span class="text-base font-medium">{{ collegeSecretary.name || "No Secretary Assigned" }}</span>
                 </div>
             </div>
@@ -37,7 +37,7 @@
                     <span class="text-xl font-bold text-green-950 md:text-3xl font-roboto_condensed">DEPARTMENT HEADS</span>
                 </div>
                 <div v-for="head in departmentHeads" :key="head.id" class="p-5 space-y-2 bg-white shadow-xl cursor-pointer border-1 rounded-xl" @click="showProfilePreview(head)">
-                    <img :src="head.photo || '/placeholder.png'" class="transition rounded-full object-fit md:size-64 hover:scale-105">
+                    <img :src="head.photo || '/placeholder.png'" class="transition rounded-full object-fit md:size-64 hover:scale-105 size-28">
                     <span class="text-base font-medium">{{ head.name || "No Head Assigned" }}</span>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                     <span class="text-xl font-bold text-green-950 md:text-3xl font-roboto_condensed">ADMINISTRATIVE STAFF</span>
                 </div>
                 <div v-for="staff in adminStaff" :key="staff.id" class="flex flex-col p-5 bg-white shadow-xl cursor-pointer border-1 rounded-xl" @click="showProfilePreview(staff)">
-                    <img :src="staff.photo || '/placeholder.png'" class="transition rounded-full oobject-fit md:size-64 hover:scale-105">
+                    <img :src="staff.photo || '/placeholder.png'" class="transition rounded-full oobject-fit md:size-64 hover:scale-105 size-28">
                     <span class="font-medium">{{ staff.name || "No Staff Assigned" }}</span>
                     <span class="text-base text-gray-600">{{ staff.subDesignation || "N/A" }}</span>
                 </div>
@@ -114,10 +114,7 @@ onMounted(fetchCollegeFacultyStaff);
 </script>
 
 <style scoped>
-.text-maroon {
-    color: #740505;
-}
-.bg-maroon {
-    background-color: #740505;
+* {
+    outline: 1px solid red;
 }
 </style>

@@ -10,7 +10,7 @@
             <div class="pb-5 ml-5 text-center md:ml-10 w-80 md:w-144">
                 <span class="text-2xl font-bold text-red-900 md:text-5xl font-playfair">MAP AND LOCATION</span>
             </div>
-            <div class="w-3/4 pl-4 pr-4 mt-8 cursor-pointer md:mt-14">
+            <div class="w-full pl-4 pr-4 mt-8 cursor-pointer md:w-3/4 md:mt-14">
                 <iframe
                     width="100%" height="450" style="border:0"
                     src="https://maps.google.com/maps?q=10.7470925,124.7950265&z=19&output=embed"
@@ -21,7 +21,7 @@
                 <span class="text-3xl font-bold">Direction to VSU</span>
                 <br>
                 <br>
-                <p class="text-lg font-base">
+                <p class="text-sm md:text-lg font-base">
                     The College of Engineering and Technology is located at the top of Visayas State University. Upon arriving at the main gate, it will take an estimated 10-minute walk.
                 </p>
             </div>
@@ -36,7 +36,7 @@
 </script>
 
 <style scoped>
-/* * {
+* {
     outline: 1px solid red;
-} */
+}
 </style>

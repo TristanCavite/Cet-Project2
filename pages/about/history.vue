@@ -18,15 +18,15 @@
     </div>
 
     <!-- ▸ Content card -->
-    <div class="w-full h-auto pt-10 pb-10 mx-auto md:w-3/4">
+    <div class="pt-10 pb-10 mx-auto md:w-3/4">
       <!-- ✅ Render rich HTML from Firestore -->
       <div
-        class="text-base font-medium prose text-justify md:m-5 md:text-lg font-roboto max-w-none"
+        class="m-2 prose md:m-5 max-w-none"
         v-html="contentHtml"
       />
 
       <!-- (Optional) Tiny fallback when not yet loaded and no content -->
-      <div v-if="!contentHtml" class="m-5 text-gray-500">
+      <div v-if="!contentHtml" class="m-5">
         Loading…
       </div>
     </div>
