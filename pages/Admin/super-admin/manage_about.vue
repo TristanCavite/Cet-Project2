@@ -1,3 +1,4 @@
+<!-- pages/admin/manage_about.vue -->
 <template>
   <div class="mx-auto max-w-6xl space-y-6 p-6">
     <!-- Header -->
@@ -32,16 +33,17 @@
           v-if="form.coverImageUrl"
           :src="form.coverImageUrl"
           class="mt-2 h-48 w-full rounded object-cover"
+          alt="About cover"
         />
       </div>
 
-      <!-- College Promo Video -->
+      <!-- College Promo Video (only for The College section) -->
       <div v-if="selectedSection === 'the_college'">
         <label class="mb-1 block font-semibold">College Promotional Video (YouTube/Vimeo)</label>
         <input
           v-model="form.videoUrl"
           type="url"
-          placeholder="https://www.youtube.com/embed/..."
+          placeholder="https://www.youtube.com/watch?v=..."
           class="input input-bordered w-full"
         />
         <div v-if="form.videoUrl" class="mt-4 aspect-video w-full">
@@ -59,33 +61,35 @@
       <div>
         <label class="mb-2 block font-semibold">Content</label>
 
-        <!-- Edit / Cancel button shown above the content -->
-        <UiButton
-          class="bg-maroon text-white hover:opacity-90"
-          @click="isEditing ? cancelEdit() : (isEditing = true)"
-        >
+        <!-- Edit / Cancel toggle -->
+        <UiButton class="bg-maroon text-white hover:opacity-90" @click="toggleEdit">
           {{ isEditing ? "Cancel" : "Edit Content" }}
         </UiButton>
 
-        <!-- Preview -->
+        <!-- PREVIEW: uses same wrapper/classes as public pages -->
         <div
           v-if="!isEditing"
-          class="prose max-w-none rounded border bg-white p-4 shadow"
+          class="cet-content prose max-w-none rounded border bg-white p-4 shadow"
           v-html="form.content"
         />
 
-        <!-- Editor -->
-        <UiTiptapEditor
-          v-else
-          v-model="form.content"
-          :editing="isEditing"
-          class="mt-2"
-          @image-upload="handleEditorImageUpload"
-        />
+        <!-- EDITOR: wrapped the SAME so typography/colors match preview/public -->
+        <div v-else class="cet-content prose max-w-none rounded border bg-white p-4 shadow">
+          <UiTiptapEditor
+            v-model="form.content"
+            :editing="isEditing"
+            @image-upload="handleEditorImageUpload"
+          />
+        </div>
 
-        <!-- Save Button for everything -->
-        <div class="mt-4 flex justify-end">
-          <UiButton class="bg-maroon text-white hover:opacity-90" @click="saveSection">
+        <!-- Save -->
+        <div class="mt-4 flex items-center justify-end gap-3">
+          <span v-if="!isDirty" class="text-sm text-gray-400">No changes</span>
+          <UiButton
+            class="bg-maroon text-white hover:opacity-90 disabled:opacity-50"
+            :disabled="!isDirty"
+            @click="saveSection"
+          >
             Save Changes
           </UiButton>
         </div>
@@ -95,122 +99,149 @@
 </template>
 
 <script setup lang="ts">
-  import UiTiptapEditor from "@/components/UiTiptapEditor.vue";
-  import { doc, getDoc, setDoc } from "firebase/firestore";
-  import { getDownloadURL, ref as storageRef, uploadBytes } from "firebase/storage";
-  import { computed, ref, watch } from "vue";
-  import { useFirebaseStorage, useFirestore } from "vuefire";
+/**
+ * Manage About Page (Admin)
+ * - Preview & editor are wrapped in `.cet-content prose` so both render with the
+ *   same typography rules defined in assets/css/tiptap.css (mobile caps, colors, etc).
+ * - Save button is disabled until content actually differs from what was loaded/saved.
+ */
+import UiTiptapEditor from '@/components/UiTiptapEditor.vue'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { getDownloadURL, ref as storageRef, uploadBytes } from 'firebase/storage'
+import { computed, ref, watch } from 'vue'
+import { useFirebaseStorage, useFirestore } from 'vuefire'
 
-  const db = useFirestore();
-  const storage = useFirebaseStorage();
-  definePageMeta({ middleware: "auth", layout: "super-admin" });
-  const originalContent = ref("");
-  const isEditing = ref(false);
-  const selectedSection = ref("");
-  const form = ref({
-    coverImageUrl: "",
-    content: "",
-    videoUrl: "",
-  });
+definePageMeta({ middleware: 'auth', layout: 'super-admin' })
 
-  watch(selectedSection, async (id) => {
-    if (!id) return;
-    const snap = await getDoc(doc(db, "about_sections", id));
-    if (snap.exists()) {
-      const data = snap.data();
-      form.value.coverImageUrl = data.coverImageUrl || "";
-      originalContent.value = data.content || ""; // save original for later reset
-      form.value.content = data.content || "";
-      form.value.videoUrl = data.videoUrl || "";
-      isEditing.value = false;
+const db = useFirestore()
+const storage = useFirebaseStorage()
+
+/** UI state */
+const isEditing = ref(false)
+const selectedSection = ref('')
+
+/** Form model */
+const form = ref({
+  coverImageUrl: '',
+  content: '',
+  videoUrl: '',
+})
+
+/** Baseline snapshot of last loaded/saved values (for dirty check) */
+const baseline = ref({ coverImageUrl: '', content: '', videoUrl: '' })
+
+/** Load section when changed */
+watch(selectedSection, async (id) => {
+  if (!id) return
+  const snap = await getDoc(doc(db, 'about_sections', id))
+  if (snap.exists()) {
+    const data = snap.data() as any
+    form.value.coverImageUrl = data.coverImageUrl || ''
+    form.value.content = data.content || ''
+    form.value.videoUrl = data.videoUrl || ''
+  } else {
+    form.value.coverImageUrl = ''
+    form.value.content = ''
+    form.value.videoUrl = ''
+  }
+  // Reset baseline and exit edit mode so preview shows what we loaded
+  baseline.value = { ...form.value }
+  isEditing.value = false
+})
+
+/** Whether anything changed vs. baseline (controls Save button) */
+const isDirty = computed(() =>
+  form.value.coverImageUrl !== baseline.value.coverImageUrl ||
+  form.value.content !== baseline.value.content ||
+  form.value.videoUrl !== baseline.value.videoUrl
+)
+
+/** Upload cover image to Storage and set URL */
+async function handleImage(e: Event) {
+  const file = (e.target as HTMLInputElement)?.files?.[0]
+  if (!file || !selectedSection.value) return
+  const path = `about_sections/${selectedSection.value}/cover.jpg`
+  const fileRef = storageRef(storage, path)
+  await uploadBytes(fileRef, file)
+  const url = await getDownloadURL(fileRef)
+  form.value.coverImageUrl = url
+}
+
+/** TipTap image uploader (returns a URL to insert) */
+async function handleEditorImageUpload(file: File) {
+  const path = `editor_images/${Date.now()}-${file.name}`
+  const fileRef = storageRef(storage, path)
+  const snap = await uploadBytes(fileRef, file)
+  return await getDownloadURL(snap.ref)
+}
+
+/** Save changes to Firestore */
+async function saveSection() {
+  if (!selectedSection.value || !isDirty.value) return
+  const payload: Record<string, any> = {
+    coverImageUrl: form.value.coverImageUrl,
+    content: form.value.content,
+  }
+  if (selectedSection.value === 'the_college') {
+    payload.videoUrl = form.value.videoUrl
+  }
+  await setDoc(doc(db, 'about_sections', selectedSection.value), payload /* , { merge: true } */)
+  baseline.value = { ...form.value } // update baseline after successful save
+  isEditing.value = false
+  alert('Section updated!')
+}
+
+/** Compute embed URL for YouTube/Vimeo (supports youtu.be & youtube.com/watch) */
+const embedVideoUrl = computed(() => {
+  const url = (form.value.videoUrl || '').trim()
+  if (!url) return ''
+  try {
+    if (url.includes('youtu.be')) {
+      const id = url.split('/').pop()?.split('?')[0]
+      return id ? `https://www.youtube.com/embed/${id}` : ''
     }
-    else {
-    // Reset the form if the section has no data
-    form.value.coverImageUrl = "";
-    form.value.content = "";
-    form.value.videoUrl = "";
-    originalContent.value = "";
-    isEditing.value = false;
-  }
-  });
-
-  async function handleImage(e: Event) {
-    const file = (e.target as HTMLInputElement)?.files?.[0];
-    if (!file || !selectedSection.value) return;
-    const path = `about_sections/${selectedSection.value}/cover.jpg`;
-    const fileRef = storageRef(storage, path);
-    await uploadBytes(fileRef, file);
-    const url = await getDownloadURL(fileRef);
-    form.value.coverImageUrl = url;
-  }
-
-  async function handleEditorImageUpload(file: File) {
-    const path = `editor_images/${Date.now()}-${file.name}`;
-    const fileRef = storageRef(storage, path);
-    const snap = await uploadBytes(fileRef, file);
-    return await getDownloadURL(snap.ref);
-  }
-
-  async function saveSection() {
-    if (!selectedSection.value) return;
-    const payload: Record<string, any> = {
-      coverImageUrl: form.value.coverImageUrl,
-      content: form.value.content,
-    };
-    if (selectedSection.value === "the_college") {
-      payload.videoUrl = form.value.videoUrl;
+    if (url.includes('youtube.com/watch')) {
+      const id = new URL(url).searchParams.get('v')
+      return id ? `https://www.youtube.com/embed/${id}` : ''
     }
-    await setDoc(doc(db, "about_sections", selectedSection.value), payload);
-    isEditing.value = false;
-    alert("Section updated!");
+    return url // already an embed or a vimeo embed link
+  } catch {
+    return ''
   }
+})
 
-  const embedVideoUrl = computed(() => {
-    const url = form.value.videoUrl.trim();
-    if (url.includes("youtu.be")) {
-      const videoId = url.split("/").pop()?.split("?")[0];
-      return `https://www.youtube.com/embed/${videoId}`;
-    }
-    if (url.includes("youtube.com/watch")) {
-      const videoId = new URL(url).searchParams.get("v");
-      return `https://www.youtube.com/embed/${videoId}`;
-    }
-    return url;
-  });
-
-  function cancelEdit() {
-    form.value.content = originalContent.value; // restore Firestore content
-    isEditing.value = false;
+/** Toggle edit mode. Cancel returns to the baseline content. */
+function toggleEdit() {
+  if (isEditing.value) {
+    // Cancel → revert any unsaved edits
+    form.value = { ...baseline.value }
+    isEditing.value = false
+  } else {
+    isEditing.value = true
   }
+}
 </script>
 
 <style>
-  .bg-maroon {
-    background-color: #740505;
-  }
+/* Brand helper */
+.bg-maroon { background-color: #740505; }
 
-  .ProseMirror {
-    outline: none !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-
-  .EditorContent {
-    border: 1px solid #e5e7eb;
-    border-radius: 0.375rem;
-    padding: 1rem;
-    min-height: 300px;
-    background-color: #ffffff;
-  }
-  .resizable-image {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0.5rem 0;
-  }
-
-  .EditorContent span[style*="font-size"],
-  .EditorContent span[style*="color"] {
-    display: inline-block;
-  }
+/* Editor chrome (the actual typography is inherited from .cet-content/.prose) */
+.ProseMirror { outline: none !important; }
+.EditorContent {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  min-height: 300px;
+  background-color: #ffffff;
+}
+.resizable-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0.5rem 0;
+}
+/* Ensure inline styled spans layout nicely if any legacy content remains */
+.EditorContent span[style*="font-size"],
+.EditorContent span[style*="color"] { display: inline-block; }
 </style>
