@@ -1,21 +1,26 @@
 <template>
-  <div class="flex flex-col min-h-screen">
-    <!-- Wrapping in ClientOnly avoids any SSR hydration mismatch
-         when the initial server guess differs from the client width -->
+  <div class="flex min-h-screen flex-col">
+    <!-- Keep nav in ClientOnly to avoid SSR width mismatch -->
     <ClientOnly>
       <NavbarMobile v-if="isMobile" />
       <NavbarMain v-else />
       <template #fallback>
-        <!-- (optional) simple skeleton while hydrating -->
+        <!-- Simple skeleton while hydrating -->
         <div class="h-[135px] w-full bg-neutral-100"></div>
       </template>
     </ClientOnly>
 
+    <!-- Page body -->
     <main class="flex-1 pt-[135px]">
-      <BackToTop />
-      <slot />
+      <!-- ✅ STEP 1: Wrap all rendered Firestore/TipTap HTML with .cet-content.
+           Your mobile font-size rules in assets/css/tiptap.css will only apply
+           to elements inside this wrapper (safe for the rest of the app). -->
+      <div class="cet-content">
+        <slot />
+      </div>
     </main>
 
+    <!-- Footer (mobile/desktop variants) -->
     <ClientOnly>
       <FooterSecondaryFooterMobile v-if="isMobile" />
       <FooterSecondaryFooter v-else />
@@ -26,6 +31,9 @@
 <script setup lang="ts">
 import { useMediaQuery } from '@vueuse/core'
 
-// Tailwind 'sm' breakpoint is 640px → mobile when <= 639px
+/**
+ * Tailwind 'sm' breakpoint = 640px.
+ * We consider mobile when viewport is <= 639px.
+ */
 const isMobile = useMediaQuery('(max-width: 639px)')
 </script>
