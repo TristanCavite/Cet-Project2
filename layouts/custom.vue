@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen flex-col">
+  <div class="flex flex-col min-h-screen">
     <!-- Keep nav in ClientOnly to avoid SSR width mismatch -->
     <ClientOnly>
       <NavbarMobile v-if="isMobile" />
@@ -10,12 +10,9 @@
       </template>
     </ClientOnly>
 
-    <!-- Page body -->
-    <main class="flex-1 pt-[135px]">
-      <!-- ✅ STEP 1: Wrap all rendered Firestore/TipTap HTML with .cet-content.
-           Your mobile font-size rules in assets/css/tiptap.css will only apply
-           to elements inside this wrapper (safe for the rest of the app). -->
+    <main class="flex-1 md:pt-[152px] pt-24">
       <div class="cet-content">
+        <BackToTop />
         <slot />
       </div>
     </main>

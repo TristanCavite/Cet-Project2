@@ -1,6 +1,6 @@
 <template>
   <!-- Add pt-24 to offset the fixed navbar -->
-  <div class="pt-24 pb-10 bg-white">
+  <div class="pt-10 pb-10 bg-white md:pt-24">
     <div class="max-w-6xl px-4 mx-auto">
       <!-- White Box for Program Info -->
       <div class="overflow-hidden ">
@@ -9,14 +9,14 @@
           <img
             :src="programData.coverImageUrl"
             alt="Program cover"
-            class="w-full h-[550px] object-cover rounded"
+            class="w-full md:h-[550px] object-cover rounded"
           />
         </div>
 
         <!-- Program Content -->
         <div
           v-if="programData?.content"
-          class="px-6 py-8 prose text-justify max-w-none"
+          class="px-6 py-8 prose max-w-none"
           v-html="programData.content"
         />
         <div v-else class="p-6 text-gray-500 ">No content available for this program.</div>
