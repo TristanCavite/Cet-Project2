@@ -1,5 +1,5 @@
 <template>
-  <main class="pb-4 bg-white">
+  <main class="bg-white">
     <!-- Header with dynamic cover image -->
     <div class="relative flex items-center w-full font-playfair">
       <img
@@ -7,13 +7,13 @@
         alt="Why Choose VSU Cover"
         class="object-cover w-full h-44 md:h-128"
       />
-      <div class="absolute top-28 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90">
+      <div class="absolute top-16 md:top-40 left-6 md:left-[120px] md:px-4 md:py-4 px-2 py-2 bg-gray-700/90">
         <span class="text-xl text-white md:text-6xl">Why Choose VSU?</span>
       </div>
     </div>
 
     <!-- Main Content Container -->
-    <div class="w-3/4 h-auto mx-auto mt-10 mb-12 md:mt-16">
+    <div class="w-full h-auto mx-auto mt-10 md:w-3/4">
       <!-- Video Section -->
       <div class="w-full h-auto p-2 md:mx-auto md:h-128 md:w-3/4 rounded-xl">
         <!-- YouTube Embed -->
@@ -32,15 +32,14 @@
           controls
           preload="auto"
           playsinline
-          class="w-full h-full object-fit"
+          class="object-cover w-full h-56 rounded-md md:h-full"
         ></video>
       </div>
 
       <!-- Rich Text Content -->
-      <div
-        v-html="admissionData?.content"
-        class="px-10 mt-10 mb-5 space-y-4 leading-relaxed text-justify text-gray-800 font-roboto"
-      ></div>
+         <div v-html="admissionData?.content"
+           class="p-10 leading-relaxed"
+         ></div>
     </div>
   </main>
 </template>

@@ -145,12 +145,12 @@
                 <div class="font-roboto">
                   <p v-html="event.description"></p>
                 </div>
-                <router-link
-                  :to="`/events/${event.id}`"
+                <UiButton
+                  @click="readMore(event.id)"
                   class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
                 >
                   Read more...
-                </router-link>
+                </UiButton>
               </div>
             </template>
 
@@ -216,6 +216,8 @@ import { isSameDay, parseISO } from "date-fns";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useFirestore } from "vuefire";
+import { useRoute } from "vue-router";
+import Item from "~/components/Ui/Accordion/Item.vue";
 
 const events = ref<any[]>([]);
 const selectedDate = ref<Date | null>(null);
@@ -299,6 +301,11 @@ const filteredEvents = computed(() => {
 
 function handleDayClick(day: any) {
   selectedDate.value = new Date(day.date);
+}
+
+const router = useRouter()
+function readMore(id: string) {
+  router.push(`/events/${id}`)
 }
 </script>
 

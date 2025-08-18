@@ -1,6 +1,6 @@
 <template>
   <main class="relative">
-    <div class="max-w-5xl pt-3 pb-4 mx-auto space-y-3">
+    <div class="max-w-5xl px-5 pt-3 pb-4 mx-auto space-y-3">
       <UiButton
         class="flex flex-row text-sm font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
         @click="goBack"
@@ -16,14 +16,14 @@
         alt="Event cover image"
       />
   
-      <h1 class="text-3xl font-bold text-red-900">{{ event?.title }}</h1>
+      <h1 class="">{{ event?.title }}</h1>
   
-      <div class="text-sm text-gray-500">
+      <div class="">
         <span>{{ formatDate(event?.date as any) }}</span>
         <template v-if="event?.location"> • <span>{{ event.location }}</span></template>
       </div>
   
-      <p class="text-lg text-gray-700">{{ event?.description }}</p>
+      <p class="">{{ event?.description }}</p>
   
       <div class="prose max-w-none" v-html="event?.content" />
     </div>

@@ -39,7 +39,7 @@
       <!-- Rich Text Content -->
       <div
         v-html="aboutData?.content"
-        class="p-10 leading-relaxed"
+        class="p-10 leading-relaxed "
       ></div>
     </div>
   </main>
