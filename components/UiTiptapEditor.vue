@@ -271,4 +271,7 @@ async function insertImages(e: Event) {
 :deep(.ProseMirror .fs-24) { font-size: clamp(18px, 5.5vw, 24px) !important; }
 :deep(.ProseMirror .fs-32) { font-size: clamp(22px, 7.4vw, 32px) !important; }
 :deep(.ProseMirror .fs-48) { font-size: clamp(28px, 10.5vw, 48px) !important; }
+
+/* pointer for links inside the editor content */
+:deep(.ProseMirror a) { cursor: pointer; }
 </style>
