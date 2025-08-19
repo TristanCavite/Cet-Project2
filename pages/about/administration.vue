@@ -2,7 +2,7 @@
     <main class="relative pb-4 bg-neutral-100">
         <div class="relative flex items-center w-full border-b-2 font-playfair">
             <img src="/images/cet_administration.jpg" alt="" class="object-cover w-full h-44 md:h-128">
-            <div class="absolute top-16 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90">
+            <div class="absolute top-16 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-red-900/60">
                 <span class="text-xl text-white md:text-6xl">Facilities And Administration</span>
             </div>
         </div>
