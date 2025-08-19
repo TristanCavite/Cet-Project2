@@ -4,10 +4,10 @@
     @mousedown="handleOutsideClick"
   >
     <!-- Modal Container -->
-    <div class="relative w-2/6">
+    <div class="relative w-11/12 md:w-2/6">
       <div
         ref="modalRef"
-        class="overflow-hidden bg-white rounded-lg">
+        class="overflow-hidden overflow-y-auto break-words bg-white rounded-lg overscroll-contain h-128">
         <!-- ✖ Close Icon -->
         <X
           class="absolute text-gray-500 transition cursor-pointer size-6 top-4 right-4 hover:scale-125"
@@ -15,13 +15,13 @@
         />
   
         <!-- Scrollable Content -->
-        <div class="px-8 py-8 max-h-[90vh] overflow-y-auto ">
+        <div class="px-4 py-8 md:px-8">
           <!-- Header -->
           <div class="text-center">
             <img
               :src="profile?.photo || '/placeholder.png'"
               alt="Profile Picture"
-              class="absolute mx-auto rounded-full object-fit size-28 -top-16 right-52"
+              class="absolute mx-auto rounded-full object-fit size-28 -top-16 md:right-52 right-28"
             />
             <h2 class="mt-4 text-2xl font-bold text-red-900">
               {{ profile?.fullName || profile?.name || 'No Name Provided' }}
@@ -46,7 +46,7 @@
   
           <!-- Info Section -->
           <div class="mt-6 space-y-4 text-base">
-            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-4 md:gap-8 md:grid-cols-2">
               <div>
                 <p class="font-semibold text-red-900">Full Name:</p>
                 <p>{{ profile?.fullName || profile?.name || 'N/A' }}</p>

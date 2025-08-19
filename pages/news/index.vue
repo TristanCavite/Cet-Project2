@@ -45,7 +45,7 @@
         <div class="pt-2">
           <UiButton
             @click="readMore(news.id)"
-            class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-300 rounded font-montserrat hover:scale-105"
+            class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
           >   
             Read more...
           </UiButton>

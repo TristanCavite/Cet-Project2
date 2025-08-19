@@ -4,7 +4,7 @@
     <div class="relative flex items-center w-full font-playfair">
       <img src="/images/cet.jpg" alt="Research Cover" class="object-cover w-full h-44 md:h-128" />
       <div
-        class="absolute top-28 md:top-40 left-6 md:left-[120px] px-4 py-4 bg-gray-700/90"
+        class="absolute top-16 md:top-40 left-6 md:left-[120px] md:px-4 md:py-4 px-2 py-2 bg-gray-700/90"
       >
         <span class="text-xl text-white md:text-6xl">Research</span>
       </div>
@@ -61,12 +61,12 @@
     </div>
 
     <!-- One-column list -->
-    <section class="max-w-4xl px-4 mx-auto mt-6">
+    <section class="max-w-4xl px-4 mx-auto mt-6 mb-2">
       <div v-if="filteredResearches.length" class="space-y-6">
         <article
           v-for="item in filteredResearches"
           :key="item.id"
-          class="p-4 transition bg-white border rounded shadow"
+          class="p-4 transition bg-white border shadow-xl rounded-xl"
         >
           <!-- Title -->
           <NuxtLink :to="`/research/${item.id}`" class="block">
@@ -109,12 +109,12 @@
 
           <!-- Read more -->
           <div class="mt-4">
-            <NuxtLink
-              :to="`/research/${item.id}`"
-              class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-300 rounded font-montserrat hover:scale-105"
+            <UiButton
+              @click="readMore(item.id)"
+              class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
             >
               Read more…
-            </NuxtLink>
+            </UiButton>
           </div>
         </article>
       </div>
@@ -134,8 +134,10 @@ import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { collection, getDocs, orderBy, query, QueryDocumentSnapshot } from 'firebase/firestore'
 import type { DocumentData } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
+import { useRouter } from 'vue-router'
 
 const db = useFirestore()
+const router = useRouter()
 
 /* Data */
 const researches = ref<any[]>([])
@@ -235,6 +237,10 @@ function selectDepartment(id: string) {
 function selectYear(year: string) {
   selectedYear.value = year
   showYears.value = false
+}
+
+function readMore(id: string) {
+  router.push(`/research/${id}`)
 }
 </script>
 

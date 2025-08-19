@@ -4,7 +4,7 @@
       <div class="relative w-full h-auto overflow-hidden">
         <!-- Arrows -->
         <button
-          class="absolute z-10 flex items-center justify-center h-16 transition transform -translate-y-1/2 bg-red-900 border shadow-lg right-20 top-1/2 md:h-28 rounded-xl"
+          class="absolute z-10 flex items-center justify-center h-16 transition transform -translate-y-1/2 bg-red-900 border shadow-lg md:right-20 top-1/2 md:h-28 rounded-xl right-4"
           @click="nextSlide"
         >
           <svg
@@ -20,7 +20,7 @@
         </button>
 
         <button
-          class="absolute z-10 flex items-center justify-center h-16 transition transform -translate-y-1/2 bg-red-900 border shadow-lg left-20 top-1/2 md:h-28 rounded-xl"
+          class="absolute z-10 flex items-center justify-center h-16 transition transform -translate-y-1/2 bg-red-900 border shadow-lg md:left-20 top-1/2 md:h-28 rounded-xl left-4"
           @click="prevSlide"
         >
           <svg
@@ -47,7 +47,7 @@
         </div>
 
         <!-- view port -->
-        <div class="relative mx-auto w-[80%] overflow-hidden rounded-xl mt-4">
+        <div class="relative mx-auto md:w-[80%] overflow-hidden rounded-xl w-[100%]">
           <!-- Slides Wrapper -->
           <div
             class="flex transition-transform duration-700 ease-in-out"
@@ -57,7 +57,7 @@
             <div
               v-for="(image, index) in images"
               :key="index"
-              class="flex items-center justify-center flex-shrink-0 w-full h-128"
+              class="flex items-center justify-center flex-shrink-0 w-full md:h-128"
               :style="{ flex: `0 0 ${100 / images.length}%` }"
             >
               <img
@@ -72,13 +72,13 @@
       </div>
 
       <!-- 📰 Events -->
-      <div class="px-4 py-10 mx-auto max-w-7xl">
+      <div class="py-5 mx-auto md:px-4 md:py-10 md:max-w-7xl">
         <!-- 🏷 Section Title -->
-        <div class="pt-4 text-center">
+        <div class="text-center md:pt-4">
           <span class="text-xl font-extrabold tracking-wide uppercase md:text-5xl text-maroon font-playfair">EVENTS</span>
         </div>
 
-        <div class="flex flex-col justify-center px-10 md:flex-row ">
+        <div class="flex flex-col justify-center md:px-10 md:flex-row ">
           <!-- 📅 left side -->
           <div class="flex flex-col w-full pt-5 space-y-6 md:w-3/4">
             <template v-if="filteredEvents.length > 0">
@@ -145,12 +145,12 @@
                 <div class="font-roboto">
                   <p v-html="event.description"></p>
                 </div>
-                <router-link
-                  :to="`/events/${event.id}`"
+                <UiButton
+                  @click="readMore(event.id)"
                   class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
                 >
                   Read more...
-                </router-link>
+                </UiButton>
               </div>
             </template>
 
@@ -177,42 +177,32 @@
           </div>
 
           <!--  Right Side -->
-          <div class="flex flex-col items-center pt-5 space-y-5">
-            <!-- Calendar -->
-            <div class="">
-              <div class="flex justify-center bg-white shadow-xl rounded-xl">
-                <UiCalendar @dayclick="handleDayClick" class="bg-neutral-100"/>
+          <div class="hidden md:block ">
+            <div class="flex flex-col items-center pt-5 space-y-5">
+              <!-- Calendar -->
+              <div class="">
+                <div class="flex justify-center bg-white shadow-xl rounded-xl">
+                  <UiCalendar @dayclick="handleDayClick" class="bg-neutral-100"/>
+                </div>
               </div>
-            </div>
-
-            <!-- Facebook Card -->
-            <div class="p-6 space-y-4 bg-white border shadow-xl w-96 rounded-xl border-neutral-200 font-roboto">
-              <div class="flex items-center pb-3 space-x-3 border-b border-neutral-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-maroon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.99 3.66 9.13 8.44 9.88v-6.99H7.9v-2.89h2.54V9.9c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.89h-2.34v6.99C18.34 21.13 22 16.99 22 12z" />
-                </svg>
-                <h3 class="text-lg font-semibold text-maroon">Follow us on Facebook</h3>
-              </div>
-              <p class="text-sm text-gray-700">Get the latest updates and announcements straight from our official page.</p>
-              <a
-                href="https://www.facebook.com/cetseb"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded-sm font-montserrat hover:bg-gray-300 hover:scale-105"
-              >
-                Visit Page
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Skeleton & Toggle -->
-        <div class="pt-10 pr-100">
-          <div class="flex justify-center w-full" v-if="isContentVisible">
-            <div class="flex items-center space-x-4">
-              <div class="space-y-24">
-                <UiSkeleton class="shadow-xl h-144 w-224" />
-                <UiSkeleton class="shadow-xl h-144 w-224" />
+  
+              <!-- Facebook Card -->
+              <div class="p-6 space-y-4 bg-white border shadow-xl w-96 rounded-xl border-neutral-200 font-roboto">
+                <div class="flex items-center pb-3 space-x-3 border-b border-neutral-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-maroon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.99 3.66 9.13 8.44 9.88v-6.99H7.9v-2.89h2.54V9.9c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.89h-2.34v6.99C18.34 21.13 22 16.99 22 12z" />
+                  </svg>
+                  <h3 class="text-lg font-semibold text-maroon">Follow us on Facebook</h3>
+                </div>
+                <p class="text-sm text-gray-700">Get the latest updates and announcements straight from our official page.</p>
+                <a
+                  href="https://www.facebook.com/cetseb"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded-sm font-montserrat hover:bg-gray-300 hover:scale-105"
+                >
+                  Visit Page
+                </a>
               </div>
             </div>
           </div>
@@ -226,6 +216,8 @@ import { isSameDay, parseISO } from "date-fns";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useFirestore } from "vuefire";
+import { useRoute } from "vue-router";
+import Item from "~/components/Ui/Accordion/Item.vue";
 
 const events = ref<any[]>([]);
 const selectedDate = ref<Date | null>(null);
@@ -309,6 +301,11 @@ const filteredEvents = computed(() => {
 
 function handleDayClick(day: any) {
   selectedDate.value = new Date(day.date);
+}
+
+const router = useRouter()
+function readMore(id: string) {
+  router.push(`/events/${id}`)
 }
 </script>
 

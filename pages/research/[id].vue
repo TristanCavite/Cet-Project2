@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-4xl px-4 py-10 mx-auto">
+  <div class="max-w-4xl px-4 py-5 mx-auto md:py-10">
     <!-- Back button -->
     <div class="mb-6">
       <UiButton
@@ -41,11 +41,11 @@
           <div
             v-for="(img, index) in coverImages"
             :key="index"
-            class="h-[400px] w-full flex-shrink-0"
+            class="md:h-[400px] w-full flex-shrink-0"
           >
             <img
               :src="img"
-              class="w-full h-full object-covers"
+              class="w-full h-56 md:h-full object-covers"
               :alt="`Slide ${index + 1}`"
               loading="lazy"
             />
@@ -81,14 +81,14 @@
       </div>
 
       <!-- Description -->
-      <p v-if="research.description" class="mb-6 text-lg text-gray-800">
+      <p v-if="research.description" class="text-gray-800 ">
         {{ research.description }}
       </p>
 
       <!-- Rich Content -->
       <div
         v-html="research.content"
-        class="prose max-w-none prose-img:rounded prose-p:text-justify"
+        class="prose max-w-none prose-img:rounded"
       />
     </div>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="py-10 bg-white">
+  <main class="py-5 bg-white md:py-10">
     <div class="max-w-6xl px-4 mx-auto">
       <!-- Department Page Box -->
       <div class="overflow-hidden">
@@ -8,7 +8,7 @@
           <img
             :src="departmentPage.coverImageUrl"
             alt="Department cover"
-            class="w-full h-44 md:h-[400px] object-cover"
+            class="w-full h-44 md:h-[400px] object-cover rounded"
           />
         </div>
 
@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
