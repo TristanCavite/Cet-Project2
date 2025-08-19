@@ -1,15 +1,13 @@
 <template>
-  <div class="max-w-6xl mx-auto px-4 py-10">
+  <div class="max-w-4xl px-4 py-5 mx-auto md:py-10">
     <!-- Back button -->
     <div class="mb-6">
       <UiButton
         variant="outline"
-        class="border-maroon text-maroon hover:bg-maroon hover:text-white"
+        class="flex flex-row px-2 py-1 text-sm font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
         @click="goBack"
       >
-        <template #icon>
-          <ArrowLeft class="w-4 h-4" />
-        </template>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left-icon lucide-move-left size-5"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg>
         Back to Research
       </UiButton>
     </div>
@@ -20,7 +18,7 @@
       <h1 class="mb-2 text-3xl font-bold text-maroon">{{ research.title }}</h1>
 
       <!-- Meta (Date • Department • Researchers) -->
-      <div class="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600">
+      <div class="flex flex-wrap items-center mb-6 text-sm text-gray-600 gap-x-3 gap-y-1">
         <span v-if="research.date">{{ formatDate(research.date as any) }}</span>
 
         <template v-if="deptName">
@@ -43,11 +41,11 @@
           <div
             v-for="(img, index) in coverImages"
             :key="index"
-            class="h-[400px] w-full flex-shrink-0"
+            class="md:h-[400px] w-full flex-shrink-0"
           >
             <img
               :src="img"
-              class="h-full w-full object-cover"
+              class="w-full h-56 md:h-full object-covers"
               :alt="`Slide ${index + 1}`"
               loading="lazy"
             />
@@ -56,26 +54,26 @@
 
         <!-- Arrows -->
         <button
-          class="absolute left-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-white/80 p-2 shadow hover:bg-white"
+          class="absolute z-10 p-2 transform -translate-y-1/2 rounded-full shadow left-4 top-1/2 bg-white/80 hover:bg-white "
           @click="prevSlide"
           aria-label="Previous image"
         >
-          <ChevronLeft class="h-6 w-6 text-maroon" />
+          <ChevronLeft class="size-6 text-maroon" />
         </button>
         <button
-          class="absolute right-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-white/80 p-2 shadow hover:bg-white"
+          class="absolute z-10 p-2 transform -translate-y-1/2 rounded-full shadow right-4 top-1/2 bg-white/80 hover:bg-white"
           @click="nextSlide"
           aria-label="Next image"
         >
-          <ChevronRight class="h-6 w-6 text-maroon" />
+          <ChevronRight class="size-6 text-maroon" />
         </button>
 
         <!-- Dots -->
-        <div class="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 transform flex gap-2">
+        <div class="absolute z-10 flex gap-2 transform -translate-x-1/2 bottom-3 left-1/2">
           <span
             v-for="(_, index) in coverImages"
             :key="index"
-            class="h-3 w-3 rounded-full"
+            class="rounded-full size-2"
             :class="currentSlide === index ? 'bg-maroon' : 'bg-gray-300'"
             @click="setSlide(index)"
           />
@@ -83,14 +81,14 @@
       </div>
 
       <!-- Description -->
-      <p v-if="research.description" class="mb-6 text-lg text-gray-800">
+      <p v-if="research.description" class="text-gray-800 ">
         {{ research.description }}
       </p>
 
       <!-- Rich Content -->
       <div
         v-html="research.content"
-        class="prose max-w-none prose-img:rounded prose-p:text-justify"
+        class="prose max-w-none prose-img:rounded"
       />
     </div>
 

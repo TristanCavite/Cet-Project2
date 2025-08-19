@@ -20,6 +20,10 @@ export default defineNuxtConfig({
     editorSupport: true,
   },
 
+  css: [
+    '~/assets/css/tiptap.css',
+  ],
+
   colorMode: {
     classSuffix: "",
     preference: 'light',

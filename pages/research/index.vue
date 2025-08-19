@@ -1,30 +1,30 @@
 <template>
-  <main class="bg-stone-200 pb-8">
+  <main class="bg-white">
     <!-- Cover -->
-    <div class="relative flex w-full items-center border-b-2 font-playfair">
-      <img src="/images/cet.jpg" alt="Research Cover" class="h-44 w-full object-cover md:h-128" />
+    <div class="relative flex items-center w-full font-playfair">
+      <img src="/images/cet.jpg" alt="Research Cover" class="object-cover w-full h-44 md:h-128" />
       <div
-        class="absolute left-6 top-28 flex h-10 w-40 items-center bg-gray-700/90 md:left-[120px] md:top-40 md:h-28 md:w-96"
+        class="absolute top-16 md:top-40 left-6 md:left-[120px] md:px-4 md:py-4 px-2 py-2 bg-gray-700/90"
       >
-        <span class="pl-2 text-xl text-white md:pl-5 md:text-6xl">Research</span>
+        <span class="text-xl text-white md:text-6xl">Research</span>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="mx-auto mt-4 flex max-w-6xl justify-end gap-4 px-4">
+    <div class="flex justify-end max-w-6xl gap-4 px-4 mx-auto mt-4">
       <!-- Year -->
       <div class="relative" @click.stop="toggleYear">
-        <div class="flex h-8 w-28 cursor-pointer items-center justify-center gap-1 border-2 border-gray-900 bg-white">
+        <div class="flex items-center justify-center h-8 gap-1 font-semibold bg-white border border-gray-500 rounded cursor-pointer w-28">
           <span class="text-sm text-gray-700">{{ selectedYearLabel }}</span>
-          <ChevronDown class="h-4 w-4 text-black" />
+          <ChevronDown class="w-4 h-4 text-black" />
         </div>
-        <div v-if="showYears" class="absolute z-20 mt-2 max-h-72 w-36 overflow-auto rounded-md border bg-white shadow">
+        <div v-if="showYears" class="absolute z-20 mt-2 overflow-auto bg-white border rounded-md shadow max-h-72 w-36 ">
           <ul>
-            <li class="cursor-pointer px-4 py-2 hover:bg-gray-100" @click.stop="selectYear('')">All Years</li>
+            <li class="px-4 py-2 cursor-pointer hover:bg-gray-100" @click.stop="selectYear('')">All Years</li>
             <li
               v-for="year in years"
               :key="year"
-              class="cursor-pointer px-4 py-2 hover:bg-gray-100"
+              class="px-4 py-2 cursor-pointer hover:bg-gray-100"
               @click.stop="selectYear(String(year))"
             >
               {{ year }}
@@ -35,22 +35,22 @@
 
       <!-- Department -->
       <div class="relative" @click.stop="toggleDepartments">
-        <div class="flex h-8 w-40 cursor-pointer items-center justify-center gap-1 border-2 border-gray-900 bg-white">
-          <span class="truncate text-sm text-gray-700">{{ selectedDeptLabel }}</span>
-          <ChevronDown class="h-4 w-4 text-black" />
+        <div class="flex items-center justify-center w-40 h-8 gap-1 font-semibold bg-white border border-gray-500 rounded cursor-pointer">
+          <span class="text-sm text-gray-700 truncate">{{ selectedDeptLabel }}</span>
+          <ChevronDown class="w-4 h-4 text-black" />
         </div>
         <div
           v-if="showDepartments"
-          class="absolute z-20 mt-2 max-h-72 w-64 overflow-auto rounded-md border bg-white shadow"
+          class="absolute z-20 w-64 mt-2 overflow-auto bg-white border rounded-md shadow max-h-72"
         >
           <ul>
-            <li class="cursor-pointer px-4 py-2 hover:bg-gray-100" @click.stop="selectDepartment('')">
+            <li class="px-4 py-2 cursor-pointer hover:bg-gray-100" @click.stop="selectDepartment('')">
               All Departments
             </li>
             <li
               v-for="dept in departments"
               :key="dept.id"
-              class="cursor-pointer px-4 py-2 hover:bg-gray-100"
+              class="px-4 py-2 cursor-pointer hover:bg-gray-100"
               @click.stop="selectDepartment(dept.id)"
             >
               {{ dept.name }}
@@ -61,12 +61,12 @@
     </div>
 
     <!-- One-column list -->
-    <section class="mx-auto mt-6 max-w-4xl px-4">
+    <section class="max-w-4xl px-4 mx-auto mt-6 mb-2">
       <div v-if="filteredResearches.length" class="space-y-6">
         <article
           v-for="item in filteredResearches"
           :key="item.id"
-          class="rounded border bg-white p-4 shadow transition hover:shadow-md"
+          class="p-4 transition bg-white border shadow-xl rounded-xl"
         >
           <!-- Title -->
           <NuxtLink :to="`/research/${item.id}`" class="block">
@@ -76,7 +76,7 @@
           </NuxtLink>
 
           <!-- Meta -->
-          <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-600">
+          <div class="flex flex-wrap items-center mt-1 text-xs text-gray-600 gap-x-2 gap-y-1">
             <span>{{ formatDate(item.date) }}</span>
 
             <template v-if="departmentName(item.departmentId)">
@@ -92,14 +92,14 @@
 
           <!-- Cover -->
           <NuxtLink :to="`/research/${item.id}`" class="block">
-  <img
-    v-if="item.coverImages?.length"
-    :src="item.coverImages[0]"
-    alt="Cover"
-    class="mt-3 w-full max-h-96 rounded object-contain bg-white"
-    loading="lazy"
-  />
-</NuxtLink>
+            <img
+              v-if="item.coverImages?.length"
+              :src="item.coverImages[0]"
+              alt="Cover"
+              class="object-contain w-full mt-3 bg-white rounded max-h-96"
+              loading="lazy"
+            />
+          </NuxtLink>
 
 
           <!-- Description -->
@@ -109,17 +109,17 @@
 
           <!-- Read more -->
           <div class="mt-4">
-            <NuxtLink
-              :to="`/research/${item.id}`"
-              class="inline-flex items-center rounded border border-maroon px-3 py-1 text-sm text-maroon hover:bg-maroon hover:text-white"
+            <UiButton
+              @click="readMore(item.id)"
+              class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
             >
               Read more…
-            </NuxtLink>
+            </UiButton>
           </div>
         </article>
       </div>
 
-      <div v-else class="rounded border bg-white p-8 text-center text-gray-500">
+      <div v-else class="p-8 text-center text-gray-500 bg-white border rounded">
         No research found for the selected filter(s).
       </div>
     </section>
@@ -134,8 +134,10 @@ import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { collection, getDocs, orderBy, query, QueryDocumentSnapshot } from 'firebase/firestore'
 import type { DocumentData } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
+import { useRouter } from 'vue-router'
 
 const db = useFirestore()
+const router = useRouter()
 
 /* Data */
 const researches = ref<any[]>([])
@@ -235,6 +237,10 @@ function selectDepartment(id: string) {
 function selectYear(year: string) {
   selectedYear.value = year
   showYears.value = false
+}
+
+function readMore(id: string) {
+  router.push(`/research/${id}`)
 }
 </script>
 

@@ -1,14 +1,14 @@
 <template>
-  <div class="py-10 bg-stone-200">
+  <main class="py-5 bg-white md:py-10">
     <div class="max-w-6xl px-4 mx-auto">
       <!-- Department Page Box -->
-      <div class="overflow-hidden rounded shadow bg-neutral-50">
+      <div class="overflow-hidden">
         <!-- Cover Image -->
         <div v-if="departmentPage?.coverImageUrl">
           <img
             :src="departmentPage.coverImageUrl"
             alt="Department cover"
-            class="w-full h-44 md:h-[400px] object-cover"
+            class="w-full h-44 md:h-[400px] object-cover rounded"
           />
         </div>
 
@@ -17,21 +17,21 @@
       </div>
 
       <!-- Degree Programs -->
-      <div v-if="degreePrograms.length" class="p-6 mt-10 space-y-4 rounded shadow bg-neutral-50">
+      <div v-if="degreePrograms.length" class="p-6 mt-10 space-y-4 border rounded ">
         <h2 class="text-2xl font-bold text-maroon">Degree Programs Offered</h2>
         <div class="grid gap-4 md:grid-cols-2">
           <NuxtLink
             v-for="program in degreePrograms"
             :key="program.id"
             :to="`/academics/degree-programs/${departmentId}/${program.id}`"
-            class="block p-4 transition bg-white border rounded hover:shadow hover:bg-gray-50"
+            class="block p-4 transition border hover:shadow hover:bg-gray-50"
           >
             <h3 class="text-lg font-semibold text-maroon">{{ program.name }}</h3>
           </NuxtLink>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

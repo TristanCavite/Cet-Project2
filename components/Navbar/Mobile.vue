@@ -1,6 +1,6 @@
 <template>
     <header class="fixed top-0 left-0 z-50 w-full ">
-        <div class="flex items-center justify-between w-full px-4 bg-red-900">
+        <div class="flex items-center justify-between w-full px-4 bg-white">
            <!-- Left: Social Icons -->
            <div class="flex items-center space-x-4">
              <a
@@ -8,13 +8,13 @@
                target="_blank"
                rel="noopener noreferrer"
              >
-               <Facebook class="w-5 h-4 text-white hover:text-red-600" />
+               <Facebook class="text-red-900 size-5 fill-neutral-100" />
              </a>
              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-               <Instagram class="w-5 h-4 text-white hover:text-red-600" />
+               <Instagram class="text-red-900 size-5 fill-neutral-100" />
              </a>
              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-               <Twitter class="w-5 h-4 text-white hover:text-red-600" />
+               <Twitter class="text-red-900 size-5 fill-neutral-100" />
              </a>
            </div>
      
@@ -23,24 +23,28 @@
              <UiInput
                id="search"
                type="text"
+               v-model="searchQuery"
+              @keydown.enter="submitSearch"
                placeholder="Search"
-               class="w-full pl-10 text-sm text-white bg-red-900 rounded-full placeholder:text-white h-7 font-montserrat"
+               class="w-full h-8 pl-10 text-sm border-2 border-red-900 rounded-full bg-neutral-100 font-montserrat placeholder:text-black focus:outline-black focus:ring-0"
              />
              <span class="absolute inset-y-0 flex items-center text-white left-3">
                <!-- Replace this with your search icon component if needed -->
-               <IconsSearch />
+               <IconsSearch class="text-red-900 fill-white" />
              </span>
             </div>
         </div>
          <!-- logo and navbar -->
         <transition name="nav-slide">
-            <div v-if="showNav" class="relative flex items-center justify-between w-full px-4 bg-white border-b-2 border-red-900">
-                <button class=" md:hidden" aria-label="Open menu" @click="showMenuBox ? closeAll() : (showMenuBox = true)">
-                    <Menu class="text-red-900 cursor-pointer stroke-[2] size-8"/>
-                </button>
-                 <NuxtLink to="/" class="pr-16">
-                     <HeaderMain/>
-                </NuxtLink>
+            <div v-if="showNav" class="relative w-full px-4 bg-white border-b-2 border-red-900">
+                <div class="flex items-center">
+                    <button class=" md:hidden" aria-label="Open menu" @click="openMenu">
+                        <Menu class="text-red-900 cursor-pointer stroke-[2] size-8"/>
+                    </button>
+                     <NuxtLink to="/" class="flex items-center mx-auto">
+                         <HeaderMain/>
+                    </NuxtLink>
+                </div>
                 <div v-if="showMenuBox" class="absolute left-0 z-40 w-full overflow-y-auto text-lg rounded-md shadow-xl top-12 md:hidden bg-neutral-700/90 font-montserrat max-h-96">
                     <!-- <button>
                         <X class="absolute text-red-800 cursor-pointer stroke-current right-2 top-4 w-7 h-7" @click="showMenuBox = false"/>
@@ -118,11 +122,11 @@
 
                         <li><NuxtLink to="/research" class="flex items-center w-full" @click="showMenuBox = false">Research</NuxtLink></li>
                         <li><NuxtLink to="/news" class="flex items-center w-full" @click="showMenuBox = false">News</NuxtLink></li>
+                        <li><NuxtLink to="/download" class="flex items-center w-full" @click="showMenuBox = false">Download</NuxtLink></li>
                     </ul>
                 </div>
             </div>
         </transition>
-  
     </header>
 </template>
 
@@ -165,6 +169,10 @@
     showAboutSubmenu.value = false
     showAdmissionSubmenu.value = false
     }
+    function openMenu(){
+        closeAll();
+        showMenuBox.value = true;
+    }
 
     // for submenu box
     const showAboutSubmenu = ref(false);
@@ -190,6 +198,8 @@
     // for departments
     const departments = ref<any[]>([]);
     const departmentRefs = ref<HTMLElement[]>([]);
+     const router = useRouter();
+    const searchQuery = ref("");
     const db = useFirestore();
 
     onMounted(async () => {
@@ -204,6 +214,11 @@
     }
     });
 
+      function submitSearch() {
+    if (searchQuery.value.trim()) {
+      router.push({ path: "/search", query: { q: searchQuery.value.trim() } });
+    }
+  }
 </script>
 
 <style scoped>
@@ -249,4 +264,8 @@
     }
 
     /* for scroll bar */
+
+    /* *{
+        outline:1px solid red;
+    } */
 </style>
