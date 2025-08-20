@@ -24,7 +24,7 @@
 
     <p class="text-lg text-gray-700">{{ news?.description }}</p>
 
-    <div class="prose max-w-none" v-html="news?.content" />
+    <div class="tiptap-render max-w-none" v-html="news?.content || ''"></div>
   </div>
 </template>
 

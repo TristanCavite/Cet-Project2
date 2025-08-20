@@ -1,31 +1,54 @@
 <template>
   <main class="relative">
-    <div class="max-w-5xl px-5 pt-3 pb-4 mx-auto space-y-3">
+    <div class="mx-auto max-w-5xl space-y-3 px-5 pt-3 pb-4">
+      <!-- Back -->
       <UiButton
-        class="flex flex-row text-sm font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
+        class="font-montserrat flex flex-row rounded bg-gray-200 text-sm font-semibold text-gray-800 transition hover:scale-105 hover:bg-gray-300"
         @click="goBack"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left-icon lucide-move-left size-5"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-move-left-icon lucide-move-left size-5"
+        >
+          <path d="M6 8L2 12L6 16" />
+          <path d="M2 12H22" />
+        </svg>
         Back to Events
       </UiButton>
-  
+
+      <!-- Cover -->
       <img
         v-if="heroImage"
         :src="heroImage"
-        class="w-full max-h-[400px] object-cover rounded"
         alt="Event cover image"
+        class="max-h-[400px] w-full rounded object-cover"
       />
-  
-      <h1 class="">{{ event?.title }}</h1>
-  
-      <div class="">
+
+      <!-- Title -->
+      <h1 class="text-2xl font-bold text-maroon">
+        {{ event?.title }}
+      </h1>
+
+      <!-- Meta -->
+      <div class="text-sm text-gray-600">
         <span>{{ formatDate(event?.date as any) }}</span>
         <template v-if="event?.location"> • <span>{{ event.location }}</span></template>
       </div>
-  
-      <p class="">{{ event?.description }}</p>
-  
-      <div class="prose max-w-none" v-html="event?.content" />
+
+      <!-- Description -->
+      <p class="text-gray-800">
+        {{ event?.description }}
+      </p>
+
+      <!-- CONTENT -->
+      <!-- 👇 IMPORTANT: use .tiptap-render (NOT .prose) to keep paragraph spacing tight -->
+      <div class="tiptap-render max-w-none" v-html="event?.content || ''"></div>
     </div>
   </main>
 </template>
@@ -67,22 +90,19 @@ const { data: event } = await useAsyncData<EventDoc | null>(
   { server: true, lazy: false }
 )
 
-// Absolute URL helper (same pattern as news)
+// Build absolute URL (for OG)
 const runtime = useRuntimeConfig()
 const base =
   (runtime.public?.SITE_URL as string) ||
   (process.env.NUXT_PUBLIC_SITE_URL as string) ||
   'https://cet-project2.vercel.app'
-const absoluteUrl = (path: string) =>
-  /^https?:\/\//i.test(path) ? path : base + path
+const absoluteUrl = (path: string) => (/^https?:\/\//i.test(path) ? path : base + path)
 
-// Prefer imageUrl, else first coverImages, else a default share image
-const heroImage = computed(() =>
-  event.value?.imageUrl || event.value?.coverImages?.[0] || ''
-)
+// Prefer explicit imageUrl, else first of coverImages
+const heroImage = computed(() => event.value?.imageUrl || event.value?.coverImages?.[0] || '')
 const ogImage = absoluteUrl(heroImage.value || '/images/og-default.jpg')
 
-// Head / OG (mirrors news)
+// SEO / OG
 useHead(() => {
   const e = event.value
   const title = e?.title ?? 'Event'
@@ -97,7 +117,7 @@ useHead(() => {
       { name: 'description', content: description },
 
       // Open Graph
-      { property: 'og:type', content: 'article' }, // or 'event'
+      { property: 'og:type', content: 'article' },
       { property: 'og:site_name', content: 'College of Engineering' },
       { property: 'og:url', content: url },
       { property: 'og:title', content: title },
@@ -137,4 +157,3 @@ function formatDate(ts?: Timestamp | { seconds: number } | Date | string | null)
   })
 }
 </script>
-

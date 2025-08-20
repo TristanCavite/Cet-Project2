@@ -22,6 +22,8 @@ export default defineNuxtConfig({
 
   css: [
     '~/assets/css/tiptap.css',
+    '~/assets/css/tiptap-render.css',
+    '~/assets/css/rich-content.css',
   ],
 
   colorMode: {
