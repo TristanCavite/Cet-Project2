@@ -21,7 +21,7 @@
 
       <!-- Color Palette -->
       <div class="relative group">
-        <button class="btn btn-sm bg-white border" title="Text Color">
+        <button type="button" class="btn btn-sm bg-white border" title="Text Color">
           <div class="h-4 w-4 rounded" :style="{ backgroundColor: selectedColor }"></div>
         </button>
         <div class="absolute z-50 hidden group-hover:flex flex-wrap gap-1 p-2 bg-white border rounded shadow w-56">
@@ -36,7 +36,7 @@
         </div>
       </div>
 
-      <!-- Buttons -->
+      <!-- Inline / block controls -->
       <button type="button" class="btn btn-sm" @click="editor?.chain().focus().toggleCustomBold().run()">
         <LucideBold class="h-4 w-4" />
       </button>
@@ -46,26 +46,95 @@
       <button type="button" class="btn btn-sm" @click="editor?.chain().focus().toggleUnderline().run()">
         <LucideUnderline class="h-4 w-4" />
       </button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()">H2</button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()">H3</button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().toggleBulletList().run()"><LucideList class="h-4 w-4" /></button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().toggleOrderedList().run()"><LucideListOrdered class="h-4 w-4" /></button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('left').run()"><LucideAlignLeft class="h-4 w-4" /></button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('center').run()"><LucideAlignCenter class="h-4 w-4" /></button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('right').run()"><LucideAlignRight class="h-4 w-4" /></button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('justify').run()"><LucideAlignJustify class="h-4 w-4" /></button>
-      <button class="btn btn-sm" @click="addLink"><LucideLink class="h-4 w-4" /></button>
-      <button class="btn btn-sm" @click="triggerImageUpload"><LucideImage class="h-4 w-4" /></button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().undo().run()"><LucideUndo class="h-4 w-4" /></button>
-      <button class="btn btn-sm" @click="editor?.chain().focus().redo().run()"><LucideRedo class="h-4 w-4" /></button>
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()">H2</button>
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()">H3</button>
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().toggleBulletList().run()"><LucideList class="h-4 w-4" /></button>
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().toggleOrderedList().run()"><LucideListOrdered class="h-4 w-4" /></button>
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('left').run()"><LucideAlignLeft class="h-4 w-4" /></button>
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('center').run()"><LucideAlignCenter class="h-4 w-4" /></button>
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('right').run()"><LucideAlignRight class="h-4 w-4" /></button>
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().setTextAlign('justify').run()"><LucideAlignJustify class="h-4 w-4" /></button>
+      <button type="button" class="btn btn-sm" @click="addLink"><LucideLink class="h-4 w-4" /></button>
+      <button type="button" class="btn btn-sm" @click="triggerImageUpload"><LucideImage class="h-4 w-4" /></button>
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().undo().run()"><LucideUndo class="h-4 w-4" /></button>
+      <button type="button" class="btn btn-sm" @click="editor?.chain().focus().redo().run()"><LucideRedo class="h-4 w-4" /></button>
+
+      <!-- ── Table controls (dropdown) ───────────────────────────────────── -->
+      <span class="mx-1 h-6 w-px bg-gray-300"></span>
+
+      <div ref="tableMenuRef" class="relative" @keydown.escape="tableOpen = false">
+        <!-- Toggle -->
+        <button
+          type="button"
+          class="btn btn-sm"
+          @click.stop="tableOpen = !tableOpen"
+          aria-haspopup="menu"
+          :aria-expanded="tableOpen"
+        >
+          Table ▾
+        </button>
+
+        <!-- Menu -->
+        <div
+          v-if="tableOpen"
+          class="absolute right-0 z-50 mt-2 w-72 rounded border bg-white p-3 shadow"
+          role="menu"
+        >
+          <!-- Quick size picker -->
+          <div class="mb-2">
+            <div class="mb-1 text-xs text-gray-500">
+              {{ hover.rows || 0 }} × {{ hover.cols || 0 }}
+            </div>
+            <div
+              class="grid gap-1"
+              :style="{ gridTemplateColumns: `repeat(${GRID}, minmax(0, 1fr))` }"
+            >
+              <button
+                v-for="cell in gridCells"
+                :key="`${cell.r}-${cell.c}`"
+                type="button"
+                class="h-5 w-5 rounded border"
+                :class="cell.r <= hover.rows && cell.c <= hover.cols
+                  ? 'bg-gray-200 border-gray-400'
+                  : 'bg-white border-gray-300'"
+                @mouseenter="hover = { rows: cell.r, cols: cell.c }"
+                @click="pickTable(cell.r, cell.c)"
+              />
+            </div>
+          </div>
+
+          <div class="my-2 h-px bg-gray-200"></div>
+
+          <!-- Row/Column/Cell actions -->
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" class="btn btn-xs" @click="cmd('addRowBefore')">+ Row ↑</button>
+            <button type="button" class="btn btn-xs" @click="cmd('addRowAfter')">+ Row ↓</button>
+            <button type="button" class="btn btn-xs" @click="cmd('deleteRow')">Del Row</button>
+
+            <button type="button" class="btn btn-xs" @click="cmd('addColumnBefore')">+ Col ◀</button>
+            <button type="button" class="btn btn-xs" @click="cmd('addColumnAfter')">+ Col ▶</button>
+            <button type="button" class="btn btn-xs" @click="cmd('deleteColumn')">Del Col</button>
+
+            <button type="button" class="btn btn-xs" @click="cmd('toggleHeaderRow')">Header row</button>
+            <button type="button" class="btn btn-xs" @click="cmd('toggleHeaderColumn')">Header col</button>
+            <button type="button" class="btn btn-xs" @click="cmd('mergeCells')">Merge</button>
+            <button type="button" class="btn btn-xs" @click="cmd('splitCell')">Split</button>
+
+            <button type="button" class="btn btn-xs btn-error text-white col-span-2" @click="cmd('deleteTable')">
+              Delete table
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- ────────────────────────────────────────────────────────────────── -->
     </div>
 
     <!-- Editor -->
     <EditorContent
-:editor="editor"
-class="w-full max-w-none rounded border border-gray-300 bg-white p-4 shadow overflow-auto"
-style="max-height: 800px; min-height: 300px"
-/>
+      :editor="editor"
+      class="w-full max-w-none rounded border border-gray-300 bg-white p-4 shadow overflow-auto"
+      style="max-height: 800px; min-height: 300px"
+    />
 
     <input ref="imageInput" type="file" class="hidden" @change="insertImages" accept="image/*" multiple />
   </div>
@@ -86,12 +155,18 @@ import { CustomBold } from '@/extensions/CustomBold'
 import FontSize, { FONT_SIZE_VALUES, isFontSizeValue } from '@/extensions/FontSize'
 import type { FontSizeValue } from '@/extensions/FontSize'
 
+/* ✅ Tables */
+import Table from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableHeader from '@tiptap/extension-table-header'
+import TableCell from '@tiptap/extension-table-cell'
+
 import {
   LucideBold, LucideItalic, LucideUnderline, LucideList, LucideListOrdered,
   LucideAlignLeft, LucideAlignCenter, LucideAlignRight, LucideAlignJustify,
   LucideLink, LucideImage, LucideUndo, LucideRedo,
 } from 'lucide-vue-next'
-import { ref, watch } from 'vue'
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useFirebaseStorage } from 'vuefire'
 import { uploadBytes, getDownloadURL, ref as storageRef } from 'firebase/storage'
 
@@ -108,6 +183,41 @@ const presetColors = [
   '#008000', '#00FFFF', '#0000FF', '#800080', '#FFC0CB', '#A52A2A',
   '#B0E0E6', '#ADD8E6', '#90EE90', '#D3D3D3', '#FF69B4', '#9932CC',
 ]
+
+/* Table dropdown state */
+const tableOpen = ref(false)
+const tableMenuRef = ref<HTMLElement | null>(null)
+const GRID = 8
+const hover = ref({ rows: 0, cols: 0 })
+const gridCells = computed(() =>
+  Array.from({ length: GRID * GRID }, (_, i) => ({
+    r: Math.floor(i / GRID) + 1,
+    c: (i % GRID) + 1,
+  })),
+)
+
+function pickTable(rows: number, cols: number) {
+  editor.value?.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run()
+  tableOpen.value = false
+  hover.value = { rows: 0, cols: 0 }
+}
+
+function cmd(name: string) {
+  const c = editor.value?.chain().focus()
+  // @ts-ignore tiptap chain has these symbol-named methods at runtime
+  c?.[name]().run()
+  tableOpen.value = false
+}
+
+/* Click-outside to close the dropdown */
+function onDocClick(e: MouseEvent) {
+  if (!tableOpen.value) return
+  const el = tableMenuRef.value
+  if (!el) return
+  if (!el.contains(e.target as Node)) tableOpen.value = false
+}
+onMounted(() => document.addEventListener('click', onDocClick))
+onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 
 /* Convert legacy inline font-size -> fs-* (client-only) */
 function convertInlineFontSizesToClasses(html: string): string {
@@ -144,7 +254,7 @@ const editor = useEditor({
   extensions: [
     StarterKit.configure({ bold: false }), // using CustomBold
     TextStyle,
-    FontSize, // class-based font size mark
+    FontSize,
     FontFamily.configure({ types: ['textStyle'] }),
     Color.configure({ types: ['textStyle', 'customBold'] }),
     CustomBold,
@@ -153,6 +263,12 @@ const editor = useEditor({
     Image,
     ResizeImage.configure({ allowBase64: true }),
     TextAlign.configure({ types: ['heading', 'paragraph'] }),
+
+    /* Tables */
+    Table.configure({ resizable: true, lastColumnResizable: true }),
+    TableRow,
+    TableHeader,
+    TableCell,
   ],
   onUpdate: ({ editor }) => emit('update:modelValue', editor.getHTML()),
   editorProps: {
@@ -172,16 +288,16 @@ watch(
   },
 )
 
-/* ==== Robust re-apply flow: extend → unset → set ==== */
+/* Font / color handlers */
 function onFontSizeChange(event: Event) {
   const raw = (event.target as HTMLSelectElement).value
   if (!isFontSizeValue(raw)) return
   editor.value
     ?.chain()
     .focus()
-    .extendMarkRange('fontSize')  // grab whole current-size run if caret sits inside
-    .unsetFontSize()              // clear any existing size in that run
-    .setFontSize(raw)             // apply the new size
+    .extendMarkRange('fontSize')
+    .unsetFontSize()
+    .setFontSize(raw)
     .run()
 }
 
@@ -190,7 +306,7 @@ function onFontFamilyChange(event: Event) {
   editor.value
     ?.chain()
     .focus()
-    .extendMarkRange('textStyle') // textStyle is used by FontFamily/Color
+    .extendMarkRange('textStyle')
     .setFontFamily(font)
     .run()
 }
@@ -205,7 +321,7 @@ function onColorPick(color: string) {
     .run()
 }
 
-/* Misc */
+/* Links & images */
 function addLink() {
   const url = prompt('Enter URL:')
   if (!url) return
@@ -243,10 +359,7 @@ async function insertImages(e: Event) {
 
 <style scoped>
 /* Editor base */
-:deep(.ProseMirror) {
-  min-height: 300px;
-  /* do NOT set color/font-family here — it overrides heading styling */
-}
+:deep(.ProseMirror) { min-height: 300px; }
 
 :deep(.ProseMirror img) {
   max-width: 100%;
@@ -255,7 +368,7 @@ async function insertImages(e: Event) {
   margin: 1rem 0;
 }
 
-/* Make headings inside the editor use the same maroon + Times */
+/* Headings in editor */
 :deep(.ProseMirror h1),
 :deep(.ProseMirror h2),
 :deep(.ProseMirror h3) {
@@ -263,7 +376,7 @@ async function insertImages(e: Event) {
   font-family: var(--cet-heading-font) !important;
 }
 
-/* Keep fs-* sizes authoritative inside editor */
+/* fs-* sizes */
 :deep(.ProseMirror .fs-12) { font-size: clamp(12px, 2.8vw, 12px) !important; }
 :deep(.ProseMirror .fs-14) { font-size: clamp(13px, 3.2vw, 14px) !important; }
 :deep(.ProseMirror .fs-16) { font-size: clamp(14px, 3.6vw, 16px) !important; }
@@ -271,4 +384,45 @@ async function insertImages(e: Event) {
 :deep(.ProseMirror .fs-24) { font-size: clamp(18px, 5.5vw, 24px) !important; }
 :deep(.ProseMirror .fs-32) { font-size: clamp(22px, 7.4vw, 32px) !important; }
 :deep(.ProseMirror .fs-48) { font-size: clamp(28px, 10.5vw, 48px) !important; }
+
+/* Links pointer inside editor */
+:deep(.ProseMirror a) { cursor: pointer; }
+
+/* ✅ Table look while editing */
+:deep(.ProseMirror table){ width:100%; border-collapse:collapse; }
+:deep(.ProseMirror th),
+:deep(.ProseMirror td){
+  position: relative;           /* keep resizer + any overlays scoped to the cell */
+  border:1px solid #d1d5db;
+  padding:6px 8px;
+  vertical-align:top;
+}
+:deep(.ProseMirror thead th){ background:#f3f4f6; font-weight:700; text-align:left; }
+:deep(.ProseMirror .column-resize-handle){
+  position:absolute; right:-2px; top:0; bottom:0; width:3px; background:rgba(0,0,0,.15); pointer-events:none;
+}
+
+/* ❌ Remove the extra blue overlay for table cell selections */
+:deep(.ProseMirror .selectedCell:after){ content:none; }
+
+/* 🔵 Make browser text selection less intense inside the editor */
+:deep(.ProseMirror ::selection){ background: rgba(160, 195, 255, .28); }
+
+
+/* --- Fix: don't tint entire cells when selecting text --- */
+:deep(.ProseMirror .selectedCell) {
+  background: transparent !important;           /* no blue fill on cells */
+}
+:deep(.ProseMirror .selectedCell)::after {
+  content: none !important;                      /* remove overlay pseudo element */
+  display: none !important;
+}
+
+/* Optional: if you still want a hint when doing a REAL cell selection,
+   use a thin outline instead of a full fill. Comment out if not wanted. */
+:deep(.ProseMirror .cell-selection .selectedCell) {
+  box-shadow: inset 0 0 0 2px #60a5fa;          /* visible outline only */
+}
+
+
 </style>
