@@ -2,8 +2,8 @@
   <header class="fixed z-50 w-full" :style="hideNav ? 'height: 120px;' : 'height: 30px;'">
     <!-- Header Bar with Search and Social Icons -->
     <transition name="header-sticky">
-      <div class="relative h-24 bg-white border-b-2 border-gray-200 header-bar-transition">
-        <div class="flex items-center justify-around w-full pt-2 gap-72 md:px-8">
+      <div class="bg-white border-gray-200 header-bar-transition">
+        <div class="flex items-center justify-center w-full gap-64 md:px-4">
           <!-- Left: Social Icons -->
           <div class="flex items-center space-x-6">
             <a
@@ -20,6 +20,11 @@
               <Twitter class="text-red-900 size-5 fill-neutral-100 md:size-6" />
             </a>
           </div>
+
+          <!-- Logo (Center) -->
+          <NuxtLink to="/" class="">
+            <HeaderMain />
+          </NuxtLink>
 
           <!-- Right: Search Bar -->
           <div class="relative my-1 w-38">
@@ -38,10 +43,6 @@
             </span>
           </div>
         </div>
-        <!-- Logo (Center) -->
-        <NuxtLink to="/" class="absolute z-10 transform -translate-x-1/2 left-1/2 top-7">
-          <HeaderMain />
-        </NuxtLink>
       </div>
     </transition>
 
@@ -226,6 +227,12 @@
                     class="pb-0 font-semibold border-b-2 border-transparent hover:border-yellow-500 hover:text-yellow-500"
                   >
                     News
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/download/"
+                    class="pb-0 font-semibold border-b-2 border-transparent hover:border-yellow-500 hover:text-yellow-500"
+                  >
+                    Download
                   </NuxtLink>
                 </TabsList>
               </Tabs>

@@ -38,7 +38,7 @@
         <transition name="nav-slide">
             <div v-if="showNav" class="relative w-full px-4 bg-white border-b-2 border-red-900">
                 <div class="flex items-center">
-                    <button class=" md:hidden" aria-label="Open menu" @click="showMenuBox ? closeAll() : (showMenuBox = true)">
+                    <button class=" md:hidden" aria-label="Open menu" @click="openMenu">
                         <Menu class="text-red-900 cursor-pointer stroke-[2] size-8"/>
                     </button>
                      <NuxtLink to="/" class="flex items-center mx-auto">
@@ -122,6 +122,7 @@
 
                         <li><NuxtLink to="/research" class="flex items-center w-full" @click="showMenuBox = false">Research</NuxtLink></li>
                         <li><NuxtLink to="/news" class="flex items-center w-full" @click="showMenuBox = false">News</NuxtLink></li>
+                        <li><NuxtLink to="/download" class="flex items-center w-full" @click="showMenuBox = false">Download</NuxtLink></li>
                     </ul>
                 </div>
             </div>
@@ -167,6 +168,10 @@
     showAcademicsSubmenu.value = false
     showAboutSubmenu.value = false
     showAdmissionSubmenu.value = false
+    }
+    function openMenu(){
+        closeAll();
+        showMenuBox.value = true;
     }
 
     // for submenu box
