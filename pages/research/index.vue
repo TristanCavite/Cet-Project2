@@ -115,7 +115,7 @@
             >
               Read more…
             </UiButton>
-            <ShareButton />
+            <ShareButton v-for="r in filteredResearches" :key="r.id" :item="{ id:r.id, type:'research', slug:r.slug, title:r.title, excerpt:r.description }" />
           </div>
         </article>
       </div>

@@ -145,12 +145,15 @@
                 <div class="font-roboto">
                   <p v-html="event.description"></p>
                 </div>
-                <UiButton
-                  @click="readMore(event.id)"
-                  class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
-                >
-                  Read more...
-                </UiButton>
+                <div class="flex justify-between">
+                  <UiButton
+                    @click="readMore(event.id)"
+                    class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
+                  >
+                    Read more...
+                  </UiButton>
+                  <ShareButton :item="{ id: event.id, type: 'event', title: event.title, excerpt: event.description }"/>
+                </div>
               </div>
             </template>
 
