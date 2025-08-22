@@ -5,21 +5,25 @@
       <div class="bg-white border-gray-200 header-bar-transition">
         <div class="flex items-center justify-center w-full gap-64 md:px-4">
           <!-- Left: Social Icons -->
-          <div class="flex items-center space-x-6">
-            <a
-              href="https://www.facebook.com/vsuengineering"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Facebook class="text-red-900 size-5 fill-neutral-100 md:size-6" />
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-              <Instagram class="text-red-900 size-5 fill-neutral-100 md:size-6" />
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-              <Twitter class="text-red-900 size-5 fill-neutral-100 md:size-6" />
-            </a>
-          </div>
+         <!-- Left: Social Icons -->
+<div class="flex items-center space-x-6">
+  <a
+    v-for="it in socialItems"
+    :key="it.key"
+    :href="it.href"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-red-900 hover:opacity-80 transition-opacity"
+    :title="it.key"
+    :aria-label="it.key"
+  >
+    <component
+      :is="SOCIAL_ICONS[it.key] || Globe"
+      class="text-red-900 size-5 fill-neutral-100 md:size-6"
+    />
+  </a>
+</div>
+
 
           <!-- Logo (Center) -->
           <NuxtLink to="/" class="">
@@ -249,10 +253,11 @@
   import IconsSearch from "@/components/Icons/Search.vue";
   import { signOut } from "firebase/auth";
   import { collection, getDocs } from "firebase/firestore";
-  import { Facebook, Instagram, Twitter } from "lucide-vue-next";
+  import { Facebook, Instagram, Twitter, Youtube, Linkedin, Globe } from "lucide-vue-next";
   import { onBeforeUnmount, onMounted, ref } from "vue";
   import { useRouter } from "vue-router";
   import { useFirestore } from "vuefire";
+  import { useSocialLinks } from "@/composables/useSocialLinks";
 
   // Auth
   const user = useCurrentUser();
@@ -265,6 +270,19 @@
   const departments = ref<any[]>([]);
   const router = useRouter();
   const searchQuery = ref("");
+
+  const SOCIAL_ICONS: Record<string, any> = {
+    facebook: Facebook,
+    instagram: Instagram,
+    twitter:  Twitter,
+    youtube:  Youtube,
+    linkedin: Linkedin,
+    website:  Globe,
+  };
+
+  const { items: socialItems } = useSocialLinks();
+
+
   const logout = async () => {
     if (auth) {
       await signOut(auth);

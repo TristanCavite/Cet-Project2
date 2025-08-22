@@ -37,7 +37,7 @@
     "firebase": "^11.3.1",
     "firebase-admin": "^12.7.0",
     "firebase-functions": "^5.1.1",
-    "lucide-vue-next": "^0.513.0",
+    "lucide-vue-next": "^0.540.0",
     "nuxt": "^3.6.0",
     "nuxt-vuefire": "^1.0.4",
     "quill": "^2.0.3",
