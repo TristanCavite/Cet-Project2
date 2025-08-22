@@ -98,6 +98,16 @@
 
             <li>
               <NuxtLink
+                to="/admin/super-admin/socials"
+                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+              >
+                Manage Socials
+              </NuxtLink>
+            </li>
+
+
+            <li>
+              <NuxtLink
                 to="/admin/super-admin/manage_department"
                 class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
               >

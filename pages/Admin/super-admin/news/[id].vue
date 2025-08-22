@@ -1,99 +1,120 @@
 <template>
   <div class="p-6 max-w-4xl mx-auto space-y-6">
-    <!-- Back to News Button -->
-    <UiButton
-      class="mb-4 text-maroon bg-white border border-maroon hover:bg-maroon hover:text-white transition duration-150"
-      @click="goBackToIndex"
-    >
-      ← Back to News
-    </UiButton>
+    <!-- Top actions -->
+    <div class="flex items-center gap-2">
+      <UiButton
+        class="text-maroon bg-white border border-maroon hover:bg-maroon hover:text-white"
+        @click="goBackToIndex"
+      >
+        ← Back to News
+      </UiButton>
 
-    <!-- Edit Button -->
-    <UiButton
-      class="mb-4 ml-2 bg-maroon text-white hover:opacity-90 transition duration-150"
-      @click="editNews"
-    >
-      ✏️ Edit
-    </UiButton>
+      <!-- If published: show Unpublish -->
+      <UiButton
+        v-if="news && news.published === true"
+        class="bg-maroon text-white hover:opacity-90"
+        :disabled="working"
+        @click="unpublish"
+      >
+        Unpublish
+      </UiButton>
 
-    <!-- Cover Image -->
+      <!-- If draft: show Edit -->
+      <UiButton
+        v-else-if="news"
+        class="border border-maroon text-maroon bg-white hover:bg-maroon hover:text-white"
+        @click="editNews"
+      >
+        ✏️ Edit
+      </UiButton>
+    </div>
+
+    <!-- Cover image -->
     <img
       v-if="news?.imageUrl"
       :src="news.imageUrl"
-      class="w-full max-h-[400px] object-cover rounded"
+      class="w-full max-h-[420px] object-cover rounded"
     />
 
     <!-- Title -->
     <h1 class="text-3xl font-bold text-maroon">{{ news?.title }}</h1>
 
-    <!-- Author + Date -->
+    <!-- Meta -->
     <div class="text-sm text-gray-500">
-      <span>By {{ news?.author || 'Unknown' }}</span> |
+      <span>Written by {{ news?.author || 'Unknown' }}</span>
+      <span class="mx-2 text-gray-300">•</span>
       <span>{{ formatDate(news?.createdAt) }}</span>
+      <span
+        v-if="news && news.published === false"
+        class="ml-2 rounded bg-yellow-50 px-2 py-0.5 text-xs text-yellow-800 border border-yellow-200"
+      >Draft</span>
     </div>
 
-    <!-- Description -->
+    <!-- Summary -->
     <p class="text-lg text-gray-700">{{ news?.description }}</p>
 
-    <!-- Full Content -->
-    <div class="prose max-w-none" v-html="news?.content" />
+    <!-- Content -->
+    <article class="prose max-w-none" v-html="news?.content"></article>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ middleware: "auth",layout: 'super-admin' })
+definePageMeta({ middleware: 'auth', layout: 'super-admin' })
 
-// Import Vue Router + Firebase helpers
 import { useRoute, useRouter } from 'vue-router'
 import { useFirestore } from 'vuefire'
-import { doc, getDoc, Timestamp } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, serverTimestamp, Timestamp } from 'firebase/firestore'
 import { ref, onMounted } from 'vue'
 
-// Composables
 const route = useRoute()
 const router = useRouter()
 const db = useFirestore()
 
-// Get news ID from route
 const newsId = route.params.id as string
 const news = ref<any>(null)
-
+const working = ref(false)
 
 function goBackToIndex() {
   router.push('/Admin/super-admin/news')
 }
-// Fetch Firestore document on mount
+
 onMounted(async () => {
   const snap = await getDoc(doc(db, 'news', newsId))
-  if (snap.exists()) {
-    news.value = snap.data()
-  }
+  if (!snap.exists()) return goBackToIndex()
+  news.value = { id: newsId, ...snap.data() }
 })
 
-// Navigate to edit screen
+async function unpublish() {
+  if (!news.value) return
+  working.value = true
+  try {
+    await updateDoc(doc(db, 'news', newsId), {
+      published: false,
+      updatedAt: serverTimestamp(),
+    })
+    // After unpublishing, send it back to the list (now visible under Drafts)
+    router.push('/Admin/super-admin/news')
+  } finally {
+    working.value = false
+  }
+}
+
 function editNews() {
   router.push(`/Admin/super-admin/news/add_news?id=${newsId}`)
 }
 
-// Format timestamp to readable string
 function formatDate(ts: Timestamp | null) {
   if (!ts?.toDate) return ''
   return ts.toDate().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   })
 }
 </script>
 
 <style scoped>
-.text-maroon {
-  color: #740505;
-}
-.border-maroon {
-  border-color: #740505;
-}
-.bg-maroon {
-  background-color: #740505;
-}
+.text-maroon { color: #740505; }
+.border-maroon { border-color: #740505; }
+.bg-maroon { background-color: #740505; }
 </style>
