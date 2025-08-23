@@ -21,7 +21,7 @@
           Save
         </UiButton>
         <UiButton class="bg-maroon text-white hover:opacity-90" @click="submitNews(true)">
-          Save & Publish
+          Publish
         </UiButton>
       </div>
     </div>
