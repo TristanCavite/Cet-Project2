@@ -6,23 +6,24 @@
         <div class="flex items-center justify-center w-full gap-64 md:px-4">
           <!-- Left: Social Icons -->
          <!-- Left: Social Icons -->
-          <div class="flex items-center space-x-6">
-            <a
-              v-for="it in socialItems"
-              :key="it.key"
-              :href="it.href"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-red-900 transition-opacity hover:opacity-80"
-              :title="it.key"
-              :aria-label="it.key"
-            >
-              <component
-                :is="SOCIAL_ICONS[it.key] || Globe"
-                class="text-red-900 size-5 fill-neutral-100 md:size-6"
-              />
-            </a>
-          </div>
+<div class="flex items-center space-x-6">
+  <a
+    v-for="it in socialItems"
+    :key="it.key"
+    :href="it.href"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-red-900 transition-opacity hover:opacity-80"
+    :title="it.key"
+    :aria-label="it.key"
+  >
+    <component
+      :is="SOCIAL_ICONS[it.key] || Globe"
+      class="text-red-900 size-5 fill-neutral-100 md:size-6"
+    />
+  </a>
+</div>
+
 
           <!-- Logo (Center) -->
           <NuxtLink to="/" class="">
