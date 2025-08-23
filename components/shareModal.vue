@@ -16,24 +16,33 @@
                 </div>
             </div>
             <div class="flex flex-row justify-center pl-4 mt-2 space-x-8">
-                <div class="flex items-center justify-center bg-blue-900 rounded-full size-10">
-                    <a :href="`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`"
-                        target="_blank"
-                        rel="noopener noreferrer"> 
-                        <Facebook class="text-white" />
-                    </a>
+                <div>
+                    <div class="flex items-center justify-center mx-auto bg-blue-900 rounded-full size-10">
+                        <a :href="facebookHref"
+                            target="_blank"
+                            rel="noopener noreferrer"> 
+                            <Facebook class="text-white" />
+                        </a>
+                    </div>
+                    <span class="text-sm font-medium text-center">Facebook</span>
                 </div>
-                <div class="flex items-center justify-center bg-red-900 rounded-full size-10">
-                    <a :href="`mailto:?subject=${encodeURIComponent(shareTitle)}&body=${encodeURIComponent(shareUrl + '\n\n' + shareText)}`">
-                        <Mail class="text-white"/>
-                    </a>
+                <div>
+                    <div class="flex items-center justify-center bg-red-900 rounded-full size-10">
+                        <a :href="mailtoHref">
+                            <Mail class="text-white"/>
+                        </a>
+                    </div>
+                    <span class="text-sm font-medium text-center">Gmail</span>
                 </div>
-                <div class="flex items-center justify-center rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 size-10" @click="shareNative">
-                    <a :href="`mailto:?subject=Check this out&body=${encodeURIComponent(shareUrl)}`"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        <Instagram  class="text-white"/>
-                    </a>
+                <div class="">
+                    <div class="flex items-center justify-center mx-auto bg-blue-500 rounded-full size-10">
+                        <a :href="messengerHref"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            <Zap class="flex justify-center text-white -rotate-45 -scale-x-100 fill-white"/>
+                        </a>
+                    </div>
+                    <span class="text-sm font-medium text-center">Messenger</span>
                 </div>
             </div>
             <div class="px-4 mt-10">
@@ -50,7 +59,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Facebook, Mail, Instagram} from "lucide-vue-next";
+import { Facebook, Mail, Zap} from "lucide-vue-next";
 import { X } from 'lucide-vue-next'
 import { useRoute, useRequestURL, useRuntimeConfig } from '#imports'
 
@@ -63,14 +72,15 @@ const emit = defineEmits(['close', 'remove'])
 const modalRef = ref<HTMLElement|null>(null)
 
 function handleOutsideClick(event: MouseEvent) {
-  // @ts-ignore
-  if (modalRef.value && !modalRef.value.contains(event.target)) {
+  const target = event.target as Node | null
+  if (modalRef.value && target && !modalRef.value.contains(target)) {
     emit('close')
   }
 }
 
 const runtime = useRuntimeConfig()
 const copied = ref(false)
+const isClient = typeof window !== 'undefined'
 const origin = (runtime.public?.SITE_URL as string | undefined) || useRequestURL().origin
 
 const shareUrl = computed(() => new URL(props.content.url, origin).href)
@@ -85,6 +95,38 @@ const textToCopy = computed(() =>
     ? `${shareText.value}\n\n${shareUrl.value}`
     : shareUrl.value
 )
+
+// --- Email ---
+const mailtoHref = computed(() =>
+  `mailto:?subject=${encodeURIComponent(shareTitle.value)}&body=${encodeURIComponent(`${shareText.value}\n\n${shareUrl.value}`)}`
+)
+
+// --- Facebook ---
+const facebookHref = computed(() =>
+  `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl.value)}`
+)
+
+// --- Messenger (fixed) ---
+const FB_APP_ID = runtime.public?.FB_APP_ID as string | undefined
+const redirectUrl = computed(() => new URL('/share/complete', origin).href) // MUST be whitelisted in your FB app
+const isMobile = computed(
+  () => isClient && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+)
+
+const messengerHref = computed(() => {
+  if (isMobile.value) {
+    return `fb-messenger://share/?link=${encodeURIComponent(shareUrl.value)}`
+  }
+  if (FB_APP_ID) {
+    return `https://www.facebook.com/dialog/send?app_id=${encodeURIComponent(
+      FB_APP_ID
+    )}&link=${encodeURIComponent(shareUrl.value)}&redirect_uri=${encodeURIComponent(
+      redirectUrl.value
+    )}&display=popup`
+  }
+  // Fallback if no app id is configured
+  return facebookHref.value
+})
 
 async function copyShareUrl() {
   try {
@@ -101,22 +143,13 @@ async function copyShareUrl() {
     ta.style.opacity = '0'
     document.body.appendChild(ta)
     ta.select()
-    try { document.execCommand('copy') } finally { document.body.removeChild(ta) }
+    try { document.execCommand('copy') } 
+    finally { document.body.removeChild(ta) }
     copied.value = true
   }
   setTimeout(() => (copied.value = false), 1500)
 }
 
-// Web Share API (works on mobile/browsers that support it)
-async function shareNative() {
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: shareTitle.value, text: shareText.value, url: shareUrl.value })
-    } catch { /* user canceled */ }
-  } else {
-    await copyShareUrl()
-  }
-}
 </script>
 
 <style>
