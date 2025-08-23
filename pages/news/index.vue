@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-5xl px-4 pt-5 pb-8 mx-auto md:py-8 md:my-7">
-    <h1 class="pb-4 text-2xl font-bold text-red-900 md:pb-8 md:text-5xl font-playfair">College News</h1>
+    <h1 class="pb-4 text-2xl font-bold text-red-900 md:pb-8 md:text-5xl font-playfair">Faculty News</h1>
 
     <!-- News List -->
     <div v-if="newsList?.length" class="space-y-10">

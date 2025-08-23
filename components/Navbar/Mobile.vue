@@ -38,7 +38,7 @@
         <transition name="nav-slide">
             <div v-if="showNav" class="relative w-full px-4 bg-white border-b-2 border-red-900">
                 <div class="flex items-center">
-                    <button class=" md:hidden" aria-label="Open menu" @click="openMenu">
+                    <button class=" md:hidden" aria-label="Open menu" @click="toggleMenu">
                         <Menu class="text-red-900 cursor-pointer stroke-[2] size-8"/>
                     </button>
                      <NuxtLink to="/" class="flex items-center mx-auto">
@@ -62,7 +62,7 @@
                             
                             <!-- About menu box -->
                             <ul v-if="showAboutSubmenu" class="h-auto pt-4 pb-3 pl-4 space-y-4 font-semibold rounded-md left-full min-w-72">
-                                <li><NuxtLink to="/about/college"  @click="closeAll" class="flex items-center w-full ">College</NuxtLink></li>
+                                <li><NuxtLink to="/about/faculty"  @click="closeAll" class="flex items-center w-full ">Faculty</NuxtLink></li>
                                 <li><NuxtLink to="/about/facilities"  @click="closeAll" class="flex items-center w-full ">Facilities</NuxtLink></li>
                                 <li><NuxtLink to="/about/history"  @click="closeAll" class="flex items-center w-full ">History</NuxtLink></li>
                                 <li class="">
@@ -169,10 +169,15 @@
     showAboutSubmenu.value = false
     showAdmissionSubmenu.value = false
     }
-    function openMenu(){
+
+    function toggleMenu() {
+    if (showMenuBox.value) {
+        closeAll();
+    } else {
         closeAll();
         showMenuBox.value = true;
     }
+}
 
     // for submenu box
     const showAboutSubmenu = ref(false);
