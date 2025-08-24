@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-5xl px-4 pt-5 pb-8 mx-auto md:py-8 md:my-7">
-    <h1 class="pb-4 text-2xl font-bold text-red-900 md:pb-8 md:text-5xl font-playfair">College News</h1>
+    <h1 class="pb-4 text-2xl font-bold text-red-900 md:pb-8 md:text-5xl font-playfair">Faculty News</h1>
 
     <!-- News List -->
     <div v-if="newsList?.length" class="space-y-10">
@@ -42,13 +42,14 @@
         <p class="text-justify text-gray-700">{{ news.description }}</p>
 
         <!-- Read More Button -->
-        <div class="pt-2">
+        <div class="flex justify-between pt-2">
           <UiButton
             @click="readMore(news.id)"
             class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
           >   
             Read more...
           </UiButton>
+          <ShareButton :item="{ id: news.id, type: 'news', title: news.title, excerpt: news.description }"/>
         </div>
       </div>
     </div>

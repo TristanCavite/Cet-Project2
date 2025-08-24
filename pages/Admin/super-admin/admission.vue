@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-6xl space-y-6 p-6">
+  <div class="max-w-6xl p-6 mx-auto space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold">Manage Admission Page</h1>
@@ -7,8 +7,8 @@
 
     <!-- Section Selector -->
     <div>
-      <label class="mb-1 block font-semibold">Select Section</label>
-      <select v-model="selectedSection" class="select select-bordered w-full">
+      <label class="block mb-1 font-semibold">Select Section</label>
+      <select v-model="selectedSection" class="w-full select select-bordered">
         <option disabled value="">-- Choose section --</option>
         <option value="why_choose_vsu">Why Choose VSU?</option>
         <option value="undergraduate">Undergraduate</option>
@@ -20,59 +20,59 @@
     <div v-if="selectedSection" class="grid gap-6">
       <!-- Cover Image -->
       <div>
-        <label class="mb-1 block font-semibold">Cover Image</label>
+        <label class="block mb-1 font-semibold">Cover Image</label>
         <input
           type="file"
-          class="file-input file-input-bordered w-full"
+          class="w-full file-input file-input-bordered"
           accept="image/*"
           @change="handleImage"
         />
         <img
           v-if="form.coverImageUrl"
           :src="form.coverImageUrl"
-          class="mt-2 h-48 w-full rounded object-cover"
+          class="object-cover w-full h-48 mt-2 rounded"
           alt="Admission cover"
         />
       </div>
 
       <!-- Promotional Video (only for 'Why Choose VSU?') -->
       <div v-if="selectedSection === 'why_choose_vsu'">
-        <label class="mb-1 block font-semibold">Promotional Video (YouTube/Vimeo)</label>
+        <label class="block mb-1 font-semibold">Promotional Video (YouTube/Vimeo)</label>
         <input
           v-model="form.videoUrl"
           type="url"
           placeholder="https://www.youtube.com/watch?v=..."
-          class="input input-bordered w-full"
+          class="w-full input input-bordered"
         />
-        <div v-if="form.videoUrl" class="mt-4 aspect-video w-full">
+        <div v-if="form.videoUrl" class="w-full mt-4 aspect-video">
           <iframe
             :src="embedVideoUrl"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
-            class="h-full w-full rounded"
+            class="w-full h-full rounded"
           ></iframe>
         </div>
       </div>
 
       <!-- Content -->
       <div>
-        <label class="mb-2 block font-semibold">Content</label>
+        <label class="block mb-2 font-semibold">Content</label>
 
         <!-- Edit / Cancel toggle -->
-        <UiButton class="bg-maroon text-white hover:opacity-90" @click="toggleEdit">
+        <UiButton class="text-white bg-maroon hover:opacity-90" @click="toggleEdit">
           {{ isEditing ? "Cancel" : "Edit Content" }}
         </UiButton>
 
         <!-- PREVIEW (identical wrapper to public pages) -->
         <div
           v-if="!isEditing"
-          class="cet-content prose max-w-none rounded border bg-white p-4 shadow"
+          class="p-4 prose bg-white border rounded shadow cet-content max-w-none"
           v-html="form.content"
         />
 
         <!-- EDITOR (same wrapper so Edit looks exactly like Preview) -->
-        <div v-else class="cet-content prose max-w-none rounded border bg-white p-4 shadow">
+        <div v-else class="p-4 prose bg-white border rounded shadow cet-content max-w-none">
           <UiTiptapEditor
             v-model="form.content"
             :editing="isEditing"
@@ -81,10 +81,10 @@
         </div>
 
         <!-- Save -->
-        <div class="mt-4 flex items-center justify-end gap-3">
+        <div class="flex items-center justify-end gap-3 mt-4">
           <span v-if="!isDirty" class="text-sm text-gray-400">No changes</span>
           <UiButton
-            class="bg-maroon text-white hover:opacity-90 disabled:opacity-50"
+            class="text-white bg-maroon hover:opacity-90 disabled:opacity-50"
             :disabled="!isDirty"
             @click="saveSection"
           >
