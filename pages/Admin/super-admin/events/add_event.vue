@@ -38,6 +38,29 @@
         <input v-model="form.date" type="date" required class="input input-bordered w-full" />
       </div>
 
+
+      <!-- Event Type / Audience -->
+<div>
+  <label class="mb-1 block text-sm font-medium text-gray-700">
+    Event Type / Audience
+  </label>
+
+  <select
+    v-model="form.eventType"
+    class="select select-bordered w-full"
+  >
+    <option disabled value="">Select event type (for filtering)</option>
+    <option v-for="t in EVENT_TYPES" :key="t.value" :value="t.value">
+      {{ t.label }}
+    </option>
+  </select>
+
+  <p class="mt-1 text-xs text-gray-500">
+    Used for the Events page filter (separate from the calendar).
+  </p>
+</div>
+
+
       <!-- Description -->
       <div>
         <label class="mb-1 block text-sm font-medium text-gray-700">Short Description</label>
@@ -118,12 +141,23 @@ const route = useRoute();
 
 const isEditMode = computed(() => !!route.query.id);
 
+const EVENT_TYPES = [
+  { value: 'faculty',      label: 'Faculty' },
+  { value: 'students',     label: 'Students' },
+  { value: 'faculty-wide', label: 'Faculty Wide' },
+] as const
+
+type EventType = '' | 'faculty' | 'students' | 'faculty-wide'
+
+
+
 const form = ref({
   title: "",
   date: "",
   description: "",
   content: "",
   coverImages: [] as string[],
+  eventType: '' as EventType,
 });
 
 const imageFiles = ref<File[]>([]);
@@ -153,6 +187,7 @@ onMounted(async () => {
         description: (data as any).description || "",
         content: (data as any).content || "",
         coverImages: (data as any).coverImages || [],
+        eventType:    (data.eventType as EventType) || '',
       };
       previewUrls.value = form.value.coverImages;
     }
