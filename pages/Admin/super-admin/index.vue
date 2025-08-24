@@ -3,7 +3,10 @@
     <main class="">
       <header class="">
         <span class="text-3xl font-bold">Admin Dashboard</span>
-        <span class="text-sm text-gray-600">Supper Admin</span>
+        <div>
+          
+          <span class="text-sm text-gray-600">Supper Admin</span>
+        </div>
       </header>
       <section>
         <p>Welcome to the Admin Dashboard. Select a section to manage.</p>
