@@ -138,6 +138,7 @@
                   </div>
                 </div>
 
+
                 <!-- Arrows -->
                 <button
                   class="absolute right-3 top-36 z-10 size-8 -translate-y-1/2 transform rounded-full bg-white/80 text-red-900 shadow-md transition hover:scale-105 hover:bg-white md:size-10"
@@ -154,6 +155,7 @@
                     <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                 </button>
+
                 <button
                   class="absolute left-3 top-36 z-10 size-8 -translate-y-1/2 transform rounded-full bg-white/80 text-red-900 shadow-md transition hover:scale-105 hover:bg-white md:size-10"
                   @click="
