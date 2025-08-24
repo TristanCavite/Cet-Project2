@@ -1,8 +1,9 @@
 <template>
     <!-- Main Content -->
-    <main class="flex-1 p-8">
-      <header class="mb-6">
-        <h1 class="text-3xl font-semibold text-red-800">Admin Dashboard</h1>
+    <main class="">
+      <header class="">
+        <span class="text-3xl font-bold">Admin Dashboard</span>
+        <span class="text-sm text-gray-600">Supper Admin</span>
       </header>
       <section>
         <p>Welcome to the Admin Dashboard. Select a section to manage.</p>

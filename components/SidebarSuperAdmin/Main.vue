@@ -1,15 +1,15 @@
 <template>
   <div class="flex h-screen">
     <!-- Sidebar -->
-    <aside class="h-full w-64 bg-maroon text-white">
-      <div class="p-4">
-        <h2 class="mb-4 text-lg font-bold">Admin Dashboard</h2>
+    <aside class="w-64 h-full text-white bg-maroon">
+      <HeaderAdmin class="pt-2" />
+      <div class="p-4 text-base font-semibold">
         <nav>
-          <ul class="space-y-2">
+          <ul class="">
             <li>
               <NuxtLink
                 to="/admin/super-admin/"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
                 Home
               </NuxtLink>
@@ -17,7 +17,7 @@
             <li>
               <NuxtLink
                 to="/admin/super-admin/admission"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
                 Admission
               </NuxtLink>
@@ -25,23 +25,31 @@
             <li>
               <NuxtLink
                 to="/admin/super-admin/create-account"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
                 Create Account
               </NuxtLink>
             </li>
             <li>
               <NuxtLink
-                to="/admin/super-admin/news"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                to="/admin/super-admin/manage_department"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
-                Manage News
+                Departments
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink
+                to="/admin/super-admin/faculty_staff"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
+              >
+                Faculty and Staff
               </NuxtLink>
             </li>
             <li>
               <NuxtLink
                 to="/admin/super-admin/manage_accounts"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
                 Manage Accounts
               </NuxtLink>
@@ -49,75 +57,64 @@
             <li>
               <NuxtLink
                 to="/admin/super-admin/manage_about"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
                 Manage About
               </NuxtLink>
             </li>
             <li>
               <NuxtLink
-                to="/admin/super-admin/research"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                to="/admin/super-admin/downloads"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
-                Manage Researches
+                Manage Downloads
               </NuxtLink>
             </li>
             <li>
               <NuxtLink
-                to="/admin/super-admin/faculty_staff"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                to="/admin/super-admin/events"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
-                Faculty and Staff
+                Manage Events
               </NuxtLink>
             </li>
             <li>
               <NuxtLink
                 to="/admin/super-admin/manage_gallery"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
                 Manage Gallery
               </NuxtLink>
             </li>
             <li>
               <NuxtLink
-                to="/admin/super-admin/events"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                to="/admin/super-admin/news"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
-                Manage Events
+                Manage News
               </NuxtLink>
             </li>
-
             <li>
               <NuxtLink
-                to="/admin/super-admin/downloads"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                to="/admin/super-admin/research"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
-                Manage Downloads
+                Manage Researches
               </NuxtLink>
             </li>
 
             <li>
               <NuxtLink
                 to="/admin/super-admin/socials"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
+                class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               >
                 Manage Socials
-              </NuxtLink>
-            </li>
-
-
-            <li>
-              <NuxtLink
-                to="/admin/super-admin/manage_department"
-                class="block rounded px-3 py-2 transition duration-300 hover:text-yellow-400"
-              >
-                Departments
               </NuxtLink>
             </li>
             <li>
               <button
                 @click="logout"
-                class="block w-full rounded px-3 py-2 text-left transition duration-300 hover:text-yellow-400"
+                class="block w-56 px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 text-start hover:scale-105"
               >
                 Logout
               </button>
@@ -126,11 +123,6 @@
         </nav>
       </div>
     </aside>
-
-    <!-- Main content -->
-    <main class="flex-1 overflow-y-auto p-6">
-      <slot />
-    </main>
   </div>
 </template>
 
