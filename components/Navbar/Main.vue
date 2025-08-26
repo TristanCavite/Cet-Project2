@@ -92,7 +92,7 @@
                         to="/about/faculty"
                         class="block px-4 py-2 border-b border-gray-500 hover:bg-gray-700"
                       >
-                        Faculty
+                        The Faculty of Engineering
                       </NuxtLink>
 
                       <NuxtLink
