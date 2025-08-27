@@ -1,113 +1,107 @@
 <template>
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+    class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/50"
     role="dialog"
     aria-modal="true"
     @mousedown="handleOutsideClick"
   >
     <!-- Modal shell (keeps the card centered) -->
-    <div class="relative w-full max-w-xl">
+    <div class="w-full max-w-xl">
       <!-- Card -->
-      <div
-        ref="modalRef"
-        class="relative w-full rounded-2xl bg-white shadow-2xl ring-1 ring-black/5"
-      >
+      <div ref="modalRef" class="relative w-full bg-white rounded-2xl ">
         <!-- Avatar (perfectly centered) -->
-        <div class="absolute -top-12 left-1/2 -translate-x-1/2">
+        <div class="absolute z-10 -translate-x-1/2 -translate-y-1/2 left-1/2">
           <img
             :src="profile?.photo || '/placeholder.png'"
             alt="Profile Picture"
-            class="h-24 w-24 rounded-full object-cover shadow-lg ring-4 ring-white"
+            class="object-cover rounded-full shadow-lg size-32 ring-4 ring-white"
           />
         </div>
 
         <!-- Close + optional delete -->
-        <button
-          type="button"
-          aria-label="Close"
-          class="absolute right-3 top-3 inline-flex items-center justify-center rounded-full p-1 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+        <UiButton
+          title="Close"
+          class="absolute inline-flex items-center justify-center p-1 text-white transition bg-transparent rounded-full right-3 top-3 hover:bg-gray-200 hover:text-gray-700 hover:scale-105"
           @click="$emit('close')"
         >
-          <X class="h-5 w-5" />
-        </button>
+          <X class="px-2 size-9" />
+        </UiButton>
 
-        <button
+        <UiButton
           v-if="showDelete"
-          type="button"
-          aria-label="Remove"
-          class="absolute left-3 top-3 inline-flex items-center justify-center rounded-full p-1 text-red-500 transition hover:bg-red-50"
-          @click="$emit('remove', profile)"
+          title="Delete"
+          class="absolute inline-flex items-center justify-center p-1 text-yellow-400 transition bg-transparent rounded-full left-3 top-3 hover:bg-gray-200 hover:scale-105"
+          @click="() => { $emit('remove', profile); $emit('close') }"
         >
-          <Trash class="h-5 w-5" />
-        </button>
+          <IconsTrash class="px-2 size-9" />
+        </UiButton>
 
+        <!-- Header -->
+        <div class="flex flex-col w-full pt-16 pb-4 text-center bg-red-900 rounded-2xl">
+          <span class="text-3xl font-bold text-white font-montserrat">
+            {{ profile?.fullName || profile?.name || "No Name Provided" }}
+          </span>
+          <span class="mt-1 text-xs font-semibold text-yellow-400 font-roboto">
+            {{
+              profile?.role === "Head Admin" && profile?.departmentName
+                ? `Department Head (${profile.departmentName})`
+                : profile?.designation || "No Designation"
+            }}
+          </span>
+        </div>
         <!-- Scrollable content area -->
-        <div class="max-h-[82vh] overflow-y-auto px-6 pb-8 pt-16 md:px-10">
-          <!-- Header -->
-          <div class="text-center">
-            <h2 class="text-2xl font-bold text-red-900">
-              {{ profile?.fullName || profile?.name || "No Name Provided" }}
-            </h2>
-            <p class="mt-1 text-lg font-semibold text-gray-500">
-              {{
-                profile?.role === "Head Admin" && profile?.departmentName
-                  ? `Department Head (${profile.departmentName})`
-                  : profile?.designation || "No Designation"
-              }}
-            </p>
-          </div>
-
+        <div class="max-h-[82vh] overflow-y-auto px-6 pb-8 md:px-10">
           <!-- Info Section -->
-          <div class="mt-6 space-y-6 text-base">
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <p class="font-semibold text-red-900">Full Name:</p>
-                <p class="mt-1">{{ profile?.fullName || profile?.name || "N/A" }}</p>
+          <div class="mt-6 space-y-6">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 text">
+              <div class="flex flex-col">
+                  <span class="text-sm font-bold text-red-900 font-montserrat text">Full Name:</span>
+                  <span class="text-base font-semibold font-roboto">{{ profile?.fullName || profile?.name || "N/A" }}</span>
+                </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-red-900 font-montserrat">Specialization:</span>
+                <span class="text-base font-semibold font-roboto">{{ profile?.specialization || "N/A" }}</span>
               </div>
-              <div>
-                <p class="font-semibold text-red-900">Specialization:</p>
-                <p class="mt-1">{{ profile?.specialization || "N/A" }}</p>
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-red-900 font-montserrat">Contact:</span>
+                <span class="text-base font-semibold font-roboto">{{ profile?.contact || "N/A" }}</span>
               </div>
-              <div>
-                <p class="font-semibold text-red-900">Contact:</p>
-                <p class="mt-1">{{ profile?.contact || "N/A" }}</p>
-              </div>
-              <div>
-                <p class="font-semibold text-red-900">Personal Email:</p>
-                <p class="mt-1 break-words">{{ profile?.personalEmail || "N/A" }}</p>
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-red-900 font-montserrat">Personal Email:</span>
+                <span class="text-base font-semibold break-words font-roboto">{{ profile?.personalEmail || "N/A" }}</span>
               </div>
             </div>
 
             <!-- Faculty Type + Home Department (only if memberType exists) -->
             <div v-if="profile?.memberType" class="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <p class="font-semibold text-red-900">Faculty Type:</p>
-                <p class="mt-1">{{ profile.memberType }}</p>
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-red-900 font-montserrat">Faculty Type:</span>
+                <span class="text-base font-semibold font-roboto">{{ profile.memberType }}</span>
               </div>
-              <div v-if="profile.memberType === 'Affiliate'">
-                <p class="font-semibold text-red-900">Home Department:</p>
-                <p class="mt-1">{{ profile.homeDepartment || "N/A" }}</p>
+              <div v-if="profile.memberType === 'Affiliate'" class="flex flex-col">
+                <span class="text-sm font-bold text-red-900 font-montserrat">Home Department:</span>
+                <span class="text-base font-semibold font-roboto">{{ profile.homeDepartment || "N/A" }}</span>
               </div>
             </div>
 
             <div>
-              <p class="font-semibold text-red-900">Highest Educational Attainment:</p>
+              <span class="text-sm font-bold text-red-900 font-montserrat">Highest Educational Attainment:</span>
               <div
-                class="prose max-w-none whitespace-pre-wrap break-words text-sm text-black"
+                class="text-sm prose text-black break-words whitespace-pre-wrap max-w-none font-roboto"
                 v-html="profile?.educationHtml || profile?.education || 'N/A'"
               />
             </div>
 
             <div>
-              <p class="font-semibold text-red-900">Websites:</p>
-              <div class="mt-1 text-sm">
+              <span class="text-sm font-bold text-red-900 font-montserrat">Websites:</span>
+              <div class="text-base font-semibold font-roboto">
                 <template v-if="profile?.websites?.length">
-                  <ul class="ml-6 list-disc space-y-1">
+                  <ul class="ml-6 space-y-1 list-disc">
                     <li v-for="(website, index) in profile.websites" :key="index">
                       <a
                         :href="website"
                         target="_blank"
-                        class="break-words text-blue-600 underline"
+                        class="text-blue-600 underline break-words"
                       >
                         {{ website }}
                       </a>
@@ -126,9 +120,8 @@
 </template>
 
 <script setup>
-  import Trash from "@/components/Icons/trash.vue";
-  import { X } from "lucide-vue-next";
-  import { ref } from "vue";
+import { X } from "lucide-vue-next";
+import { ref } from "vue";
 
   defineProps({
     profile: Object,
@@ -159,4 +152,8 @@
     border: 2px solid transparent;
     background-clip: content-box;
   }
+
+  /* *{
+    outline:1px solid red
+  } */
 </style>
