@@ -139,6 +139,8 @@ module.exports = {
         roboto: ['Roboto', 'Arial', 'sans-serif'],
         playfair: ['Playfair Display', 'Arial', 'sans-serif'],
         inter: ['Inter', 'Arial', 'sans-serif'],
+        trajan: ['Trajan Sans', 'Arial', 'sans-serif'],
+        galada: ['Galada', 'Arial', 'sans-serif'],
       },
 
       typography: ({ theme }) => ({
