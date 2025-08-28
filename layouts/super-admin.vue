@@ -1,14 +1,16 @@
 <template>
-  <div class="h-screen flex flex-col">
-    <HeaderMain />
-    <div class="flex flex-1 overflow-hidden">
+  <div class="flex h-screen overflow-hidden">
       <!-- Sidebar -->
-      <SidebarSuperAdminMain />
-
+      <SidebarSuperAdminMain class="shrink-0" />
       <!-- Page Content -->
-      <div class="flex-1 p-6 overflow-y-auto">
+      <div class="flex-1 overflow-auto">
         <slot />
       </div>
-    </div>
   </div>
 </template>
+
+<style>
+/* *{
+  outline: 1px solid red;
+} */
+</style>

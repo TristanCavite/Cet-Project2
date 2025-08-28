@@ -1,13 +1,13 @@
 <template>
-  <div class="mx-auto max-w-5xl px-4 py-8">
+  <div class="max-w-5xl px-4 py-8 mx-auto">
     <!-- Page title -->
-    <h1 class="pb-4 text-2xl font-bold text-red-900 md:pb-8 md:text-5xl font-playfair">College Downloads</h1>
+    <span class="pb-4 text-2xl font-bold text-red-900 md:pb-8 md:text-5xl font-playfair">College Downloads</span>
 
     <!-- Empty / loading states -->
-    <div v-if="!downloads" class="rounded border bg-white p-6 text-gray-500">
+    <div v-if="!downloads" class="p-6 text-gray-500 bg-white border rounded">
       Loading downloads…
     </div>
-    <div v-else-if="downloads.length === 0" class="rounded border bg-white p-10 text-center text-gray-500">
+    <div v-else-if="downloads.length === 0" class="p-10 text-center text-gray-500 bg-white border rounded">
       No downloads yet.
     </div>
 
@@ -16,22 +16,22 @@
       <article
         v-for="item in downloads"
         :key="item.id"
-        class="rounded-lg border bg-white p-5 shadow-sm"
+        class="p-5 bg-white border rounded-lg shadow-sm"
       >
         <!-- Title -->
-        <h2 class="text-2xl font-bold text-maroon">
+        <span class="text-2xl font-bold text-red-900">
           {{ item.title }}
-        </h2>
+        </span>
 
         <!-- Byline -->
-        <p class="mt-1 text-sm text-gray-600">
+        <div class="mt-1 text-sm text-gray-600">
           By {{ item.author || '—' }}
           <span class="mx-2 text-gray-300">•</span>
           {{ formatDate(item.createdAt) }}
-        </p>
+        </div>
 
         <!-- Rich content (tables/links) -->
-        <div class="prose mt-4 max-w-none">
+        <div class="mt-4 prose max-w-none">
           <!-- force links to open in a new tab -->
           <div v-html="externalizedLinks(item.content)"></div>
         </div>
@@ -75,7 +75,7 @@ function externalizedLinks(html = '') {
 }
 </script>
 
-<style scoped>
+<!-- <style scoped>
 /* fallback if your utility isn't globally present */
 .text-maroon { color: #740505; }
 
@@ -113,4 +113,4 @@ function externalizedLinks(html = '') {
 /* If your editor left any TipTap selection classes, keep them unobtrusive here */
 :deep(.prose .selectedCell) { background: transparent; }
 :deep(.prose .selectedCell::after) { content: none; }
-</style>
+</style> -->

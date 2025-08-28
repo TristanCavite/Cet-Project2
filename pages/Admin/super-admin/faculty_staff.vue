@@ -1,73 +1,86 @@
 <template>
-  <div class="p-8">
-    <h1 class="text-2xl font-bold mb-6 text-maroon">College Faculty and Staff</h1>
-
-    <!-- Add Faculty/Staff Button -->
-    <button
-      @click="showAddModal = true"
-      class="px-4 py-2 bg-maroon text-white rounded shadow hover:bg-red-600"
-    >
-      + Add Faculty and Staff
-    </button>
-
-    <!-- College Dean Section -->
-    <div class="mt-8" v-if="collegeDean">
-      <h2 class="text-xl font-semibold text-center mb-4">College Dean</h2>
-      <div class="flex justify-center">
-        <div class="text-center cursor-pointer" @click="showProfilePreview(collegeDean)">
-          <img :src="collegeDean.photo || '/placeholder.png'" alt="College Dean" class="w-32 h-32 rounded-full object-cover mx-auto shadow-lg" />
-          <p class="mt-2 font-bold text-lg">{{ collegeDean.name || "No Dean Assigned" }}</p>
-        </div>
-      </div>
+  <main class="p-8">
+    <div class="flex flex-col">
+      <span class="text-4xl font-bold text-red-900 font-trajan">College Faculty and Staff</span>
+      <span class="text-xs font-montserrat">Manage leadership roles, department heads, and the directory</span>
     </div>
 
-    <!-- College Secretary Section -->
-    <div class="mt-8" v-if="collegeSecretary">
-      <h2 class="text-xl font-semibold text-center mb-4">College Secretary</h2>
-      <div class="flex justify-center">
-        <div class="text-center cursor-pointer" @click="showProfilePreview(collegeSecretary)">
-          <img :src="collegeSecretary.photo || '/placeholder.png'" alt="College Secretary" class="w-32 h-32 rounded-full object-cover mx-auto shadow-lg" />
-          <p class="mt-2 font-bold text-lg">{{ collegeSecretary.name || "No Secretary Assigned" }}</p>
+    <!-- Add Faculty/Staff Button -->
+    <div class="flex justify-end">
+      <UiButton
+        @click="showAddModal = true"
+        class="px-4 py-2 text-white bg-red-900 rounded shadow hover:bg-red-800 hover:scale-105"
+      >
+      <UserPlus class="size-5" />
+      Add Faculty and Staff
+      </UiButton>
+    </div>
+
+    <span class="text-xl font-bold font-trajan">College Leadership</span>
+    <div class="grid grid-cols-3 mt-3 mb-10 gap-x-6">
+      <!-- College Dean Section -->
+      <div class="flex justify-start h-32 pl-4 space-x-6 text-black rounded shadow-xl cursor-pointer bg-neutral-100 " v-if="collegeDean"  @click="showProfilePreview(collegeDean)">
+        <div class="flex items-center">
+          <img :src="collegeDean.photo || '/placeholder.png'" alt="College Dean" class="object-cover rounded-full size-28" />
+        </div>
+        <div class="flex flex-col items-start justify-center">
+            <span class="text-xs font-normal font-roboto">College Dean</span>
+            <span class="text-lg font-semibold font-montserrat">{{ collegeDean.name || "No Dean Assigned" }}</span>
+        </div>
+      </div>
+  
+      <!-- College Secretary Section -->
+      <div class="flex h-32 pl-4 space-x-6 text-black rounded shadow-xl cursor-pointer ustify-start bg-neutral-100" v-if="collegeSecretary" @click="showProfilePreview(collegeSecretary)">
+        <div class="flex items-center">
+          <img :src="collegeSecretary.photo || '/placeholder.png'" alt="College Secretary" class="object-cover rounded-full size-28" />
+        </div>
+        <div class="flex flex-col items-start justify-center">
+          <span class="text-xs font-normal font-roboto">College Secretary</span>
+          <span class="text-lg font-semibold font-montserrat">{{ collegeSecretary.name || "No Secretary Assigned" }}</span>
         </div>
       </div>
     </div>
 
     <!-- Department Heads Section -->
-    <div class="mt-12" v-if="departmentHeads.length">
-      <h2 class="text-xl font-semibold text-center mb-4">Department Heads</h2>
-      <div class="grid grid-cols-4 gap-6">
-        <div v-for="head in departmentHeads" :key="head.id" class="text-center cursor-pointer" @click="showProfilePreview(head)">
-          <img :src="head.photo || '/placeholder.png'" alt="Department Head" class="w-24 h-24 rounded-full object-cover mx-auto shadow-lg" />
-          <p class="mt-2 font-bold text-lg">{{ head.name || "No Head Assigned" }}</p>
+    <span class="text-xl font-bold font-trajan">Department Heads</span>
+    <div class="grid grid-cols-3 mt-3 mb-10 gap-y-6 gap-x-6" v-if="departmentHeads.length">
+      <div class="flex justify-start h-32 pl-4 space-x-6 text-black rounded shadow-xl cursor-pointer bg-neutral-100 " v-for="head in departmentHeads" :key="head.id" @click="showProfilePreview(head)">
+        <div class="flex items-center">
+          <img :src="head.photo || '/placeholder.png'" alt="Department Head" class="object-cover rounded-full size-28" />
+        </div>
+        <div class="flex flex-col items-start justify-center">
+          <span class="text-lg font-semibold font-montserrat">{{ head.name || "No Head Assigned" }}</span>
         </div>
       </div>
     </div>
 
     <!-- Administrative Staff Section -->
-    <div class="mt-12" v-if="adminStaff.length">
-      <h2 class="text-xl font-semibold text-center mb-4">Administrative Staff</h2>
-      <div class="grid grid-cols-4 gap-6">
-        <div v-for="staff in adminStaff" :key="staff.id" class="text-center cursor-pointer" @click="showProfilePreview(staff)">
-          <img :src="staff.photo || '/placeholder.png'" alt="Staff" class="w-24 h-24 rounded-full object-cover mx-auto shadow-lg" />
-          <p class="mt-2 font-bold text-lg">{{ staff.name || "No Staff Assigned" }}</p>
-          <p class="text-sm text-gray-600">{{ staff.subDesignation || "N/A" }}</p>
+    <span class="text-xl font-bold font-trajand">Administrative Staff</span>
+    <div class="grid grid-cols-3 mt-3 mb-10 gap-y-6 gap-x-6" v-if="adminStaff.length">
+      <div class="flex justify-start h-32 pl-4 space-x-6 text-black rounded shadow-xl cursor-pointer bg-neutral-100 " v-for="staff in adminStaff" :key="staff.id" @click="showProfilePreview(staff)">
+        <div class="flex items-center">
+          <img :src="staff.photo || '/placeholder.png'" alt="Staff" class="object-cover rounded-full shadow-lg size-28" />
+        </div>
+        <div class="flex flex-col items-start justify-center">
+          <span class="mt-2 text-lg font-bold font-montserrat">{{ staff.name || "No Staff Assigned" }}</span>
+          <span class="text-sm text-gray-600 font-trajan">{{ staff.subDesignation || "N/A" }}</span>
         </div>
       </div>
     </div>
 
-        <!-- Profile Preview Modal -->
-        <ProfilePreviewModal
+    <!-- Profile Preview Modal -->
+    <ProfilePreviewModal
       v-if="showProfilePreviewModal"
-      :profile="selectedProfile"
+      :profile="selectedProfile"  
       :showDelete="true"
       @close="closeProfilePreviewModal"
       @remove="removeUserFromCollege"
     />
 
     <!-- Add Faculty/Staff Modal -->
-    <div v-if="showAddModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-8 rounded shadow-lg w-96">
-        <h2 class="text-lg font-bold mb-4">Add Faculty/Staff</h2>
+    <div v-if="showAddModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="p-8 bg-white rounded shadow-lg w-96">
+        <h2 class="mb-4 text-lg font-bold">Add Faculty/Staff</h2>
 
         <!-- Search Bar with Suggestions -->
         <div class="relative mb-4">
@@ -79,11 +92,11 @@
               @blur="hideDropdown"
               type="text"
               placeholder="Search Faculty"
-              class="w-full border rounded px-3 py-2 pl-10"
+              class="w-full px-3 py-2 pl-10 border rounded"
             />
-            <Search class="absolute left-3 top-2 text-gray-500 w-5 h-5" />
+            <Search class="absolute text-gray-500 size-5 left-3 top-2" />
           </div>
-          <ul v-if="dropdownVisible && filteredUsers.length" class="absolute w-full bg-white border rounded shadow mt-1 z-10">
+          <ul v-if="dropdownVisible && filteredUsers.length" class="absolute z-10 w-full mt-1 overflow-auto bg-white border rounded shadow max-h-48">
             <li
               v-for="user in filteredUsers"
               :key="user.id"
@@ -102,7 +115,7 @@
         <!-- Designation Dropdown -->
         <div class="mb-4">
           <label class="block text-sm font-medium">Designation:</label>
-          <select v-model="selectedUser.designation" class="w-full border rounded px-3 py-2">
+          <select v-model="selectedUser.designation" class="w-full px-3 py-2 border rounded">
             <option value="" disabled>Select Designation</option>
             <option v-for="designation in designations" :key="designation" :value="designation">
               {{ designation }}
@@ -111,20 +124,20 @@
         </div>
         
         <!-- Sub-Designation Input (Only for Administrative Staff) -->
-    <div v-if="selectedUser.designation === 'Administrative Staff'" class="mb-4">
-      <label class="block text-sm font-medium">Specify Role:</label>
-      <input v-model="selectedUser.subDesignation" type="text" placeholder="Please specify role" class="w-full border rounded px-3 py-2" />
-    </div>
+        <div v-if="selectedUser.designation === 'Administrative Staff'" class="mb-4">
+          <label class="block text-sm font-medium">Specify Role:</label>
+          <input v-model="selectedUser.subDesignation" type="text" placeholder="Please specify role" class="w-full px-3 py-2 border rounded" />
+        </div>
 
         <!-- Action Buttons -->
-        <div class="flex justify-end space-x-2 mt-4">
-          <button @click="resetModal" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
-          <button @click="addFacultyOrStaff" class="px-4 py-2 bg-maroon text-white rounded hover:bg-red-600">Add</button>
+        <div class="flex justify-end mt-4 space-x-2">
+          <UiButton @click="resetModal" class="px-4 py-2 bg-gray-400 rounded hover:bg-gray-500">Cancel</UiButton>
+          <UiButton @click="addFacultyOrStaff" class="px-4 py-2 text-white bg-red-900 rounded hover:bg-red-800">Add</UiButton>
         </div>
       </div>
     </div>
 
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -140,6 +153,7 @@ import {
 import { collection } from "firebase/firestore";
 import Search from "@/components/Icons/Search.vue";
 import ProfilePreviewModal from '@/components/ProfilePreviewModal.vue';
+import { UserPlus} from "lucide-vue-next";
 
 definePageMeta({
   middleware: "auth",
@@ -371,11 +385,8 @@ onMounted(() => {
 
 
 <style scoped>
-.text-maroon {
-  color: #740505;
-}
-.bg-maroon {
-  background-color: #740505;
-}
+/* *{
+  outline: 1px solid red;
+} */
 </style>
 
