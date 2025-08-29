@@ -52,17 +52,23 @@
       <div>
         <label class="mb-1 block font-semibold">Cover Image</label>
         <input
-          type="file"
-          class="file-input file-input-bordered w-full"
-          accept="image/*"
-          @change="handleImage"
-        />
+  ref="coverInput"
+  type="file"
+  class="file-input file-input-bordered w-full"
+  accept="image/*"
+  @change="handleImage"
+/>
+
         <img
-          v-if="form.coverImageUrl"
-          :src="form.coverImageUrl"
-          class="mt-2 h-48 w-full rounded object-cover"
-          alt="Admission cover"
-        />
+  v-if="pendingCoverPreview || form.coverImageUrl"
+  :src="pendingCoverPreview || form.coverImageUrl"
+  class="mt-2 h-48 w-full rounded object-cover"
+  alt="Admission cover"
+/>
+<p v-if="pendingCoverPreview" class="mt-1 text-xs text-amber-600">
+  This image is not saved yet — it will be uploaded when you click <b>Save Changes</b>.
+</p>
+
       </div>
 
       <!-- Promotional Video (only for 'Why Choose VSU?') -->
@@ -163,6 +169,14 @@ const form = ref({
   videoUrl: '',
 })
 
+const coverInput = ref<HTMLInputElement | null>(null)
+
+/** Pending (unsaved) cover image */
+const pendingCoverFile = ref<File | null>(null)
+/** Local preview URL for the pending cover image */
+const pendingCoverPreview = ref<string | ''>('')
+
+
 /** Baseline snapshot (for 'No changes' detection) */
 const baseline = ref({ coverImageUrl: '', content: '', videoUrl: '' })
 
@@ -188,6 +202,11 @@ async function loadUndergradVisibility() {
 watch(selectedSection, async (id) => {
   if (!id) return
 
+  if (pendingCoverPreview.value) URL.revokeObjectURL(pendingCoverPreview.value as string)
+pendingCoverFile.value = null
+pendingCoverPreview.value = ''
+if (coverInput.value) coverInput.value.value = ''
+
   // Load section content
   const snap = await getDoc(doc(db, 'admission_sections', id))
   if (snap.exists()) {
@@ -210,22 +229,25 @@ watch(selectedSection, async (id) => {
 })
 
 /** Dirty checker mirrors Manage About */
-const isDirty = computed(
-  () =>
-    form.value.coverImageUrl !== baseline.value.coverImageUrl ||
-    form.value.content !== baseline.value.content ||
-    form.value.videoUrl !== baseline.value.videoUrl
+const isDirty = computed(() =>
+  // New unsaved cover image OR other field changes
+  !!pendingCoverFile.value ||
+  form.value.coverImageUrl !== baseline.value.coverImageUrl ||
+  form.value.content !== baseline.value.content ||
+  form.value.videoUrl !== baseline.value.videoUrl
 )
 
-/** Upload cover image to Storage and set URL */
-async function handleImage(e: Event) {
+
+/** Pick cover image locally (no upload yet). Shows a preview and marks form dirty. */
+function handleImage(e: Event) {
   const file = (e.target as HTMLInputElement)?.files?.[0]
-  if (!file || !selectedSection.value) return
-  const path = `admission_sections/${selectedSection.value}/cover.jpg`
-  const fileRef = storageRef(storage, path)
-  await uploadBytes(fileRef, file)
-  const url = await getDownloadURL(fileRef)
-  form.value.coverImageUrl = url
+  if (!file) return
+
+  // Clean up previous preview to avoid leaks
+  if (pendingCoverPreview.value) URL.revokeObjectURL(pendingCoverPreview.value as string)
+
+  pendingCoverFile.value = file
+  pendingCoverPreview.value = URL.createObjectURL(file)
 }
 
 /** TipTap image uploader (returns URL to insert) */
@@ -237,8 +259,19 @@ async function handleEditorImageUpload(file: File) {
 }
 
 /** Save content changes to Firestore; update baseline; exit edit mode */
+/** Save content changes to Firestore; upload pending cover if any; update baseline; exit edit mode */
 async function saveSection() {
   if (!selectedSection.value || !isDirty.value) return
+
+  // 1) If there is a new cover image pending, upload it now
+  if (pendingCoverFile.value) {
+    const path = `admission_sections/${selectedSection.value}/cover.jpg`
+    const fileRef = storageRef(storage, path)
+    await uploadBytes(fileRef, pendingCoverFile.value)
+    form.value.coverImageUrl = await getDownloadURL(fileRef)
+  }
+
+  // 2) Build doc payload
   const payload: Record<string, any> = {
     coverImageUrl: form.value.coverImageUrl,
     content: form.value.content,
@@ -246,11 +279,21 @@ async function saveSection() {
   if (selectedSection.value === 'why_choose_vsu') {
     payload.videoUrl = form.value.videoUrl
   }
-  await setDoc(doc(db, 'admission_sections', selectedSection.value), payload /* , { merge: true } */)
+
+  // 3) Persist
+  await setDoc(doc(db, 'admission_sections', selectedSection.value), payload)
+
+  // 4) Cleanup pending + reset baseline + exit edit mode
+  if (pendingCoverPreview.value) URL.revokeObjectURL(pendingCoverPreview.value as string)
+  pendingCoverFile.value = null
+  pendingCoverPreview.value = ''
+  if (coverInput.value) coverInput.value.value = ''
+
   baseline.value = { ...form.value }
   isEditing.value = false
   alert('Section updated!')
 }
+
 
 /** Convert YT URLs to embed form; passthrough others (e.g., Vimeo embed) */
 const embedVideoUrl = computed(() => {
@@ -274,12 +317,21 @@ const embedVideoUrl = computed(() => {
 /** Toggle edit mode with snapshot-safe cancel */
 function toggleEdit() {
   if (isEditing.value) {
-    form.value = { ...baseline.value } // Cancel → revert to baseline
+    // Cancel → revert fields
+    form.value = { ...baseline.value }
+
+    // Also discard any unsaved cover image
+    if (pendingCoverPreview.value) URL.revokeObjectURL(pendingCoverPreview.value as string)
+    pendingCoverFile.value = null
+    pendingCoverPreview.value = ''
+    if (coverInput.value) coverInput.value.value = ''
+
     isEditing.value = false
   } else {
     isEditing.value = true
   }
 }
+
 
 /** Commit the "Show Undergraduate on public" checkbox (atomic batch) */
 async function saveUndergradVisibility() {

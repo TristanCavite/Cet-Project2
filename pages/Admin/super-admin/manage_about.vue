@@ -24,17 +24,23 @@
       <div>
         <label class="mb-1 block font-semibold">Cover Image</label>
         <input
-          type="file"
-          class="file-input file-input-bordered w-full"
-          accept="image/*"
-          @change="handleImage"
-        />
+  ref="coverInput"
+  type="file"
+  class="file-input file-input-bordered w-full"
+  accept="image/*"
+  @change="handleImage"
+/>
+
         <img
-          v-if="form.coverImageUrl"
-          :src="form.coverImageUrl"
-          class="mt-2 h-48 w-full rounded object-cover"
-          alt="About cover"
-        />
+  v-if="pendingCoverPreview || form.coverImageUrl"
+  :src="pendingCoverPreview || form.coverImageUrl"
+  class="mt-2 h-48 w-full rounded object-cover"
+  alt="About cover"
+/>
+<p v-if="pendingCoverPreview" class="mt-1 text-xs text-amber-600">
+  This image is not saved yet — it will be uploaded when you click <b>Save Changes</b>.
+</p>
+
       </div>
 
       <!-- College Promo Video (only for The College section) -->
@@ -127,12 +133,23 @@ const form = ref({
   videoUrl: '',
 })
 
+const coverInput = ref<HTMLInputElement | null>(null)
+const pendingCoverFile = ref<File | null>(null)
+const pendingCoverPreview = ref<string | ''>('')
+
+
 /** Baseline snapshot of last loaded/saved values (for dirty check) */
 const baseline = ref({ coverImageUrl: '', content: '', videoUrl: '' })
 
 /** Load section when changed */
 watch(selectedSection, async (id) => {
   if (!id) return
+  // Discard any unsaved cover selection when switching sections
+if (pendingCoverPreview.value) URL.revokeObjectURL(pendingCoverPreview.value as string)
+pendingCoverFile.value = null
+pendingCoverPreview.value = ''
+if (coverInput.value) coverInput.value.value = ''
+
   const snap = await getDoc(doc(db, 'about_sections', id))
   if (snap.exists()) {
     const data = snap.data() as any
@@ -151,21 +168,24 @@ watch(selectedSection, async (id) => {
 
 /** Whether anything changed vs. baseline (controls Save button) */
 const isDirty = computed(() =>
+  !!pendingCoverFile.value ||
   form.value.coverImageUrl !== baseline.value.coverImageUrl ||
   form.value.content !== baseline.value.content ||
   form.value.videoUrl !== baseline.value.videoUrl
 )
 
-/** Upload cover image to Storage and set URL */
-async function handleImage(e: Event) {
+/** Pick cover image locally (no upload yet). Shows a preview and marks form dirty. */
+function handleImage(e: Event) {
   const file = (e.target as HTMLInputElement)?.files?.[0]
-  if (!file || !selectedSection.value) return
-  const path = `about_sections/${selectedSection.value}/cover.jpg`
-  const fileRef = storageRef(storage, path)
-  await uploadBytes(fileRef, file)
-  const url = await getDownloadURL(fileRef)
-  form.value.coverImageUrl = url
+  if (!file) return
+
+  // Clean up previous preview to avoid leaks
+  if (pendingCoverPreview.value) URL.revokeObjectURL(pendingCoverPreview.value as string)
+
+  pendingCoverFile.value = file
+  pendingCoverPreview.value = URL.createObjectURL(file)
 }
+
 
 /** TipTap image uploader (returns a URL to insert) */
 async function handleEditorImageUpload(file: File) {
@@ -176,8 +196,18 @@ async function handleEditorImageUpload(file: File) {
 }
 
 /** Save changes to Firestore */
+/** Save changes to Firestore (uploads pending cover first) */
 async function saveSection() {
   if (!selectedSection.value || !isDirty.value) return
+
+  // Upload pending cover if present
+  if (pendingCoverFile.value) {
+    const path = `about_sections/${selectedSection.value}/cover.jpg`
+    const fileRef = storageRef(storage, path)
+    await uploadBytes(fileRef, pendingCoverFile.value)
+    form.value.coverImageUrl = await getDownloadURL(fileRef)
+  }
+
   const payload: Record<string, any> = {
     coverImageUrl: form.value.coverImageUrl,
     content: form.value.content,
@@ -185,11 +215,20 @@ async function saveSection() {
   if (selectedSection.value === 'the_college') {
     payload.videoUrl = form.value.videoUrl
   }
-  await setDoc(doc(db, 'about_sections', selectedSection.value), payload /* , { merge: true } */)
-  baseline.value = { ...form.value } // update baseline after successful save
+
+  await setDoc(doc(db, 'about_sections', selectedSection.value), payload)
+
+  // Cleanup pending + update baseline + exit edit mode
+  if (pendingCoverPreview.value) URL.revokeObjectURL(pendingCoverPreview.value as string)
+  pendingCoverFile.value = null
+  pendingCoverPreview.value = ''
+  if (coverInput.value) coverInput.value.value = ''
+
+  baseline.value = { ...form.value }
   isEditing.value = false
   alert('Section updated!')
 }
+
 
 /** Compute embed URL for YouTube/Vimeo (supports youtu.be & youtube.com/watch) */
 const embedVideoUrl = computed(() => {
@@ -215,11 +254,19 @@ function toggleEdit() {
   if (isEditing.value) {
     // Cancel → revert any unsaved edits
     form.value = { ...baseline.value }
+
+    // Discard pending cover
+    if (pendingCoverPreview.value) URL.revokeObjectURL(pendingCoverPreview.value as string)
+    pendingCoverFile.value = null
+    pendingCoverPreview.value = ''
+    if (coverInput.value) coverInput.value.value = ''
+
     isEditing.value = false
   } else {
     isEditing.value = true
   }
 }
+
 </script>
 
 <style>

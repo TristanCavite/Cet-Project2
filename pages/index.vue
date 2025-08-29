@@ -48,32 +48,41 @@
         ></span>
       </div>
 
-      <!-- view port -->
-      <div class="relative mx-auto w-[100%] overflow-hidden rounded-xl md:w-[80%]">
-        <!-- Slides Wrapper -->
+      <!-- Viewport (centered; 90% wide on md+) -->
+<div class="relative mx-auto w-[100%] md:w-[85%]">
+
+  <!-- 16:9 ratio box: 9/16 = 56.25% -->
+  <div class="relative" :style="{ paddingBottom: ratioPadding }">
+    <div class="absolute inset-0 overflow-hidden rounded-xl bg-neutral-200">
+      <div
+        class="flex h-full transition-transform duration-700 ease-in-out"
+        :style="{
+          width: `${slideCount * 100}%`,
+          transform: `translateX(-${currentIndex * (100 / slideCount)}%)`,
+        }"
+      >
+        <!-- Each Slide is exactly one frame wide -->
         <div
-          class="flex transition-transform duration-700 ease-in-out"
-          :style="{
-            transform: `translateX(-${currentIndex * (100 / images.length)}%)`,
-            width: `${images.length * 100}%`,
-          }"
-        >
-          <!-- Each Slide -->
-          <div
-            v-for="(image, index) in images"
-            :key="index"
-            class="flex w-full flex-shrink-0 items-center justify-center md:h-128"
-            :style="{ flex: `0 0 ${100 / images.length}%` }"
-          >
-            <img
-              :src="image.src"
-              :alt="image.alt || `Slide ${index + 1}`"
-              class="h-full w-full rounded-xl object-cover"
-              loading="lazy"
-            />
-          </div>
+  v-for="(image, index) in images"
+  :key="index"
+  class="h-full shrink-0 grow-0"
+  :style="{ flex: `0 0 ${100 / slideCount}%` }"
+>
+
+          <!-- Fill & center within the 16:9 frame -->
+          <img
+            :src="image.src"
+            :alt="image.alt || `Slide ${index + 1}`"
+            class="h-full w-full rounded-xl object-cover object-center"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
     </div>
 
     <!-- 📰 Events -->
@@ -86,7 +95,7 @@
         >
       </div>
 
-      <div class="flex flex-col justify-center md:px-10 md:flex-row md:gap-10 lg:gap-16">
+      <div class="flex flex-col justify-center md:flex-row md:gap-10 md:px-10 lg:gap-16">
         <!-- 📅 left side -->
         <div class="flex w-full flex-col space-y-6 pt-5 md:w-3/4">
           <!-- Type Filter (dropdown) -->
@@ -137,7 +146,6 @@
                     <img :src="img" alt="" class="h-48 w-full object-cover md:h-60" />
                   </div>
                 </div>
-
 
                 <!-- Arrows -->
                 <button
@@ -241,7 +249,9 @@
         </div>
 
         <!--  Right Side -->
-        <div class="hidden md:flex md:w-[340px] md:shrink-0 md:flex-col md:items-center md:pt-5 md:space-y-5">
+        <div
+          class="hidden md:flex md:w-[340px] md:shrink-0 md:flex-col md:items-center md:space-y-5 md:pt-5"
+        >
           <div class="flex flex-col items-center space-y-5 pt-5">
             <!-- Calendar -->
             <div class="">
@@ -314,6 +324,11 @@
 
   const MAX_VISIBLE = 3;
   const MAX_OLD_EVENTS = 10;
+  // 16:9 ratio (height/width = 9/16 = 56.25%)
+const ratioPadding = '42.857%'; // 21:9 (shorter than 16:9)
+
+const slideCount = computed(() => Math.max(images.value.length, 1));
+
 
   const events = ref<any[]>([]);
   const selectedDate = ref<Date | null>(null);
@@ -365,11 +380,13 @@
     const q = query(collection(db, "homepage_gallery"), orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
     images.value = snap.docs
-      .map((d) => {
-        const data: any = d.data();
-        return { src: data?.imageUrl || "", alt: data?.caption || "Homepage slide" };
-      })
-      .filter((i) => !!i.src);
+  .map((d) => {
+    const data: any = d.data();
+    const src = data?.heroUrl || data?.imageUrl || data?.originalUrl || "";
+    return { src, alt: data?.caption || "Homepage slide" };
+  })
+  .filter((i) => !!i.src);
+
 
     if (images.value.length === 0) {
       images.value = [
