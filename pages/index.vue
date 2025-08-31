@@ -1,15 +1,31 @@
 <template>
   <main class="bg-white">
     <!-- 🔼 Hero Slider -->
-    <div class="relative h-auto w-full overflow-hidden">
+    <div class="relative w-full h-auto overflow-hidden">
       <!-- Arrows -->
       <button
-        class="absolute right-4 top-1/2 z-10 flex h-16 -translate-y-1/2 transform items-center justify-center rounded-xl border bg-red-900 shadow-lg transition md:right-20 md:h-28"
+        class="absolute z-10 flex items-center justify-center h-12 transition transform -translate-y-1/2 bg-red-900 left-1 top-1/2 rounded-xl md:left-10 md:h-28"
+        @click="prevSlide"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="text-white lucide lucide-chevron-left size-5 md:size-10"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="m15 18-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+      
+      <button
+        class="absolute z-10 flex items-center justify-center h-12 transition transform -translate-y-1/2 bg-red-900 right-1 top-1/2 rounded-xl md:h-28 md:right-10"
         @click="nextSlide"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="lucide lucide-chevron-right size-5 text-white md:size-10"
+          class="text-white lucide lucide-chevron-right size-5 md:size-10"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -19,87 +35,64 @@
         </svg>
       </button>
 
-      <button
-        class="absolute left-4 top-1/2 z-10 flex h-16 -translate-y-1/2 transform items-center justify-center rounded-xl border bg-red-900 shadow-lg transition md:left-20 md:h-28"
-        @click="prevSlide"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="lucide lucide-chevron-left size-5 text-white md:size-10"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="m15 18-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
 
       <!-- Dots -->
       <div
-        class="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 transform space-x-2 md:bottom-4"
+        class="absolute z-10 flex space-x-2 transform -translate-x-1/2 bottom-2 left-1/2 md:bottom-4"
       >
         <span
           v-for="(image, index) in images"
           :key="index"
-          class="size-2 rounded-full bg-gray-400"
+          class="bg-gray-400 rounded-full size-1 md:size-2"
           :class="{ 'bg-gray-800': currentIndex === index }"
           @click="setCurrentSlide(index)"
         ></span>
       </div>
 
       <!-- Viewport (centered; 90% wide on md+) -->
-<div class="relative mx-auto w-[100%] md:w-[85%]">
-
-  <!-- 16:9 ratio box: 9/16 = 56.25% -->
-  <div class="relative" :style="{ paddingBottom: ratioPadding }">
-    <div class="absolute inset-0 overflow-hidden rounded-xl bg-neutral-200">
-      <div
-        class="flex h-full transition-transform duration-700 ease-in-out"
-        :style="{
-          width: `${slideCount * 100}%`,
-          transform: `translateX(-${currentIndex * (100 / slideCount)}%)`,
-        }"
-      >
-        <!-- Each Slide is exactly one frame wide -->
-        <div
-  v-for="(image, index) in images"
-  :key="index"
-  class="h-full shrink-0 grow-0"
-  :style="{ flex: `0 0 ${100 / slideCount}%` }"
->
-
-          <!-- Fill & center within the 16:9 frame -->
-          <img
-            :src="image.src"
-            :alt="image.alt || `Slide ${index + 1}`"
-            class="h-full w-full rounded-xl object-cover object-center"
-            loading="lazy"
-            decoding="async"
-          />
+      <div class="relative mx-auto w-[100%] md:w-[85%]">
+        <!-- 16:9 ratio box: 9/16 = 56.25% -->
+        <div class="relative" :style="{ paddingBottom: ratioPadding }">
+          <div class="absolute inset-0 overflow-hidden rounded-xl bg-neutral-200">
+            <div
+              class="flex h-full transition-transform duration-700 ease-in-out"
+              :style="{
+                width: `${slideCount * 100}%`,
+                transform: `translateX(-${currentIndex * (100 / slideCount)}%)`,
+              }"
+            >
+              <!-- Each Slide is exactly one frame wide -->
+              <div v-for="(image, index) in images" :key="index" class="h-full shrink-0 grow-0" :style="{ flex: `0 0 ${100 / slideCount}%` }">
+                <!-- Fill & center within the 16:9 frame -->
+                <img
+                  :src="image.src"
+                  :alt="image.alt || `Slide ${index + 1}`"
+                  class="object-cover object-center w-full h-full rounded-xl"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-    </div>
 
     <!-- 📰 Events -->
-    <div class="mx-auto py-5 md:max-w-7xl md:px-4 md:py-10">
+    <div class="py-5 mx-auto md:max-w-7xl md:px-4 md:py-10">
       <!-- 🏷 Section Title -->
       <div class="text-center md:pt-4">
         <span
-          class="font-playfair text-xl font-extrabold uppercase tracking-wide text-maroon md:text-5xl"
+          class="text-xl font-extrabold tracking-wide uppercase font-playfair text-maroon md:text-5xl"
           >EVENTS</span
         >
       </div>
 
       <div class="flex flex-col justify-center md:flex-row md:gap-10 md:px-10 lg:gap-16">
         <!-- 📅 left side -->
-        <div class="flex w-full flex-col space-y-6 pt-5 md:w-3/4">
+        <div class="flex flex-col w-full pt-5 space-y-6 md:w-3/4">
           <!-- Type Filter (dropdown) -->
-          <div class="mb-4 flex items-center gap-3">
+          <div class="flex items-center gap-3 mb-4">
             <label class="text-sm font-medium text-gray-700">Filter by:</label>
 
             <select v-model="typeFilter" class="select select-bordered select-sm md:select-md">
@@ -113,7 +106,7 @@
             <button
               v-if="selectedDate"
               type="button"
-              class="rounded bg-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-300"
+              class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
               @click="selectedDate = null"
             >
               Clear date
@@ -124,10 +117,10 @@
             <div
               v-for="event in filteredEvents"
               :key="event.id"
-              class="w-full rounded-lg bg-white p-5 shadow-2xl md:w-4/5"
+              class="w-full p-5 bg-white rounded-lg shadow-2xl md:w-4/5"
             >
               <!-- Date -->
-              <span class="text-md font-inter font-semibold text-red-800 md:text-2xl">
+              <span class="font-semibold text-red-800 text-md font-inter md:text-2xl">
                 DAY
                 {{
                   new Date(event.date)
@@ -139,22 +132,22 @@
               <!-- Image slide -->
               <div class="relative mx-auto overflow-hidden">
                 <div
-                  class="flex flex-shrink-0 pb-4 pt-4 transition-transform duration-500"
+                  class="flex flex-shrink-0 pt-4 pb-4 transition-transform duration-500"
                   :style="{ transform: `translateX(-${event.currentSlide || 0}00%)` }"
                 >
-                  <div v-for="(img, i) in event.coverImages" :key="i" class="w-full flex-shrink-0">
-                    <img :src="img" alt="" class="h-48 w-full object-cover md:h-60" />
+                  <div v-for="(img, i) in event.coverImages" :key="i" class="flex-shrink-0 w-full">
+                    <img :src="img" alt="" class="object-cover w-full h-48 md:h-60" />
                   </div>
                 </div>
 
                 <!-- Arrows -->
                 <button
-                  class="absolute right-3 top-36 z-10 size-8 -translate-y-1/2 transform rounded-full bg-white/80 text-red-900 shadow-md transition hover:scale-105 hover:bg-white md:size-10"
+                  class="absolute z-10 text-red-900 transition transform -translate-y-1/2 rounded-full shadow-md right-3 top-36 size-8 bg-white/80 hover:scale-105 hover:bg-white md:size-10"
                   @click="event.currentSlide = (event.currentSlide + 1) % event.coverImages.length"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="mx-auto size-7 font-bold"
+                    class="mx-auto font-bold size-7"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -165,7 +158,7 @@
                 </button>
 
                 <button
-                  class="absolute left-3 top-36 z-10 size-8 -translate-y-1/2 transform rounded-full bg-white/80 text-red-900 shadow-md transition hover:scale-105 hover:bg-white md:size-10"
+                  class="absolute z-10 text-red-900 transition transform -translate-y-1/2 rounded-full shadow-md left-3 top-36 size-8 bg-white/80 hover:scale-105 hover:bg-white md:size-10"
                   @click="
                     event.currentSlide =
                       (event.currentSlide - 1 + event.coverImages.length) % event.coverImages.length
@@ -173,7 +166,7 @@
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="mx-auto size-7 font-bold"
+                    class="mx-auto font-bold size-7"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -185,12 +178,12 @@
 
                 <!-- Dots -->
                 <div
-                  class="absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 transform space-x-2"
+                  class="absolute z-10 flex space-x-2 transform -translate-x-1/2 bottom-7 left-1/2"
                 >
                   <span
                     v-for="(img, i) in event.coverImages"
                     :key="i"
-                    class="h-2 w-2 rounded-full bg-gray-400"
+                    class="w-2 h-2 bg-gray-400 rounded-full"
                     :class="{ 'bg-gray-800': (event.currentSlide || 0) === i }"
                     @click="event.currentSlide = i"
                   ></span>
@@ -199,14 +192,14 @@
 
               <!-- Title & Description -->
               <div class="pb-2 md:pt-2">
-                <span class="font-roboto text-xl font-semibold md:text-2xl">{{ event.title }}</span>
+                <span class="text-xl font-semibold font-roboto md:text-2xl">{{ event.title }}</span>
               </div>
               <div class="font-roboto">
                 <p v-html="event.description"></p>
               </div>
               <UiButton
                 @click="readMore(event.id)"
-                class="inline-block rounded bg-gray-200 px-2 py-1 font-montserrat text-xs font-semibold text-gray-800 transition hover:scale-105 hover:bg-gray-300"
+                class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
               >
                 Read more...
               </UiButton>
@@ -221,7 +214,7 @@
               <!-- Icon -->
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="mb-5 h-16 w-16 text-red-700"
+                class="w-16 h-16 mb-5 text-red-700"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -240,7 +233,7 @@
               <button
                 v-if="selectedDate"
                 @click="selectedDate = null"
-                class="mt-4 w-fit self-center rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-400"
+                class="self-center px-4 py-2 mt-4 text-sm font-semibold text-gray-700 bg-gray-300 rounded w-fit hover:bg-gray-400"
               >
                 Show all events
               </button>
@@ -252,10 +245,10 @@
         <div
           class="hidden md:flex md:w-[340px] md:shrink-0 md:flex-col md:items-center md:space-y-5 md:pt-5"
         >
-          <div class="flex flex-col items-center space-y-5 pt-5">
+          <div class="flex flex-col items-center pt-5 space-y-5">
             <!-- Calendar -->
             <div class="">
-              <div class="flex justify-center rounded-xl bg-white shadow-xl">
+              <div class="flex justify-center bg-white shadow-xl rounded-xl">
                 <UiCalendar @dayclick="handleDayClick" class="bg-neutral-100" />
               </div>
             </div>
@@ -263,12 +256,12 @@
             <!-- More / older events (only visible on All events with no date selected) -->
             <div
               v-if="oldEvents.length"
-              class="w-96 rounded-xl border border-neutral-200 bg-white p-6 shadow-xl"
+              class="p-6 bg-white border shadow-xl w-96 rounded-xl border-neutral-200"
             >
-              <div class="flex items-center gap-2 border-b border-neutral-300 pb-3">
+              <div class="flex items-center gap-2 pb-3 border-b border-neutral-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 text-maroon"
+                  class="w-5 h-5 text-maroon"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
@@ -285,12 +278,12 @@
                   class="flex items-start justify-between gap-3"
                 >
                   <button
-                    class="text-left text-sm font-medium text-gray-800 hover:underline"
+                    class="text-sm font-medium text-left text-gray-800 hover:underline"
                     @click="readMore(ev.id)"
                   >
                     {{ ev.title }}
                   </button>
-                  <span class="shrink-0 text-xs text-gray-500">
+                  <span class="text-xs text-gray-500 shrink-0">
                     {{ miniDate(ev.createdAt || ev.date) }}
                   </span>
                 </li>
