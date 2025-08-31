@@ -25,15 +25,6 @@
           </li>
           <li>
             <NuxtLink
-              to="/admin/super-admin/create-account"
-              class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
-              exact-active-class="text-black bg-yellow-400"
-            >
-              Create Account
-            </NuxtLink>
-          </li>
-          <li>
-            <NuxtLink
               to="/admin/super-admin/manage_department"
               class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
               exact-active-class="text-black bg-yellow-400"
