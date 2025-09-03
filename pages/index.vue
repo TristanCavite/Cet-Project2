@@ -4,12 +4,32 @@
     <div class="relative w-full h-auto overflow-hidden">
       <!-- Arrows -->
       <button
-        class="absolute z-10 flex items-center justify-center h-16 transition transform -translate-y-1/2 bg-red-900 border shadow-lg right-4 top-1/2 rounded-xl md:right-20 md:h-28"
+
+        class="absolute z-10 flex items-center justify-center h-12 transition transform -translate-y-1/2 bg-red-900 left-1 top-1/2 rounded-xl md:left-10 md:h-28"
+        @click="prevSlide"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="text-white lucide lucide-chevron-left size-5 md:size-10"
+
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="m15 18-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+      
+      <button
+
+        class="absolute z-10 flex items-center justify-center h-12 transition transform -translate-y-1/2 bg-red-900 right-1 top-1/2 rounded-xl md:h-28 md:right-10"
         @click="nextSlide"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="text-white lucide lucide-chevron-right size-5 md:size-10"
+
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -19,21 +39,6 @@
         </svg>
       </button>
 
-      <button
-        class="absolute z-10 flex items-center justify-center h-16 transition transform -translate-y-1/2 bg-red-900 border shadow-lg left-4 top-1/2 rounded-xl md:left-20 md:h-28"
-        @click="prevSlide"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="text-white lucide lucide-chevron-left size-5 md:size-10"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="m15 18-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
 
       <!-- Dots -->
       <div
@@ -42,35 +47,40 @@
         <span
           v-for="(image, index) in images"
           :key="index"
-          class="bg-gray-400 rounded-full size-2"
+
+          class="bg-gray-400 rounded-full size-1 md:size-2"
+
           :class="{ 'bg-gray-800': currentIndex === index }"
           @click="setCurrentSlide(index)"
         ></span>
       </div>
 
-      <!-- view port -->
-      <div class="relative mx-auto w-[100%] overflow-hidden rounded-xl md:w-[80%]">
-        <!-- Slides Wrapper -->
-        <div
-          class="flex transition-transform duration-700 ease-in-out"
-          :style="{
-            transform: `translateX(-${currentIndex * (100 / images.length)}%)`,
-            width: `${images.length * 100}%`,
-          }"
-        >
-          <!-- Each Slide -->
-          <div
-            v-for="(image, index) in images"
-            :key="index"
-            class="flex items-center justify-center flex-shrink-0 w-full md:h-128"
-            :style="{ flex: `0 0 ${100 / images.length}%` }"
-          >
-            <img
-              :src="image.src"
-              :alt="image.alt || `Slide ${index + 1}`"
-              class="object-cover w-full h-full rounded-xl"
-              loading="lazy"
-            />
+
+      <!-- Viewport (centered; 90% wide on md+) -->
+      <div class="relative mx-auto w-[100%] md:w-[85%]">
+        <!-- 16:9 ratio box: 9/16 = 56.25% -->
+        <div class="relative" :style="{ paddingBottom: ratioPadding }">
+          <div class="absolute inset-0 overflow-hidden rounded-xl bg-neutral-200">
+            <div
+              class="flex h-full transition-transform duration-700 ease-in-out"
+              :style="{
+                width: `${slideCount * 100}%`,
+                transform: `translateX(-${currentIndex * (100 / slideCount)}%)`,
+              }"
+            >
+              <!-- Each Slide is exactly one frame wide -->
+              <div v-for="(image, index) in images" :key="index" class="h-full shrink-0 grow-0" :style="{ flex: `0 0 ${100 / slideCount}%` }">
+                <!-- Fill & center within the 16:9 frame -->
+                <img
+                  :src="image.src"
+                  :alt="image.alt || `Slide ${index + 1}`"
+                  class="object-cover object-center w-full h-full rounded-xl"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -86,7 +96,7 @@
         >
       </div>
 
-      <div class="flex flex-col justify-center md:px-10 md:flex-row md:gap-10 lg:gap-16">
+      <div class="flex flex-col justify-center md:flex-row md:gap-10 md:px-10 lg:gap-16">
         <!-- 📅 left side -->
         <div class="flex flex-col w-full pt-5 space-y-6 md:w-3/4">
           <!-- Type Filter (dropdown) -->
@@ -137,7 +147,6 @@
                     <img :src="img" alt="" class="object-cover w-full h-48 md:h-60" />
                   </div>
                 </div>
-
 
                 <!-- Arrows -->
                 <button
@@ -196,15 +205,14 @@
               <div class="font-roboto">
                 <p v-html="event.description"></p>
               </div>
-              <div class="flex justify-between">
-                <UiButton
-                  @click="readMore(event.id)"
-                  class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
-                >
-                  Read more...
-                </UiButton>
-                <ShareButton :item="{ id: event.id, type: 'event', title: event.title, excerpt: event.description }"/>
-              </div>
+
+              <UiButton
+                @click="readMore(event.id)"
+                class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
+              >
+                Read more...
+              </UiButton>
+
             </div>
           </template>
 
@@ -244,7 +252,11 @@
         </div>
 
         <!--  Right Side -->
-        <div class="hidden md:flex md:w-[340px] md:shrink-0 md:flex-col md:items-center md:pt-5 md:space-y-5">
+
+        <div
+          class="hidden md:flex md:w-[340px] md:shrink-0 md:flex-col md:items-center md:space-y-5 md:pt-5"
+        >
+
           <div class="flex flex-col items-center pt-5 space-y-5">
             <!-- Calendar -->
             <div class="">
@@ -317,6 +329,11 @@
 
   const MAX_VISIBLE = 3;
   const MAX_OLD_EVENTS = 10;
+  // 16:9 ratio (height/width = 9/16 = 56.25%)
+const ratioPadding = '42.857%'; // 21:9 (shorter than 16:9)
+
+const slideCount = computed(() => Math.max(images.value.length, 1));
+
 
   const events = ref<any[]>([]);
   const selectedDate = ref<Date | null>(null);
@@ -368,11 +385,13 @@
     const q = query(collection(db, "homepage_gallery"), orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
     images.value = snap.docs
-      .map((d) => {
-        const data: any = d.data();
-        return { src: data?.imageUrl || "", alt: data?.caption || "Homepage slide" };
-      })
-      .filter((i) => !!i.src);
+  .map((d) => {
+    const data: any = d.data();
+    const src = data?.heroUrl || data?.imageUrl || data?.originalUrl || "";
+    return { src, alt: data?.caption || "Homepage slide" };
+  })
+  .filter((i) => !!i.src);
+
 
     if (images.value.length === 0) {
       images.value = [
