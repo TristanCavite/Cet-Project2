@@ -4,12 +4,14 @@
     <div class="relative w-full h-auto overflow-hidden">
       <!-- Arrows -->
       <button
+
         class="absolute z-10 flex items-center justify-center h-12 transition transform -translate-y-1/2 bg-red-900 left-1 top-1/2 rounded-xl md:left-10 md:h-28"
         @click="prevSlide"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="text-white lucide lucide-chevron-left size-5 md:size-10"
+
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -20,12 +22,14 @@
       </button>
       
       <button
+
         class="absolute z-10 flex items-center justify-center h-12 transition transform -translate-y-1/2 bg-red-900 right-1 top-1/2 rounded-xl md:h-28 md:right-10"
         @click="nextSlide"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="text-white lucide lucide-chevron-right size-5 md:size-10"
+
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -43,11 +47,14 @@
         <span
           v-for="(image, index) in images"
           :key="index"
+
           class="bg-gray-400 rounded-full size-1 md:size-2"
+
           :class="{ 'bg-gray-800': currentIndex === index }"
           @click="setCurrentSlide(index)"
         ></span>
       </div>
+
 
       <!-- Viewport (centered; 90% wide on md+) -->
       <div class="relative mx-auto w-[100%] md:w-[85%]">
@@ -73,6 +80,7 @@
                 />
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -197,12 +205,14 @@
               <div class="font-roboto">
                 <p v-html="event.description"></p>
               </div>
+
               <UiButton
                 @click="readMore(event.id)"
                 class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
               >
                 Read more...
               </UiButton>
+
             </div>
           </template>
 
@@ -242,9 +252,11 @@
         </div>
 
         <!--  Right Side -->
+
         <div
           class="hidden md:flex md:w-[340px] md:shrink-0 md:flex-col md:items-center md:space-y-5 md:pt-5"
         >
+
           <div class="flex flex-col items-center pt-5 space-y-5">
             <!-- Calendar -->
             <div class="">
