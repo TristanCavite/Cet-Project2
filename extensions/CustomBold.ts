@@ -11,6 +11,8 @@ declare module '@tiptap/core' {
 
 export const CustomBold = Mark.create({
   name: 'customBold',
+  // Allow other marks (color, font family, etc.) to mix with bold
+  excludes: '',
 
   addAttributes() {
     return {
