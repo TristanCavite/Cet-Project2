@@ -1,17 +1,16 @@
 // /extensions/FontSize.ts
-// Class-based Font Size mark for TipTap
-// - Writes class="fs-24" + data-fs="24px" (no inline styles)
-// - Allows coexistence with other marks (bold, color, etc.) via `excludes: ''`
-// - Parses legacy style="font-size: 24px" so old content still renders
-// - Exports a type guard to keep UI code strictly typed
+// Font size attribute tied to TipTap's textStyle mark.
+// - Stores size as class="fs-24" + data-fs="24px" for responsive CSS.
+// - Parses legacy inline styles and our data attributes/classes.
+// - Provides type-safe commands for setting/unsetting font size.
 
-import { Mark, mergeAttributes } from '@tiptap/core'
+import { Extension } from '@tiptap/core'
 
 /** Keep in sync with your toolbar options */
 export const FONT_SIZE_VALUES = ['12px', '14px', '16px', '18px', '24px', '32px', '48px'] as const
 export type FontSizeValue = typeof FONT_SIZE_VALUES[number]
 
-/** TS type guard for narrowing arbitrary strings */
+/** Type guard to narrow arbitrary strings */
 export function isFontSizeValue(s: string): s is FontSizeValue {
   return (FONT_SIZE_VALUES as readonly string[]).includes(s)
 }
@@ -27,74 +26,55 @@ declare module '@tiptap/core' {
   }
 }
 
-export const FontSize = Mark.create({
+const FontSize = Extension.create({
   name: 'fontSize',
-  group: 'inline',
-  inline: true,
 
-  // ✅ Important: don't exclude other marks; let font size mix with bold, color, link, etc.
-  excludes: '',
+  addGlobalAttributes() {
+    return [
+      {
+        types: ['textStyle'],
+        attributes: {
+          fontSize: {
+            default: null as FontSizeValue | null,
+            renderHTML: attrs => {
+              const size = attrs.fontSize as FontSizeValue | null
+              if (!size) return {}
+              const numeric = String(size).replace(/[^0-9]/g, '')
+              return {
+                class: `fs-${numeric}`,
+                'data-fs': size,
+              }
+            },
+            parseHTML: element => {
+              const ds = element.getAttribute('data-fs')
+              if (ds && isFontSizeValue(ds)) return ds
 
-  addAttributes() {
-    return {
-      size: {
-        default: null as FontSizeValue | null,
+              const cls = element.getAttribute('class') || ''
+              const m = cls.match(/\bfs-(12|14|16|18|24|32|48)\b/)
+              if (m) return `${m[1]}px` as FontSizeValue
 
-        // Render as class + data attribute (no inline style)
-        renderHTML: (attrs: { size?: FontSizeValue | null }) => {
-          const size = attrs.size ?? null
-          if (!size) return {}
-          const numeric = String(size).replace(/[^0-9]/g, '') // "24px" -> "24"
-          return {
-            class: `fs-${numeric}`,
-            'data-fs': size,
-          }
-        },
+              const styleVal = (element as HTMLElement).style.fontSize || ''
+              if (styleVal && isFontSizeValue(styleVal)) return styleVal
 
-        // Parse from data-fs, class, or legacy inline style="font-size: XXpx"
-        parseHTML: (el: HTMLElement) => {
-          const ds = el.getAttribute('data-fs')
-          if (ds && isFontSizeValue(ds)) return ds
-
-          const cls = el.getAttribute('class') || ''
-          const m = cls.match(/\bfs-(12|14|16|18|24|32|48)\b/)
-          if (m) return `${m[1]}px` as FontSizeValue
-
-          const styleVal = (el.style && el.style.fontSize) || ''
-          if (styleVal && isFontSizeValue(styleVal)) return styleVal
-
-          return null
+              return null
+            },
+          },
         },
       },
-    }
-  },
-
-  // Let TipTap discover this mark in raw HTML
-  parseHTML() {
-    return [
-      { tag: 'span[data-fs]' },
-      { tag: 'span[class*="fs-"]' },
-      { style: 'font-size' }, // legacy fallback
     ]
   },
 
-  // Render wrapper
-  renderHTML({ HTMLAttributes }) {
-    return ['span', mergeAttributes(HTMLAttributes), 0]
-  },
-
-  // Commands used by your toolbar
   addCommands() {
     return {
       setFontSize:
-        (size: FontSizeValue) =>
+        size =>
         ({ chain }) =>
-          chain().setMark(this.name, { size }).run(),
+          chain().setMark('textStyle', { fontSize: size }).run(),
 
       unsetFontSize:
         () =>
         ({ chain }) =>
-          chain().unsetMark(this.name).run(),
+          chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run(),
     }
   },
 })
