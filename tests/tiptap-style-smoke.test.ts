@@ -27,7 +27,7 @@ const editor = new Editor({
 })
 
 const html = `<p><span style="color: #ff0000; font-family: Georgia;" class="fs-24" data-fs="24px">Test</span></p>`
-editor.commands.setContent(html, { emitUpdate: false })
+editor.commands.setContent(html, false)
 const output = editor.getHTML()
 
 assert.ok(output.includes('color: #ff0000'))
