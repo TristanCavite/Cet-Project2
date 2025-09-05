@@ -132,7 +132,7 @@
     <!-- Editor -->
     <EditorContent
       :editor="editor"
-      class="w-full max-w-none rounded border border-gray-300 bg-white p-4 shadow overflow-auto"
+      class="tiptap w-full max-w-none rounded border border-gray-300 bg-white p-4 shadow overflow-auto"
       style="max-height: 800px; min-height: 300px"
     />
 
@@ -255,7 +255,7 @@ const editor = useEditor({
     StarterKit.configure({ bold: false }), // using CustomBold
     TextStyle,
     FontSize,
-    FontFamily.configure({ types: ['textStyle'] }),
+    FontFamily.configure({ types: ['textStyle', 'customBold'] }),
     Color.configure({ types: ['textStyle', 'customBold'] }),
     CustomBold,
     Underline,
@@ -283,7 +283,7 @@ watch(
     const normalized = convertInlineFontSizesToClasses(val || '<p></p>')
     const current = editor.value?.getHTML()
     if (editor.value && normalized !== current) {
-      editor.value.commands.setContent(normalized, false)
+      editor.value.commands.setContent(normalized, { emitUpdate: false })
     }
   },
 )
@@ -295,8 +295,7 @@ function onFontSizeChange(event: Event) {
   editor.value
     ?.chain()
     .focus()
-    .extendMarkRange('fontSize')
-    .unsetFontSize()
+    .extendMarkRange('textStyle')
     .setFontSize(raw)
     .run()
 }
@@ -359,68 +358,61 @@ async function insertImages(e: Event) {
 
 <style scoped>
 /* Editor base */
-:deep(.ProseMirror) { min-height: 300px; }
+ .tiptap :deep(.ProseMirror) { min-height: 300px; }
 
-:deep(.ProseMirror img) {
+ .tiptap :deep(.ProseMirror img) {
   max-width: 100%;
   height: auto;
   display: block;
   margin: 1rem 0;
 }
 
-/* Headings in editor */
-:deep(.ProseMirror h1),
-:deep(.ProseMirror h2),
-:deep(.ProseMirror h3) {
-  color: var(--cet-heading) !important;
-  font-family: var(--cet-heading-font) !important;
-}
-
 /* fs-* sizes */
-:deep(.ProseMirror .fs-12) { font-size: clamp(12px, 2.8vw, 12px) !important; }
-:deep(.ProseMirror .fs-14) { font-size: clamp(13px, 3.2vw, 14px) !important; }
-:deep(.ProseMirror .fs-16) { font-size: clamp(14px, 3.6vw, 16px) !important; }
-:deep(.ProseMirror .fs-18) { font-size: clamp(16px, 4.0vw, 18px) !important; }
-:deep(.ProseMirror .fs-24) { font-size: clamp(18px, 5.5vw, 24px) !important; }
-:deep(.ProseMirror .fs-32) { font-size: clamp(22px, 7.4vw, 32px) !important; }
-:deep(.ProseMirror .fs-48) { font-size: clamp(28px, 10.5vw, 48px) !important; }
+
+.tiptap :deep(.ProseMirror .fs-12) { font-size: clamp(12px, 2.8vw, 12px) !important; }
+.tiptap :deep(.ProseMirror .fs-14) { font-size: clamp(13px, 3.2vw, 14px) !important; }
+.tiptap :deep(.ProseMirror .fs-16) { font-size: clamp(14px, 3.6vw, 16px) !important; }
+.tiptap :deep(.ProseMirror .fs-18) { font-size: clamp(16px, 4.0vw, 18px) !important; }
+.tiptap :deep(.ProseMirror .fs-24) { font-size: clamp(18px, 5.5vw, 24px) !important; }
+.tiptap :deep(.ProseMirror .fs-32) { font-size: clamp(22px, 7.4vw, 32px) !important; }
+.tiptap :deep(.ProseMirror .fs-48) { font-size: clamp(28px, 10.5vw, 48px) !important; }
 
 /* Links pointer inside editor */
-:deep(.ProseMirror a) { cursor: pointer; }
+.tiptap :deep(.ProseMirror a) { cursor: pointer; }
 
 /* ✅ Table look while editing */
-:deep(.ProseMirror table){ width:100%; border-collapse:collapse; }
-:deep(.ProseMirror th),
-:deep(.ProseMirror td){
+.tiptap :deep(.ProseMirror table){ width:100%; border-collapse:collapse; }
+.tiptap :deep(.ProseMirror th),
+.tiptap :deep(.ProseMirror td){
   position: relative;           /* keep resizer + any overlays scoped to the cell */
   border:1px solid #d1d5db;
   padding:6px 8px;
   vertical-align:top;
 }
-:deep(.ProseMirror thead th){ background:#f3f4f6; font-weight:700; text-align:left; }
-:deep(.ProseMirror .column-resize-handle){
+.tiptap :deep(.ProseMirror thead th){ background:#f3f4f6; font-weight:700; text-align:left; }
+.tiptap :deep(.ProseMirror .column-resize-handle){
   position:absolute; right:-2px; top:0; bottom:0; width:3px; background:rgba(0,0,0,.15); pointer-events:none;
 }
 
 /* ❌ Remove the extra blue overlay for table cell selections */
-:deep(.ProseMirror .selectedCell:after){ content:none; }
+.tiptap :deep(.ProseMirror .selectedCell:after){ content:none; }
 
 /* 🔵 Make browser text selection less intense inside the editor */
-:deep(.ProseMirror ::selection){ background: rgba(160, 195, 255, .28); }
+.tiptap :deep(.ProseMirror ::selection){ background: rgba(160, 195, 255, .28); }
 
 
 /* --- Fix: don't tint entire cells when selecting text --- */
-:deep(.ProseMirror .selectedCell) {
+.tiptap :deep(.ProseMirror .selectedCell) {
   background: transparent !important;           /* no blue fill on cells */
 }
-:deep(.ProseMirror .selectedCell)::after {
+.tiptap :deep(.ProseMirror .selectedCell)::after {
   content: none !important;                      /* remove overlay pseudo element */
   display: none !important;
 }
 
 /* Optional: if you still want a hint when doing a REAL cell selection,
    use a thin outline instead of a full fill. Comment out if not wanted. */
-:deep(.ProseMirror .cell-selection .selectedCell) {
+.tiptap :deep(.ProseMirror .cell-selection .selectedCell) {
   box-shadow: inset 0 0 0 2px #60a5fa;          /* visible outline only */
 }
 
