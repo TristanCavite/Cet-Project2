@@ -283,7 +283,7 @@ watch(
     const normalized = convertInlineFontSizesToClasses(val || '<p></p>')
     const current = editor.value?.getHTML()
     if (editor.value && normalized !== current) {
-      editor.value.commands.setContent(normalized, false)
+      editor.value.commands.setContent(normalized, { emitUpdate: false })
     }
   },
 )
