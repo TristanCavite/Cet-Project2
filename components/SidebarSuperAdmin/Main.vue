@@ -49,6 +49,7 @@
                 <IconsChevronDown class="transition-transform size-5 stroke-[3] " :class="{ 'rotate-180': showManageSubmenu }"/>
             </div>
             <ul  v-if="showManageSubmenu" class="">
+               <li><NuxtLink to="/admin/super-admin/manage_obe" class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105" exact-active-class="text-black bg-yellow-400">Manage OBE</NuxtLink></li>
               <li><NuxtLink to="/admin/super-admin/manage_about" class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105" exact-active-class="text-black bg-yellow-400"> Manage About</NuxtLink></li>
               <li><NuxtLink to="/admin/super-admin/manage_accounts" class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105" exact-active-class="text-black bg-yellow-400">Manage Accounts</NuxtLink></li>
               <li><NuxtLink to="/admin/super-admin/downloads" class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105" exact-active-class="text-black bg-yellow-400"> Manage Downloads</NuxtLink></li>

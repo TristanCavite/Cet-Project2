@@ -442,6 +442,24 @@ for (const p of progSnap.docs) {
   }
 }
 
+// --- OBE Page (single doc: obe_page/main)
+{
+  const snap = await getDoc(doc(db, "obe_page", "main"))
+  if (snap.exists()) {
+    const data: any = snap.data()
+    const hay = `${stripHtml(data?.content)}`.toLowerCase()
+    if (hay.includes(needle)) {
+      bucket.push({
+        title: "Outcomes-Based Education",
+        url: "/obe", // public OBE page
+        tag: "OBE",
+        snippet: truncate(stripHtml(data?.content)),
+      })
+    }
+  }
+}
+
+
 
     // optional: sort (news/events by date desc first, then others by title)
     bucket.sort((a, b) => {
