@@ -96,7 +96,7 @@
         >
       </div>
 
-      <div class="flex flex-col justify-center md:flex-row md:gap-10 md:px-10 lg:gap-16">
+      <div id="events-list" class="flex flex-col justify-center md:flex-row md:gap-10 md:px-10 lg:gap-16">
         <!-- 📅 left side -->
         <div class="flex flex-col w-full pt-5 space-y-6 md:w-3/4">
           <!-- Type Filter (dropdown) -->
@@ -111,14 +111,13 @@
             </select>
 
             <!-- still useful if user filtered by date while 'All events' is selected -->
-            <button
+            <UiButton
               v-if="selectedDate"
-              type="button"
               class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
               @click="selectedDate = null"
             >
               Clear date
-            </button>
+            </UiButton>
           </div>
 
           <template v-if="filteredEvents.length > 0">
@@ -240,13 +239,13 @@
               <p class="text-lg font-semibold">No events on this day.</p>
               <p class="text-sm">Try selecting another date on the calendar.</p>
 
-              <button
+              <UiButton
                 v-if="selectedDate"
                 @click="selectedDate = null"
                 class="self-center px-4 py-2 mt-4 text-sm font-semibold text-gray-700 bg-gray-300 rounded w-fit hover:bg-gray-400"
               >
                 Show all events
-              </button>
+              </UiButton>
             </div>
           </template>
         </div>
@@ -261,7 +260,7 @@
             <!-- Calendar -->
             <div class="">
               <div class="flex justify-center bg-white shadow-xl rounded-xl">
-                <UiCalendar @dayclick="handleDayClick" class="bg-neutral-100" />
+                <UiCalendar  class="bg-neutral-100" :dot-events="dotEvents" @date-click="handleDayClick" v-model:selectedDate="selectedDate" />
               </div>
             </div>
 
@@ -309,10 +308,9 @@
 </template>
 
 <script lang="ts" setup>
-  import Item from "~/components/Ui/Accordion/Item.vue";
   import { isSameDay, parseISO } from "date-fns";
   import { collection, getDocs, orderBy, query } from "firebase/firestore";
-  import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+  import { computed, onMounted, onUnmounted, ref, watch, nextTick } from "vue";
   import { useRoute, useRouter } from "vue-router";
   import { useFirestore } from "vuefire";
 
@@ -330,9 +328,9 @@
   const MAX_VISIBLE = 3;
   const MAX_OLD_EVENTS = 10;
   // 16:9 ratio (height/width = 9/16 = 56.25%)
-const ratioPadding = '42.857%'; // 21:9 (shorter than 16:9)
+  const ratioPadding = '42.857%'; // 21:9 (shorter than 16:9)
 
-const slideCount = computed(() => Math.max(images.value.length, 1));
+  const slideCount = computed(() => Math.max(images.value.length, 1));
 
 
   const events = ref<any[]>([]);
@@ -444,9 +442,24 @@ const slideCount = computed(() => Math.max(images.value.length, 1));
       .slice(0, MAX_OLD_EVENTS);
   });
 
-  function handleDayClick(day: any) {
-    selectedDate.value = new Date(day.date);
+  function handleDayClick(d: Date) {
+  // toggle if the same day is clicked again
+  if (selectedDate.value && isSameDay(selectedDate.value, d)) {
+    selectedDate.value = null
+  } else {
+    selectedDate.value = d
+    // optional: ensure type filter doesn't hide the clicked date
+    // typeFilter.value = 'all'
   }
+
+  // smooth scroll to the events list
+  nextTick(() => {
+    document.getElementById('events-list')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  })
+}
 
   const router = useRouter();
   function readMore(id: string) {
@@ -470,6 +483,31 @@ const slideCount = computed(() => Math.max(images.value.length, 1));
     const d = typeof val?.toDate === "function" ? val.toDate() : new Date(val);
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   }
+
+  //calendar filter
+  const asDate = (val: any): Date | null => {
+  if (!val) return null
+  if (val instanceof Date) return val
+  if (typeof val?.toDate === 'function') return val.toDate() // Firestore Timestamp
+  if (typeof val === 'string' || typeof val === 'number') return new Date(val)
+  return null
+}
+
+// const DOT_RED = '#ef4444' // or simply 'red'
+/** Option A: one dot per event (VCalendar stacks dots for same day) */
+const dotEvents = computed(() => {
+  return events.value
+    .map((e: any) => {
+      const d = asDate(e.date)
+      if (!d) return null
+      return {
+        date: d,
+        // color: DOT_RED,                // 🔴 always red
+        label: e.title || 'Event',
+      }
+    })
+    .filter(Boolean) as { date: Date; color: string; label?: string }[]
+})
 </script>
 
 <style>
