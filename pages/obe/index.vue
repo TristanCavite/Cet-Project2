@@ -16,30 +16,30 @@
 
     <!-- Main Content Container -->
     <div class="mx-auto mb-12 mt-10 w-3/4 md:mt-16">
-      <div class="leading-relaxed" v-html="obeData?.content"></div>
+      <div class="cet-content prose max-w-none" v-html="obeData?.content"></div>
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
-/**
- * Public OBE Page
- * - Always visible (no flag like undergrad/admission)
- * - Fetches Firestore doc `obe_page/main`
- */
-import { shallowRef, onMounted } from 'vue'
-import { useFirestore } from 'vuefire'
-import { doc, getDoc } from 'firebase/firestore'
+  /**
+   * Public OBE Page
+   * - Always visible (no flag like undergrad/admission)
+   * - Fetches Firestore doc `obe_page/main`
+   */
+  import { doc, getDoc } from "firebase/firestore";
+  import { onMounted, shallowRef } from "vue";
+  import { useFirestore } from "vuefire";
 
-definePageMeta({ layout: 'custom' })
+  definePageMeta({ layout: "custom" });
 
-const db = useFirestore()
+  const db = useFirestore();
 
-/* Local state for OBE content */
-const obeData = shallowRef<any>(null)
+  /* Local state for OBE content */
+  const obeData = shallowRef<any>(null);
 
-onMounted(async () => {
-  const snap = await getDoc(doc(db, 'obe_page', 'main'))
-  obeData.value = snap.exists() ? snap.data() : null
-})
+  onMounted(async () => {
+    const snap = await getDoc(doc(db, "obe_page", "main"));
+    obeData.value = snap.exists() ? snap.data() : null;
+  });
 </script>
