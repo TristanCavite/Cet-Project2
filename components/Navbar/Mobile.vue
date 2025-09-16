@@ -3,19 +3,21 @@
         <div class="flex items-center justify-between w-full px-4 bg-white">
            <!-- Left: Social Icons -->
            <div class="flex items-center space-x-4">
-             <a
-               href="https://www.facebook.com/vsuengineering"
-               target="_blank"
-               rel="noopener noreferrer"
-             >
-               <Facebook class="text-red-900 size-5 fill-neutral-100" />
-             </a>
-             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-               <Instagram class="text-red-900 size-5 fill-neutral-100" />
-             </a>
-             <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-               <Twitter class="text-red-900 size-5 fill-neutral-100" />
-             </a>
+                <a
+                v-for="it in socialItems"
+                :key="it.key"
+                :href="it.href"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-red-900 transition-opacity hover:opacity-80"
+                :title="it.key"
+                :aria-label="it.key"
+                >
+                <component
+                    :is="SOCIAL_ICONS[it.key] || Globe"
+                    class="text-red-900 size-5 fill-neutral-100 md:size-6"
+                />
+                </a>
            </div>
      
            <!-- Right: Search Bar -->
@@ -114,7 +116,7 @@
                                 <ChevronDown class="transition-transform size-6 stroke-[3] " :class="{ 'rotate-180': showAdmissionSubmenu }"/>
                             </div>
                             <ul  v-if="showAdmissionSubmenu" class="h-auto pt-4 pb-3 pl-4 space-y-4 font-semibold rounded-md left-full min-w-72">
-                                <li><NuxtLink to="/admission/graduate" class="flex items-center w-full" @click="showMenuBox = false; showAdmissionSubmenu = false"> Graduate</NuxtLink></li>
+                                <li><ClientOnly><NuxtLink to="/admission/graduate" v-if="undergradVisible" class="flex items-center w-full" @click="showMenuBox = false; showAdmissionSubmenu = false"> Graduate</NuxtLink></ClientOnly></li>
                                 <li><NuxtLink to="/admission/undergraduate" class="flex items-center w-full"  @click="showMenuBox = false; showAdmissionSubmenu = false">Undergraduate</NuxtLink></li>
                                 <li><NuxtLink to="/admission/why_choose_cet" class="flex items-center w-full" @click="showMenuBox = false; showAdmissionSubmenu = false">Why Choose VSU-FE?</NuxtLink></li>
                             </ul>
@@ -123,6 +125,7 @@
                         <li><NuxtLink to="/research" class="flex items-center w-full" @click="showMenuBox = false">Research</NuxtLink></li>
                         <li><NuxtLink to="/news" class="flex items-center w-full" @click="showMenuBox = false">News</NuxtLink></li>
                         <li><NuxtLink to="/download" class="flex items-center w-full" @click="showMenuBox = false">Download</NuxtLink></li>
+                        <li><NuxtLink to="/obe" class="flex items-center w-full" @click="showMenuBox = false">OBE</NuxtLink></li>
                     </ul>
                 </div>
             </div>
@@ -132,11 +135,27 @@
 
 <script setup lang="ts">
     import ChevronDown from "@/components/Icons/ChevronDown.vue";
-    import { Facebook, Instagram, Twitter, Menu,  X} from "lucide-vue-next";
+    import { useSocialLinks } from "@/composables/useSocialLinks";
+    import { Facebook, Instagram, Twitter, Menu,  X, Globe,  Linkedin, Youtube } from "lucide-vue-next";
     import { ref } from 'vue';
-    import { collection, getDocs } from "firebase/firestore";
-    import { useFirestore } from "vuefire";
+    import { collection, getDocs, doc } from "firebase/firestore";
+    import { useFirestore, useDocument } from "vuefire";
+    // for dynamic social icons
+    const SOCIAL_ICONS: Record<string, any> = {
+        facebook: Facebook,
+        instagram: Instagram,
+        twitter: Twitter,
+        youtube: Youtube,
+        linkedin: Linkedin,
+        website: Globe,
+    };
+    const { items: socialItems } = useSocialLinks();
+    // for dynamic admission
+    const db = useFirestore();
+    const flagsRef = doc(db, "settings", "public_flags");
+    const { data: flags } = useDocument<{ admissionUndergradVisible?: boolean }>(flagsRef);
 
+    const undergradVisible = computed(() => flags.value?.admissionUndergradVisible ?? true)
     const showNav = ref(true);
     let lastScrollY = window.scrollY
 
@@ -205,7 +224,6 @@
     const departmentRefs = ref<HTMLElement[]>([]);
      const router = useRouter();
     const searchQuery = ref("");
-    const db = useFirestore();
 
     onMounted(async () => {
     try {

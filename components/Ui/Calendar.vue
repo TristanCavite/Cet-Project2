@@ -4,6 +4,9 @@
       :trim-weeks="props.trimWeeks || true"
       :is-dark="$colorMode.value == 'dark'"
       v-bind="$attrs"
+      :attributes="mergedAttributes"             
+      @dayclick="onDayClick"                     
+      @day-click="onDayClick"
     >
       <template v-for="(_, slot) in $slots" #[slot]="scope">
         <slot :name="slot" v-bind="scope" />
@@ -13,13 +16,90 @@
 </template>
 
 <script lang="ts" setup>
-  import type { Calendar } from "v-calendar";
+import type { Calendar } from "v-calendar";
+import { computed, ref } from "vue";
+import dayjs from "dayjs";
 
-  defineOptions({ inheritAttrs: false });
+defineOptions({ inheritAttrs: false });
 
-  interface Props extends /* @vue-ignore */ Partial<InstanceType<typeof Calendar>["$props"]> {}
+type DotEvent = { date: Date | string; color?: string; label?: string };
+interface Props extends /* @vue-ignore */ Partial<InstanceType<typeof Calendar>["$props"]> {}
 
-  const props = defineProps<Props & { trimWeeks?: boolean }>();
+const props = withDefaults(defineProps<Props & {
+  trimWeeks?: boolean;
+  clickHighlight?: boolean;
+  clickLabel?: string;
+  dotEvents?: DotEvent[];
+  selectedDate?: Date | null;
+}>(), {
+  trimWeeks: true,
+  clickHighlight: true,
+  clickLabel: "Selected date",
+  dotEvents: () => [],
+});
+
+const toDate = (d: unknown): Date => {
+  if (d instanceof Date) return d;
+  if (typeof d === 'string') return dayjs(d).toDate();
+  if (d && typeof (d as any).toDate === 'function') return (d as any).toDate(); // Firestore Timestamp
+  return dayjs(d as any).toDate();
+};
+const clickedDate = ref<Date | null>(null);
+
+const dynamicDots = computed(() =>
+  (props.dotEvents ?? []).map((e, i) => ({
+    key: `dot-${i}-${dayjs(toDate(e.date)).format('YYYY-MM-DD')}`,
+    dates: toDate(e.date),
+
+    // 🔴 inline style beats theme variables
+    dot: {
+      style: {
+        backgroundColor: '#ef4444',
+        borderColor: '#ef4444',
+      },
+    },
+
+    popover: e.label ? { label: e.label } : undefined,
+  }))
+)
+
+watch(() => props.selectedDate, (val) => {
+  clickedDate.value = val ?? null;
+});
+
+// Merge parent-provided attributes with our click highlight
+const mergedAttributes = computed(() => {
+  const base = (props.attributes as any[]) ?? [];
+  const extra = props.clickHighlight && clickedDate.value
+    ? [{
+        key: "__clicked__",
+        highlight: true,
+        dates: clickedDate.value,
+        popover: { label: props.clickLabel },
+      }]
+    : [];
+  return [...base, ...dynamicDots.value, ...extra]; // ← include dynamicDots here
+});
+
+const emit = defineEmits<{
+  (e: 'date-click', date: Date): void;
+  (e: 'dayclick', payload: any): void; // optional: forward native
+  (e: "update:selectedDate", date: Date | null): void;
+}>();
+
+function onDayClick(payload: any) {
+  const dt: Date | null =
+    payload instanceof Date ? payload :
+    payload?.date instanceof Date ? payload.date :
+    payload?.day?.date instanceof Date ? payload.day.date :
+    null;
+
+  if (!dt) return;
+  clickedDate.value = dt;
+  emit("date-click", dt);
+  emit("dayclick", payload);
+  emit("update:selectedDate", dt);        // 👈 keep parent in sync
+}
 </script>
 
 <style>
@@ -50,7 +130,7 @@
 
     &.vc-attr,
     & .vc-attr {
-      --vc-content-color: theme("colors.primary.DEFAULT");
+      /* --vc-content-color: theme("colors.primary.DEFAULT"); */
       --vc-highlight-outline-bg: theme("colors.primary.DEFAULT");
       --vc-highlight-outline-border: theme("colors.primary.DEFAULT");
       --vc-highlight-outline-content-color: theme("colors.primary.foreground");
@@ -60,6 +140,10 @@
       --vc-highlight-solid-content-color: theme("colors.primary.foreground");
     }
   }
+  .vc-day .vc-attr .vc-dot {
+  background-color: #800e0e !important;
+  border-color: #800e0e !important;
+}
 
   .vc-blue {
     --vc-accent-200: theme("colors.primary.DEFAULT / 20%");
