@@ -43,6 +43,7 @@
     "nuxt-vuefire": "^1.0.4",
     "quill": "^2.0.3",
     "radix-vue": "^1.9.10",
+    "reka-ui": "^2.5.0",
     "tailwind-variants": "^0.3.0",
     "tiptap-extension-resize-image": "^1.2.2",
     "vue": "latest",
