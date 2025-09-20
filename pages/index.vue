@@ -1,10 +1,9 @@
 <template>
   <main class="bg-white">
-    <!-- 🔼 Hero Slider -->
+    <!-- Hero Slider -->
     <div class="relative h-auto w-full overflow-hidden">
-      <!-- Arrows -->
       <button
-        class="absolute left-1 top-1/2 z-10 flex h-12 -translate-y-1/2 transform items-center justify-center rounded-xl bg-red-900 transition md:left-10 md:h-28"
+        class="absolute left-1/2 top-1/2 z-10 flex h-12 -translate-y-1/2 transform items-center justify-center rounded-xl bg-red-900 transition md:left-10 md:h-28"
         @click="prevSlide"
       >
         <svg
@@ -18,7 +17,6 @@
           <path d="m15 18-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </button>
-
       <button
         class="absolute right-1 top-1/2 z-10 flex h-12 -translate-y-1/2 transform items-center justify-center rounded-xl bg-red-900 transition md:right-10 md:h-28"
         @click="nextSlide"
@@ -48,9 +46,8 @@
         ></span>
       </div>
 
-      <!-- Viewport (centered; 90% wide on md+) -->
+      <!-- Viewport -->
       <div class="relative mx-auto w-[100%] md:w-[85%]">
-        <!-- 16:9 ratio box: 9/16 = 56.25% -->
         <div class="relative" :style="{ paddingBottom: ratioPadding }">
           <div class="absolute inset-0 overflow-hidden rounded-xl bg-neutral-200">
             <div
@@ -60,14 +57,12 @@
                 transform: `translateX(-${currentIndex * (100 / slideCount)}%)`,
               }"
             >
-              <!-- Each Slide is exactly one frame wide -->
               <div
                 v-for="(image, index) in images"
                 :key="index"
                 class="h-full shrink-0 grow-0"
                 :style="{ flex: `0 0 ${100 / slideCount}%` }"
               >
-                <!-- Fill & center within the 16:9 frame -->
                 <img
                   :src="image.src"
                   :alt="image.alt || `Slide ${index + 1}`"
@@ -82,89 +77,89 @@
       </div>
     </div>
 
-    <!-- 📰 Events -->
+    <!-- EVENTS -->
     <div class="mx-auto py-5 md:max-w-7xl md:px-4 md:py-10">
-      <!-- 🏷 Section Title -->
       <div class="text-center md:pt-4">
         <span
           class="font-playfair text-xl font-extrabold uppercase tracking-wide text-maroon md:text-5xl"
-          >EVENTS</span
         >
+          EVENTS
+        </span>
       </div>
 
+      <!-- Filter bar -->
+      <div class="mt-6 flex items-center gap-3 md:px-10">
+        <label class="text-sm font-medium text-gray-700">Filter by:</label>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            class="flex items-center gap-2 rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-100"
+          >
+            <component :is="selectedIcon" class="h-4 w-4 text-maroon" />
+            <span>{{ selectedLabel }}</span>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent class="w-44">
+            <DropdownMenuItem
+              v-for="opt in TYPE_OPTIONS"
+              :key="opt.value"
+              @click="setFilter(opt.value)"
+            >
+              <component :is="opt.icon" class="mr-2 h-4 w-4 text-gray-600" />
+              {{ opt.label }}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <UiButton
+          v-if="selectedDate"
+          class="rounded bg-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-300"
+          @click="selectedDate = null"
+        >
+          Clear date
+        </UiButton>
+      </div>
+
+      <!-- SWAPPED SIZES: wide events (left), narrow calendar (right) -->
       <div
         id="events-list"
-        class="flex flex-col justify-center md:flex-row md:gap-10 md:px-10 lg:gap-16"
+        class="mt-4 grid grid-cols-1 gap-10 md:grid-cols-[minmax(680px,1fr)_420px] md:px-10"
       >
-        <!-- 📅 left side -->
-        <div class="flex w-full flex-col space-y-6 pt-5 md:w-3/4">
-          <!-- Type Filter (dropdown) -->
-          <div class="mb-4 flex items-center gap-3">
-            <label class="text-sm font-medium text-gray-700">Filter by:</label>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                class="flex items-center gap-2 rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-100"
-              >
-                <component :is="selectedIcon" class="h-4 w-4 text-maroon" />
-                <span>{{ selectedLabel }}</span>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent class="w-44">
-                <DropdownMenuItem
-                  v-for="opt in TYPE_OPTIONS"
-                  :key="opt.value"
-                  @click="setFilter(opt.value)"
-                >
-                  <component :is="opt.icon" class="mr-2 h-4 w-4 text-gray-600" />
-                  {{ opt.label }}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <!-- still useful if user filtered by date while 'All events' is selected -->
-            <UiButton
-              v-if="selectedDate"
-              class="rounded bg-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-300"
-              @click="selectedDate = null"
-            >
-              Clear date
-            </UiButton>
-          </div>
-
+        <!-- LEFT: Events (wide) -->
+        <div class="flex w-full flex-col space-y-6">
           <template v-if="filteredEvents.length > 0">
             <div
               v-for="event in filteredEvents"
               :key="event.id"
-              class="w-full rounded-lg bg-white p-5 shadow-2xl md:w-4/5"
+              class="w-full rounded-lg bg-white p-5 shadow-2xl"
             >
-              <!-- Date -->
-              <span class="text-md font-inter font-semibold text-red-800 md:text-2xl"> //add this or replace this span sa date
-                EVENT DATE:
-                {{ formatEventDate(event.date, event.dateEnd) }}
+              <span class="text-md font-inter font-semibold text-red-800 md:text-2xl">
+                EVENT DATE: {{ formatEventDate(event.date, event.dateEnd) }}
               </span>
 
-              <!-- Image slide -->
+              <!-- Image slider -->
+              <!-- Image slider (taller) -->
               <div class="relative mx-auto overflow-hidden">
                 <div
                   class="flex flex-shrink-0 pb-4 pt-4 transition-transform duration-500"
                   :style="{ transform: `translateX(-${event.currentSlide || 0}00%)` }"
                 >
                   <div v-for="(img, i) in event.coverImages" :key="i" class="w-full flex-shrink-0">
-                    <img :src="img" alt="" class="h-48 w-full object-cover md:h-60" />
+                    <!-- taller image -->
+                    <img :src="img" alt="" class="h-64 w-full object-cover md:h-80 lg:h-96" />
                   </div>
                 </div>
 
-                <!-- Arrows -->
+                <!-- Arrows (vertically centered) -->
                 <button
-                  class="absolute right-3 top-36 z-10 size-8 -translate-y-1/2 transform rounded-full bg-white/80 text-red-900 shadow-md transition hover:scale-105 hover:bg-white md:size-10"
+                  class="absolute right-3 top-1/2 z-10 size-9 -translate-y-1/2 rounded-full bg-white/80 text-red-900 shadow-md hover:scale-105 hover:bg-white md:size-10"
                   @click="event.currentSlide = (event.currentSlide + 1) % event.coverImages.length"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="mx-auto size-7 font-bold"
-                    fill="none"
+                    class="mx-auto size-6"
                     viewBox="0 0 24 24"
+                    fill="none"
                     stroke="currentColor"
                     stroke-width="2"
                   >
@@ -173,7 +168,7 @@
                 </button>
 
                 <button
-                  class="absolute left-3 top-36 z-10 size-8 -translate-y-1/2 transform rounded-full bg-white/80 text-red-900 shadow-md transition hover:scale-105 hover:bg-white md:size-10"
+                  class="absolute left-3 top-1/2 z-10 size-9 -translate-y-1/2 rounded-full bg-white/80 text-red-900 shadow-md hover:scale-105 hover:bg-white md:size-10"
                   @click="
                     event.currentSlide =
                       (event.currentSlide - 1 + event.coverImages.length) % event.coverImages.length
@@ -181,9 +176,9 @@
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="mx-auto size-7 font-bold"
-                    fill="none"
+                    class="mx-auto size-6"
                     viewBox="0 0 24 24"
+                    fill="none"
                     stroke="currentColor"
                     stroke-width="2"
                   >
@@ -192,9 +187,7 @@
                 </button>
 
                 <!-- Dots -->
-                <div
-                  class="absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 transform space-x-2"
-                >
+                <div class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 space-x-2">
                   <span
                     v-for="(img, i) in event.coverImages"
                     :key="i"
@@ -205,16 +198,14 @@
                 </div>
               </div>
 
-              <!-- Title & Description -->
               <div class="pb-2 md:pt-2">
                 <span class="font-roboto text-xl font-semibold md:text-2xl">{{ event.title }}</span>
                 <div class="text-sm italic text-gray-600">
-                  Published: {{ formatPublishDate(event.createdAt) }}  // add this div
+                  Published: {{ formatPublishDate(event.createdAt) }}
                 </div>
               </div>
-              <div class="font-roboto">
-                <p v-html="event.description"></p>
-              </div>
+
+              <div class="font-roboto"><p v-html="event.description"></p></div>
 
               <UiButton
                 @click="readMore(event.id)"
@@ -225,15 +216,14 @@
             </div>
           </template>
 
+          <!-- Empty state (match calendar card height) -->
           <template v-else>
-            <!-- 🧼 Empty State -->
             <div
-              class="flex min-h-[300px] w-224 flex-col items-center justify-center rounded border-2 bg-white text-center text-gray-500 shadow"
+              class="flex h-[420px] w-full flex-col items-center justify-center rounded-xl border bg-white text-center text-gray-500 shadow"
             >
-              <!-- Icon -->
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="mb-5 h-16 w-16 text-red-700"
+                class="mb-4 h-14 w-14 text-red-700"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -248,11 +238,10 @@
               </svg>
               <p class="text-lg font-semibold">No events on this day.</p>
               <p class="text-sm">Try selecting another date on the calendar.</p>
-
               <UiButton
                 v-if="selectedDate"
                 @click="selectedDate = null"
-                class="mt-4 w-fit self-center rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-400"
+                class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-400"
               >
                 Show all events
               </UiButton>
@@ -260,30 +249,26 @@
           </template>
         </div>
 
-        <!--  Right Side -->
+        <!-- RIGHT: Calendar (narrow) + More events -->
+        <div class="hidden md:block md:w-[420px] md:justify-self-end">
+          <div class="sticky top-24 space-y-5">
+            <!-- Calendar card (narrower) -->
+            <div class="rounded-xl bg-white p-6 shadow-xl">
+              <AutoFitCalendar
+  :attributes="calendarAttributes"
+  v-model:selectedDate="selectedDate"
+  :max-height="400"
+  @date-click="handleDayClick"
+/>
 
-        <div
-          class="hidden md:flex md:w-[340px] md:shrink-0 md:flex-col md:items-center md:space-y-5 md:pt-5"
-        >
-          <div class="flex flex-col items-center space-y-5 pt-5">
-            <!-- Calendar -->
-            <div class="">
-              <div class="flex justify-center rounded-xl bg-white shadow-xl">
-                <UiCalendar
-                  class="bg-neutral-100"
-                  :dot-events="dotEvents"
-                  @date-click="handleDayClick"
-                  v-model:selectedDate="selectedDate"
-                />
-              </div>
             </div>
 
-            <!-- More / older events (only visible on All events with no date selected) -->
+            <!-- More events -->
             <div
               v-if="oldEvents.length"
-              class="w-96 rounded-xl border border-neutral-200 bg-white p-6 shadow-xl"
+              class="rounded-xl border border-neutral-200 bg-white p-6 shadow-xl"
             >
-              <div class="flex items-center gap-2 border-b border-neutral-300 pb-3">
+              <div class="mb-3 flex items-center gap-2 border-b border-neutral-300 pb-3">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="h-5 w-5 text-maroon"
@@ -296,7 +281,7 @@
                 <h3 class="text-lg font-semibold text-maroon">More events</h3>
               </div>
 
-              <ul class="mt-3 space-y-2">
+              <ul class="space-y-2">
                 <li
                   v-for="ev in oldEvents"
                   :key="ev.id"
@@ -308,9 +293,9 @@
                   >
                     {{ ev.title }}
                   </button>
-                  <span class="shrink-0 text-xs text-gray-500">
-                    {{ miniDate(ev.createdAt || ev.date) }}
-                  </span>
+                  <span class="shrink-0 text-xs text-gray-500">{{
+                    miniDate(ev.createdAt || ev.date)
+                  }}</span>
                 </li>
               </ul>
             </div>
@@ -322,6 +307,7 @@
 </template>
 
 <script lang="ts" setup>
+import AutoFitCalendar from "@/components/AutoFitCalendar.vue";
   import DropdownMenuContent from "@/components/Ui/DropdownMenu/Content.vue";
   import DropdownMenu from "@/components/Ui/DropdownMenu/DropdownMenu.vue";
   import DropdownMenuItem from "@/components/Ui/DropdownMenu/Item.vue";
@@ -448,16 +434,51 @@
     if (intervalId) clearInterval(intervalId);
   });
 
+
+  const calendarAttributes = computed(() => {
+  const attrs: any[] = [];
+
+  for (const e of events.value) {
+    const start = asDate(e.date);
+    const end = asDate(e.dateEnd);
+
+    if (!start) continue;
+
+    if (end && end > start) {
+      // multi-day: highlight the span
+      attrs.push({
+        key: `range-${e.id}`,
+        highlight: true,
+        dates: { start, end },
+        popover: { label: e.title || "Event" },
+      });
+    } else {
+      // single-day: dot
+      attrs.push({
+        key: `dot-${e.id}-${+start}`,
+        dates: start,
+        dot: true,
+        popover: { label: e.title || "Event" },
+      });
+    }
+  }
+
+  return attrs;
+});
+
+
   /** skeleton visibility (template still uses it) */
   const isContentVisible = ref(false);
 
-  const filteredEvents = computed(() => {
-    const list = listByType.value;
-    if (selectedDate.value) {
-      return list.filter((e) => isSameDay(parseISO(e.date), selectedDate.value as Date));
-    }
-    return list.slice(0, MAX_VISIBLE);
-  });
+ const filteredEvents = computed(() => {
+  const list = listByType.value;
+  if (selectedDate.value) {
+    const d = selectedDate.value as Date;
+    return list.filter((e) => inDayRange(e, d));
+  }
+  return list.slice(0, MAX_VISIBLE);
+});
+
 
   const oldEvents = computed(() => {
     return sortedByDateDesc.value // ALWAYS all events
@@ -539,6 +560,25 @@
     const d = typeof val?.toDate === "function" ? val.toDate() : new Date(val);
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   }
+
+  function inDayRange(e: any, day: Date): boolean {
+  const s = asDate(e.date);
+  if (!s) return false;
+
+  // normalize to whole-day comparisons
+  const d0 = new Date(day); d0.setHours(0,0,0,0);
+  const s0 = new Date(s);  s0.setHours(0,0,0,0);
+
+  const maybeEnd = asDate(e.dateEnd);
+  if (maybeEnd) {
+    const e0 = new Date(maybeEnd);
+    e0.setHours(23,59,59,999); // inclusive end
+    return d0 >= s0 && d0 <= e0;
+  }
+  // single-day event
+  return d0.getTime() === s0.getTime();
+}
+
 
   //calendar filter
   const asDate = (val: any): Date | null => {
