@@ -251,16 +251,15 @@
 
         <!-- RIGHT: Calendar (narrow) + More events -->
         <div class="hidden md:block md:w-[420px] md:justify-self-end">
-          <div class="sticky top-24 space-y-5">
+          <div class="space-y-5">
             <!-- Calendar card (narrower) -->
-            <div class="rounded-xl bg-white p-6 shadow-xl">
+            <div class="rounded-xl bg-white p-4 shadow-xl">
               <AutoFitCalendar
-  :attributes="calendarAttributes"
-  v-model:selectedDate="selectedDate"
-  :max-height="400"
-  @date-click="handleDayClick"
-/>
-
+                :attributes="calendarAttributes"
+                v-model:selectedDate="selectedDate"
+                :max-height="400"
+                @date-click="handleDayClick"
+              />
             </div>
 
             <!-- More events -->
@@ -307,7 +306,7 @@
 </template>
 
 <script lang="ts" setup>
-import AutoFitCalendar from "@/components/AutoFitCalendar.vue";
+  import AutoFitCalendar from "@/components/AutoFitCalendar.vue";
   import DropdownMenuContent from "@/components/Ui/DropdownMenu/Content.vue";
   import DropdownMenu from "@/components/Ui/DropdownMenu/DropdownMenu.vue";
   import DropdownMenuItem from "@/components/Ui/DropdownMenu/Item.vue";
@@ -434,51 +433,48 @@ import AutoFitCalendar from "@/components/AutoFitCalendar.vue";
     if (intervalId) clearInterval(intervalId);
   });
 
-
   const calendarAttributes = computed(() => {
-  const attrs: any[] = [];
+    const attrs: any[] = [];
 
-  for (const e of events.value) {
-    const start = asDate(e.date);
-    const end = asDate(e.dateEnd);
+    for (const e of events.value) {
+      const start = asDate(e.date);
+      const end = asDate(e.dateEnd);
 
-    if (!start) continue;
+      if (!start) continue;
 
-    if (end && end > start) {
-      // multi-day: highlight the span
-      attrs.push({
-        key: `range-${e.id}`,
-        highlight: true,
-        dates: { start, end },
-        popover: { label: e.title || "Event" },
-      });
-    } else {
-      // single-day: dot
-      attrs.push({
-        key: `dot-${e.id}-${+start}`,
-        dates: start,
-        dot: true,
-        popover: { label: e.title || "Event" },
-      });
+      if (end && end > start) {
+        // multi-day: highlight the span
+        attrs.push({
+          key: `range-${e.id}`,
+          highlight: true,
+          dates: { start, end },
+          popover: { label: e.title || "Event" },
+        });
+      } else {
+        // single-day: dot
+        attrs.push({
+          key: `dot-${e.id}-${+start}`,
+          dates: start,
+          dot: true,
+          popover: { label: e.title || "Event" },
+        });
+      }
     }
-  }
 
-  return attrs;
-});
-
+    return attrs;
+  });
 
   /** skeleton visibility (template still uses it) */
   const isContentVisible = ref(false);
 
- const filteredEvents = computed(() => {
-  const list = listByType.value;
-  if (selectedDate.value) {
-    const d = selectedDate.value as Date;
-    return list.filter((e) => inDayRange(e, d));
-  }
-  return list.slice(0, MAX_VISIBLE);
-});
-
+  const filteredEvents = computed(() => {
+    const list = listByType.value;
+    if (selectedDate.value) {
+      const d = selectedDate.value as Date;
+      return list.filter((e) => inDayRange(e, d));
+    }
+    return list.slice(0, MAX_VISIBLE);
+  });
 
   const oldEvents = computed(() => {
     return sortedByDateDesc.value // ALWAYS all events
@@ -562,23 +558,24 @@ import AutoFitCalendar from "@/components/AutoFitCalendar.vue";
   }
 
   function inDayRange(e: any, day: Date): boolean {
-  const s = asDate(e.date);
-  if (!s) return false;
+    const s = asDate(e.date);
+    if (!s) return false;
 
-  // normalize to whole-day comparisons
-  const d0 = new Date(day); d0.setHours(0,0,0,0);
-  const s0 = new Date(s);  s0.setHours(0,0,0,0);
+    // normalize to whole-day comparisons
+    const d0 = new Date(day);
+    d0.setHours(0, 0, 0, 0);
+    const s0 = new Date(s);
+    s0.setHours(0, 0, 0, 0);
 
-  const maybeEnd = asDate(e.dateEnd);
-  if (maybeEnd) {
-    const e0 = new Date(maybeEnd);
-    e0.setHours(23,59,59,999); // inclusive end
-    return d0 >= s0 && d0 <= e0;
+    const maybeEnd = asDate(e.dateEnd);
+    if (maybeEnd) {
+      const e0 = new Date(maybeEnd);
+      e0.setHours(23, 59, 59, 999); // inclusive end
+      return d0 >= s0 && d0 <= e0;
+    }
+    // single-day event
+    return d0.getTime() === s0.getTime();
   }
-  // single-day event
-  return d0.getTime() === s0.getTime();
-}
-
 
   //calendar filter
   const asDate = (val: any): Date | null => {
