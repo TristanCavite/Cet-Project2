@@ -28,10 +28,10 @@
         </UiButton>
 
         <UiButton
-          v-if="showDelete"
+           v-if="showDeleteButton"
           title="Delete"
           class="absolute inline-flex items-center justify-center p-1 text-yellow-400 transition bg-transparent rounded-full left-3 top-3 hover:bg-gray-200 hover:scale-105"
-          @click="() => { $emit('remove', profile); $emit('close') }"
+          @click="onRequestDelete"
         >
           <IconsTrash class="px-2 size-9" />
         </UiButton>
@@ -123,14 +123,18 @@
 import { X } from "lucide-vue-next";
 import { ref } from "vue";
 
-  defineProps({
-    profile: Object,
-    showDelete: Boolean,
-  });
+  const props = defineProps({
+  profile: Object,
+  showDeleteButton: Boolean,
+})
 
-  const emit = defineEmits(["close", "remove"]);
+  const emit = defineEmits(['close', 'request-delete', 'remove']);
   const modalRef = ref(null);
 
+  function onRequestDelete() {
+  // emit upward to parent
+    emit('request-delete', props.profile)
+  }
   function handleOutsideClick(event) {
     if (modalRef.value && !modalRef.value.contains(event.target)) {
       emit("close");
