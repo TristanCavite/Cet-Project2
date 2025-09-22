@@ -253,14 +253,14 @@
         <div class="hidden md:block md:w-[420px] md:justify-self-end">
           <div class="space-y-5">
             <!-- Calendar card (narrower) -->
-            <div class="rounded-xl bg-white p-4 shadow-xl">
-              <AutoFitCalendar
-                :attributes="calendarAttributes"
-                v-model:selectedDate="selectedDate"
-                :max-height="400"
-                @date-click="handleDayClick"
-              />
-            </div>
+            <div class="rounded-xl bg-white p-6 shadow-xl">
+  <AutoFitCalendar
+    :attributes="calendarAttributes"
+    v-model:selectedDate="selectedDate"
+    @date-click="handleDayClick"
+  />
+</div>
+
 
             <!-- More events -->
             <div
