@@ -1,9 +1,9 @@
 <template>
   <!-- Page background layers -->
-  <div class="relative flex min-h-screen items-center justify-center overflow-hidden">
+  <div class="relative flex items-center justify-center min-h-screen overflow-hidden">
     <!-- Blurred photo -->
     <div
-      class="absolute inset-0 -z-20 bg-center bg-cover scale-105 blur-xl"
+      class="absolute inset-0 scale-105 bg-center bg-cover -z-20 blur-xl"
       style="background-image: url('/bg.png')"
       aria-hidden="true"
     />
@@ -14,13 +14,13 @@
    <div class="relative mx-4 w-full max-w-[480px] sm:max-w-[520px]">
 
       <div
-        class="rounded-2xl bg-white/10 backdrop-blur-xl ring-1 ring-white/15 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)]"
+        class="rounded-2xl bg-red-900/70 backdrop-blur-xl ring-1 ring-white/15 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)]"
       >
         <!-- Header -->
         <div class="flex flex-col items-center px-8 pt-8">
-          <img src="/logoTab.png" alt="Logo" class="h-14" />
-          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-white">Log in</h1>
-          <p class="mt-1 mb-6 text-center text-sm text-white/70">
+          <img src="/FE_logo_white_wbg.png" alt="Logo" class="h-14" />
+          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-white">LOGIN</h1>
+          <p class="mt-1 mb-6 text-sm text-center text-white/70">
             Enter your email & password to log in.
           </p>
         </div>
@@ -37,7 +37,7 @@
                 id="email"
                 autocomplete="email"
                 required
-                class="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-white placeholder-white/40 shadow-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/30"
+                class="w-full px-3 py-2 mt-1 text-white transition border rounded-lg shadow-sm outline-none border-white/20 bg-white/5 placeholder-white/40 focus:border-red-500 focus:ring-2 focus:ring-red-500/30"
                 placeholder="sample.rani@valid.com"
               />
             </div>
@@ -48,7 +48,7 @@
                 <label for="password" class="block text-sm font-medium text-white/80">Password</label>
                 <button
                   type="button"
-                  class="text-sm font-medium text-white/90 underline decoration-white/30 underline-offset-4 hover:decoration-white"
+                  class="text-sm font-medium underline text-white/90 decoration-white/30 underline-offset-4 hover:decoration-white"
                   @click="forgotOpen = true"
                 >
                   Forgot password?
@@ -60,17 +60,17 @@
                 id="password"
                 autocomplete="current-password"
                 required
-                class="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-white placeholder-white/40 shadow-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/30"
+                class="w-full px-3 py-2 mt-1 text-white transition border rounded-lg shadow-sm outline-none border-white/20 bg-white/5 placeholder-white/40 focus:border-red-500 focus:ring-2 focus:ring-red-500/30"
                 placeholder="******"
               />
             </div>
 
             <!-- REMEMBER -->
-            <label class="mt-1 inline-flex items-center gap-2">
+            <label class="inline-flex items-center gap-2 mt-1">
               <input
                 v-model="rememberMe"
                 type="checkbox"
-                class="rounded border-white/30 bg-transparent text-red-600 focus:ring-red-600"
+                class="text-red-600 bg-transparent rounded border-white/30 focus:ring-red-600"
               />
               <span class="text-sm text-white/80">Remember me</span>
             </label>
