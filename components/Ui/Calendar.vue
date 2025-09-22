@@ -22,6 +22,11 @@ import dayjs from "dayjs";
 
 defineOptions({ inheritAttrs: false });
 
+interface Props extends /* @vue-ignore */ Partial<InstanceType<typeof Calendar>["$props"]> {
+  attributes?: any[];
+}
+
+
 type DotEvent = { date: Date | string; color?: string; label?: string };
 interface Props extends /* @vue-ignore */ Partial<InstanceType<typeof Calendar>["$props"]> {}
 
@@ -32,10 +37,11 @@ const props = withDefaults(defineProps<Props & {
   dotEvents?: DotEvent[];
   selectedDate?: Date | null;
 }>(), {
-  trimWeeks: true,
+    trimWeeks: true,
   clickHighlight: true,
   clickLabel: "Selected date",
   dotEvents: () => [],
+  attributes: () => [], 
 });
 
 const toDate = (d: unknown): Date => {

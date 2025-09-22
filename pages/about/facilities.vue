@@ -8,19 +8,9 @@
       </div>
     </div>
 
-    <!-- Content Box -->
-    <div class="w-full h-auto pt-10 pb-10 mx-auto md:w-3/4">
-      <!-- Loading -->
-      <template v-if="pending">
-        <UiSkeleton class="mx-auto mt-16 shadow-lg h-96 w-288 bg-stone-600" />
-        <UiSkeleton class="mx-auto mt-4 shadow-lg h-96 w-288 bg-stone-600" />
-        <UiSkeleton class="mx-auto mt-4 shadow-lg h-96 w-288 bg-stone-600" />
-        <UiSkeleton class="mx-auto mt-4 mb-16 shadow-lg h-96 w-288 bg-stone-600" />
-      </template>
-
-      <!-- Loaded Content -->
-      <div v-else v-html="section?.content" class="max-w-5xl mx-auto prose" />
-    </div>
+      <div class="mx-auto mb-12 mt-10 w-3/4 md:mt-16">
+        <div class="cet-content prose max-w-none" v-html="section?.content"></div>
+      </div>
   </main>
 </template>
 

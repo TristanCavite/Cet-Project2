@@ -1,101 +1,113 @@
 <template>
-  <div
-    class="flex items-center justify-center h-screen bg-center bg-cover"
-    style="background-image: url('bg.png')"
-  >
-    <!-- Wrapper with Border -->
-    <div class="w-full max-w-md p-6 bg-white border border-gray-300 rounded shadow-md">
-      <!-- Centered Logo and Heading -->
-      <div class="flex flex-col items-center my-6 space-y-2">
-        <img src="/logoTab.png" alt="Logo" class="h-14" />
-        <h1 class="text-2xl font-semibold tracking-tight">Log in</h1>
-      </div>
+  <!-- Page background layers -->
+  <div class="relative flex min-h-screen items-center justify-center overflow-hidden">
+    <!-- Blurred photo -->
+    <div
+      class="absolute inset-0 -z-20 bg-center bg-cover scale-105 blur-xl"
+      style="background-image: url('/bg.png')"
+      aria-hidden="true"
+    />
+    <!-- Dark overlay to improve contrast -->
+    <div class="absolute inset-0 -z-10 bg-black/70" aria-hidden="true" />
 
-      <p class="mb-8 text-center text-gray-500">Enter your email & password to log in.</p>
+    <!-- Glassy form box -->
+   <div class="relative mx-4 w-full max-w-[480px] sm:max-w-[520px]">
 
-      <!-- Form -->
-      <form @submit.prevent="submit">
-        <fieldset class="grid gap-4">
-          <!-- EMAIL -->
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-600">Email</label>
-            <input
-              v-model="email"
-              type="email"
-              id="email"
-              autocomplete="email"
-              required
-              class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
-              placeholder="sample.rani@valid.com"
-            />
-          </div>
+      <div
+        class="rounded-2xl bg-white/10 backdrop-blur-xl ring-1 ring-white/15 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)]"
+      >
+        <!-- Header -->
+        <div class="flex flex-col items-center px-8 pt-8">
+          <img src="/logoTab.png" alt="Logo" class="h-14" />
+          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-white">Log in</h1>
+          <p class="mt-1 mb-6 text-center text-sm text-white/70">
+            Enter your email & password to log in.
+          </p>
+        </div>
 
-          <!-- PASSWORD -->
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-600">Password</label>
-            <input
-              v-model="password"
-              type="password"
-              id="password"
-              autocomplete="current-password"
-              required
-              class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-red-600"
-              placeholder="******"
-            />
-          </div>
+        <!-- Form -->
+        <form @submit.prevent="submit" class="px-8 pb-8">
+          <fieldset class="grid gap-4">
+            <!-- EMAIL -->
+            <div>
+              <label for="email" class="block text-sm font-medium text-white/80">Email</label>
+              <input
+                v-model="email"
+                type="email"
+                id="email"
+                autocomplete="email"
+                required
+                class="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-white placeholder-white/40 shadow-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/30"
+                placeholder="sample.rani@valid.com"
+              />
+            </div>
 
-          <!-- REMEMBER + FORGOT -->
-          <div class="flex items-center justify-between mt-2">
-            <label class="flex items-center">
-              <!-- Remember me affects Firebase Auth persistence -->
+            <!-- PASSWORD -->
+            <div>
+              <div class="flex items-center justify-between">
+                <label for="password" class="block text-sm font-medium text-white/80">Password</label>
+                <button
+                  type="button"
+                  class="text-sm font-medium text-white/90 underline decoration-white/30 underline-offset-4 hover:decoration-white"
+                  @click="forgotOpen = true"
+                >
+                  Forgot password?
+                </button>
+              </div>
+              <input
+                v-model="password"
+                type="password"
+                id="password"
+                autocomplete="current-password"
+                required
+                class="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-white placeholder-white/40 shadow-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/30"
+                placeholder="******"
+              />
+            </div>
+
+            <!-- REMEMBER -->
+            <label class="mt-1 inline-flex items-center gap-2">
               <input
                 v-model="rememberMe"
                 type="checkbox"
-                class="rounded border-gray-300 text-red-600 focus:ring-red-600"
+                class="rounded border-white/30 bg-transparent text-red-600 focus:ring-red-600"
               />
-              <span class="ml-2 text-sm text-gray-600">Remember me</span>
+              <span class="text-sm text-white/80">Remember me</span>
             </label>
 
-            <!-- Opens the Forgot Password modal -->
+            <!-- SUBMIT -->
+            <button
+              type="submit"
+              :disabled="loading"
+              class="mt-2 w-full rounded-lg bg-white py-2.5 font-semibold text-black shadow-lg transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/30 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <span v-if="!loading">Log In</span>
+              <span v-else>Signing in…</span>
+            </button>
+
+            <!-- CANCEL -->
             <button
               type="button"
-              class="text-sm font-medium underline text-red-600"
-              @click="forgotOpen = true"
+              @click="cancel"
+              class="w-full rounded-lg bg-white/10 py-2.5 font-semibold text-white shadow-sm transition hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
-              Forgot password?
+              Cancel
             </button>
-          </div>
-
-          <!-- SUBMIT -->
-          <button
-            type="submit"
-            :disabled="loading"
-            class="w-full mt-4 rounded-md bg-red-800 py-2 text-white font-semibold shadow-md transition hover:bg-red-700 disabled:opacity-60 focus:outline-none focus:ring focus:ring-red-600"
-          >
-            <span v-if="!loading">Log In</span>
-            <span v-else>Signing in…</span>
-          </button>
-
-          <!-- CANCEL -->
-          <button
-            type="button"
-            @click="cancel"
-            class="w-full mt-2 rounded-md bg-gray-300 py-2 text-gray-800 font-semibold shadow-md transition hover:bg-gray-400 focus:outline-none focus:ring focus:ring-gray-600"
-          >
-            Cancel
-          </button>
-        </fieldset>
-      </form>
+          </fieldset>
+        </form>
+      </div>
     </div>
   </div>
 
+  <!-- Keep your existing modal exactly the same -->
   <ForgotPasswordModal
-  v-model="forgotOpen"
-  :prefill="email"
-  redirect-path="/auth/reset-password"
-  @sent="onResetSent"
-/>
+    v-model="forgotOpen"
+    :prefill="email"
+    redirect-path="/auth/reset-password"
+    @sent="onResetSent"
+  />
 </template>
+
 
 <script setup>
 /**

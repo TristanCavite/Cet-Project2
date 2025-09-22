@@ -16,9 +16,9 @@
     </div>
 
     <!-- Main Content Container -->
-    <div class="mx-auto mb-12 mt-10 w-3/4 md:mt-16">
-      <div class="leading-relaxed" v-html="admissionData?.content"></div>
-    </div>
+     <div class="mx-auto mb-12 mt-10 w-3/4 md:mt-16">
+        <div class="cet-content prose max-w-none" v-html="admissionData?.content"></div>
+      </div>
   </main>
 </template>
 
