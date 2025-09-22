@@ -1,14 +1,14 @@
 <template>
   <main class="bg-white">
     <!-- Hero Slider -->
-    <div class="relative h-auto w-full overflow-hidden">
+    <div class="relative w-full h-auto overflow-hidden">
       <button
-        class="absolute left-1/2 top-1/2 z-10 flex h-12 -translate-y-1/2 transform items-center justify-center rounded-xl bg-red-900 transition md:left-10 md:h-28"
+        class="absolute z-10 flex items-center justify-center h-12 transition transform -translate-y-1/2 bg-red-900 left-1/2 top-1/2 rounded-xl md:left-10 md:h-28"
         @click="prevSlide"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="lucide lucide-chevron-left size-5 text-white md:size-10"
+          class="text-white lucide lucide-chevron-left size-5 md:size-10"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -18,12 +18,12 @@
         </svg>
       </button>
       <button
-        class="absolute right-1 top-1/2 z-10 flex h-12 -translate-y-1/2 transform items-center justify-center rounded-xl bg-red-900 transition md:right-10 md:h-28"
+        class="absolute z-10 flex items-center justify-center h-12 transition transform -translate-y-1/2 bg-red-900 right-1 top-1/2 rounded-xl md:right-10 md:h-28"
         @click="nextSlide"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="lucide lucide-chevron-right size-5 text-white md:size-10"
+          class="text-white lucide lucide-chevron-right size-5 md:size-10"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -35,12 +35,12 @@
 
       <!-- Dots -->
       <div
-        class="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 transform space-x-2 md:bottom-4"
+        class="absolute z-10 flex space-x-2 transform -translate-x-1/2 bottom-2 left-1/2 md:bottom-4"
       >
         <span
           v-for="(image, index) in images"
           :key="index"
-          class="size-1 rounded-full bg-gray-400 md:size-2"
+          class="bg-gray-400 rounded-full size-1 md:size-2"
           :class="{ 'bg-gray-800': currentIndex === index }"
           @click="setCurrentSlide(index)"
         ></span>
@@ -66,7 +66,7 @@
                 <img
                   :src="image.src"
                   :alt="image.alt || `Slide ${index + 1}`"
-                  class="h-full w-full rounded-xl object-cover object-center"
+                  class="object-cover object-center w-full h-full rounded-xl"
                   loading="lazy"
                   decoding="async"
                 />
@@ -78,24 +78,24 @@
     </div>
 
     <!-- EVENTS -->
-    <div class="mx-auto py-5 md:max-w-7xl md:px-4 md:py-10">
+    <div class="py-5 mx-auto md:max-w-7xl md:px-4 md:py-10">
       <div class="text-center md:pt-4">
         <span
-          class="font-playfair text-xl font-extrabold uppercase tracking-wide text-maroon md:text-5xl"
+          class="text-xl font-extrabold tracking-wide uppercase font-playfair text-maroon md:text-5xl"
         >
           EVENTS
         </span>
       </div>
 
       <!-- Filter bar -->
-      <div class="mt-6 flex items-center gap-3 md:px-10">
+      <div class="flex items-center gap-3 mt-6 md:px-10">
         <label class="text-sm font-medium text-gray-700">Filter by:</label>
 
         <DropdownMenu>
           <DropdownMenuTrigger
-            class="flex items-center gap-2 rounded-md border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-100"
+            class="flex items-center gap-2 px-3 py-2 text-sm bg-white border rounded-md shadow-sm hover:bg-gray-100"
           >
-            <component :is="selectedIcon" class="h-4 w-4 text-maroon" />
+            <component :is="selectedIcon" class="w-4 h-4 text-maroon" />
             <span>{{ selectedLabel }}</span>
           </DropdownMenuTrigger>
 
@@ -105,7 +105,7 @@
               :key="opt.value"
               @click="setFilter(opt.value)"
             >
-              <component :is="opt.icon" class="mr-2 h-4 w-4 text-gray-600" />
+              <component :is="opt.icon" class="w-4 h-4 mr-2 text-gray-600" />
               {{ opt.label }}
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -113,7 +113,7 @@
 
         <UiButton
           v-if="selectedDate"
-          class="rounded bg-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-300"
+          class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
           @click="selectedDate = null"
         >
           Clear date
@@ -126,14 +126,14 @@
         class="mt-4 grid grid-cols-1 gap-10 md:grid-cols-[minmax(680px,1fr)_420px] md:px-10"
       >
         <!-- LEFT: Events (wide) -->
-        <div class="flex w-full flex-col space-y-6">
+        <div class="flex flex-col w-full space-y-6">
           <template v-if="filteredEvents.length > 0">
             <div
               v-for="event in filteredEvents"
               :key="event.id"
-              class="w-full rounded-lg bg-white p-5 shadow-2xl"
+              class="w-full p-5 bg-white rounded-lg shadow-2xl"
             >
-              <span class="text-md font-inter font-semibold text-red-800 md:text-2xl">
+              <span class="font-semibold text-red-800 text-md font-inter md:text-2xl">
                 EVENT DATE: {{ formatEventDate(event.date, event.dateEnd) }}
               </span>
 
@@ -141,18 +141,18 @@
               <!-- Image slider (taller) -->
               <div class="relative mx-auto overflow-hidden">
                 <div
-                  class="flex flex-shrink-0 pb-4 pt-4 transition-transform duration-500"
+                  class="flex flex-shrink-0 pt-4 pb-4 transition-transform duration-500"
                   :style="{ transform: `translateX(-${event.currentSlide || 0}00%)` }"
                 >
-                  <div v-for="(img, i) in event.coverImages" :key="i" class="w-full flex-shrink-0">
+                  <div v-for="(img, i) in event.coverImages" :key="i" class="flex-shrink-0 w-full">
                     <!-- taller image -->
-                    <img :src="img" alt="" class="h-64 w-full object-cover md:h-80 lg:h-96" />
+                    <img :src="img" alt="" class="object-cover w-full h-64 md:h-80 lg:h-96" />
                   </div>
                 </div>
 
                 <!-- Arrows (vertically centered) -->
                 <button
-                  class="absolute right-3 top-1/2 z-10 size-9 -translate-y-1/2 rounded-full bg-white/80 text-red-900 shadow-md hover:scale-105 hover:bg-white md:size-10"
+                  class="absolute z-10 text-red-900 -translate-y-1/2 rounded-full shadow-md right-3 top-1/2 size-9 bg-white/80 hover:scale-105 hover:bg-white md:size-10"
                   @click="event.currentSlide = (event.currentSlide + 1) % event.coverImages.length"
                 >
                   <svg
@@ -168,7 +168,7 @@
                 </button>
 
                 <button
-                  class="absolute left-3 top-1/2 z-10 size-9 -translate-y-1/2 rounded-full bg-white/80 text-red-900 shadow-md hover:scale-105 hover:bg-white md:size-10"
+                  class="absolute z-10 text-red-900 -translate-y-1/2 rounded-full shadow-md left-3 top-1/2 size-9 bg-white/80 hover:scale-105 hover:bg-white md:size-10"
                   @click="
                     event.currentSlide =
                       (event.currentSlide - 1 + event.coverImages.length) % event.coverImages.length
@@ -187,11 +187,11 @@
                 </button>
 
                 <!-- Dots -->
-                <div class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 space-x-2">
+                <div class="absolute z-10 flex space-x-2 -translate-x-1/2 bottom-4 left-1/2">
                   <span
                     v-for="(img, i) in event.coverImages"
                     :key="i"
-                    class="h-2 w-2 rounded-full bg-gray-400"
+                    class="w-2 h-2 bg-gray-400 rounded-full"
                     :class="{ 'bg-gray-800': (event.currentSlide || 0) === i }"
                     @click="event.currentSlide = i"
                   ></span>
@@ -199,20 +199,22 @@
               </div>
 
               <div class="pb-2 md:pt-2">
-                <span class="font-roboto text-xl font-semibold md:text-2xl">{{ event.title }}</span>
+                <span class="text-xl font-semibold font-roboto md:text-2xl">{{ event.title }}</span>
                 <div class="text-sm italic text-gray-600">
                   Published: {{ formatPublishDate(event.createdAt) }}
                 </div>
               </div>
 
               <div class="font-roboto"><p v-html="event.description"></p></div>
-
-              <UiButton
-                @click="readMore(event.id)"
-                class="inline-block rounded bg-gray-200 px-2 py-1 font-montserrat text-xs font-semibold text-gray-800 transition hover:scale-105 hover:bg-gray-300"
-              >
-                Read more...
-              </UiButton>
+              <div class="flex justify-between">
+                <UiButton
+                  @click="readMore(event.id)"
+                  class="inline-block px-2 py-1 text-xs font-semibold text-gray-800 transition bg-gray-200 rounded font-montserrat hover:scale-105 hover:bg-gray-300"
+                >
+                  Read more...
+                </UiButton>
+                <ShareButton :item="{ id:event.id, type:'event', slug:event.slug, title:event.title, excerpt:event.description }" />
+              </div>
             </div>
           </template>
 
@@ -223,7 +225,7 @@
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="mb-4 h-14 w-14 text-red-700"
+                class="mb-4 text-red-700 h-14 w-14"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -241,7 +243,7 @@
               <UiButton
                 v-if="selectedDate"
                 @click="selectedDate = null"
-                class="mt-4 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-400"
+                class="px-4 py-2 mt-4 text-sm font-semibold text-gray-700 bg-gray-300 rounded hover:bg-gray-400"
               >
                 Show all events
               </UiButton>
@@ -253,7 +255,7 @@
         <div class="hidden md:block md:w-[420px] md:justify-self-end">
           <div class="space-y-5">
             <!-- Calendar card (narrower) -->
-            <div class="rounded-xl bg-white p-6 shadow-xl">
+            <div class="p-6 bg-white shadow-xl rounded-xl">
   <AutoFitCalendar
     :attributes="calendarAttributes"
     v-model:selectedDate="selectedDate"
@@ -265,12 +267,12 @@
             <!-- More events -->
             <div
               v-if="oldEvents.length"
-              class="rounded-xl border border-neutral-200 bg-white p-6 shadow-xl"
+              class="p-6 bg-white border shadow-xl rounded-xl border-neutral-200"
             >
-              <div class="mb-3 flex items-center gap-2 border-b border-neutral-300 pb-3">
+              <div class="flex items-center gap-2 pb-3 mb-3 border-b border-neutral-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 text-maroon"
+                  class="w-5 h-5 text-maroon"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
@@ -287,12 +289,12 @@
                   class="flex items-start justify-between gap-3"
                 >
                   <button
-                    class="text-left text-sm font-medium text-gray-800 hover:underline"
+                    class="text-sm font-medium text-left text-gray-800 hover:underline"
                     @click="readMore(ev.id)"
                   >
                     {{ ev.title }}
                   </button>
-                  <span class="shrink-0 text-xs text-gray-500">{{
+                  <span class="text-xs text-gray-500 shrink-0">{{
                     miniDate(ev.createdAt || ev.date)
                   }}</span>
                 </li>
