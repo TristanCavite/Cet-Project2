@@ -303,6 +303,7 @@
       </div>
     </div>
   </main>
+  
 </template>
 
 <script lang="ts" setup>
@@ -313,13 +314,14 @@
   import DropdownMenuTrigger from "@/components/Ui/DropdownMenu/Trigger.vue";
   import { isSameDay, parseISO } from "date-fns";
   import { collection, getDocs, orderBy, query } from "firebase/firestore";
-  import { GraduationCap, ListFilter, School, Users } from "lucide-vue-next";
+  import { Building2, Globe, GraduationCap, ListFilter, School, Users } from "lucide-vue-next";
   import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
   import { useRoute, useRouter } from "vue-router";
   import { useFirestore } from "vuefire";
 
   // Which event type is selected (for the chip filter)
-  const typeFilter = ref<"all" | "faculty" | "students" | "faculty-wide">("all");
+const typeFilter = ref<"all" | "university" | "faculty" | "students" | "department" | "general">("all");
+
 
   const selectedLabel = computed(() => {
     return TYPE_OPTIONS.find((opt) => opt.value === typeFilter.value)?.label || "All events";
@@ -335,12 +337,15 @@
   }
 
   // Options for the chip UI
-  const TYPE_OPTIONS = [
-    { value: "all", label: "All events", icon: ListFilter },
-    { value: "faculty", label: "Faculty", icon: School },
-    { value: "students", label: "Students", icon: GraduationCap },
-    { value: "faculty-wide", label: "Faculty Wide", icon: Users },
-  ] as const;
+// Filter dropdown options — uses canonical eventType values
+const TYPE_OPTIONS = [
+  { value: "all",        label: "All events",  icon: ListFilter },
+  { value: "university", label: "University",  icon: GraduationCap },         // top-level / college-wide
+  { value: "faculty",    label: "Faculty",     icon: School },        // department faculty
+  { value: "students",   label: "Students",    icon: Users }, // student-facing
+  { value: "department", label: "Department",  icon: Building2 },         // single-department events
+  { value: "general",    label: "General",     icon: Globe },    // misc / public
+] as const;
 
   const MAX_VISIBLE = 3;
   const MAX_OLD_EVENTS = 10;
@@ -376,13 +381,21 @@
   const sortedByDateDesc = computed(() =>
     events.value.slice().sort((a, b) => msFrom(b.date) - msFrom(a.date))
   );
+const listByType = computed(() => {
+  if (typeFilter.value === "all") return sortedByDateDesc.value;
 
-  const listByType = computed(() => {
-    if (typeFilter.value === "all") return sortedByDateDesc.value;
-    return sortedByDateDesc.value.filter(
-      (e) => (e.eventType || "").toLowerCase().replace(/[_\s]+/g, "-") === typeFilter.value
-    );
-  });
+  // normalize helper (lowercase, convert spaces/underscores to hyphen, strip extra chars)
+  const normalizeType = (v: any) =>
+    String(v || "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-") // replace spaces/underscores/multiple chars with single hyphen
+      .replace(/(^-|-$)/g, ""); // trim leading/trailing hyphens
+
+  const wanted = typeFilter.value; // already canonical (e.g. 'university' or 'department')
+  return sortedByDateDesc.value.filter((e) => normalizeType(e.eventType) === wanted);
+});
+
 
   onMounted(async () => {
     // Load events
