@@ -75,7 +75,7 @@
             <!-- Faculty Type + Home Department (only if memberType exists) -->
             <div v-if="profile?.memberType" class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div class="flex flex-col">
-                <span class="text-sm font-bold text-red-900 font-montserrat">Faculty Type:</span>
+                <span class="text-sm font-bold text-red-900 font-montserrat">Faculty:</span>
                 <span class="text-base font-semibold font-roboto">{{ profile.memberType }}</span>
               </div>
               <div v-if="profile.memberType === 'Affiliate'" class="flex flex-col">
