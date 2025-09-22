@@ -3,7 +3,7 @@
     <!-- Header Bar with Search and Social Icons -->
     <transition name="header-sticky">
       <div class="header-bar-transition border-gray-200 bg-white">
-        <div class="flex w-full items-center justify-center gap-64 md:px-4">
+        <div class="w-full max-w-screen-xl mx-auto flex items-center justify-between px-4">
           <!-- Left: Social Icons -->
           <div class="flex items-center space-x-6">
             <a
@@ -222,7 +222,7 @@
                       </NuxtLink>
 
                       <!-- 👇 This one hides/shows live based on Firestore -->
-                      <ClientOnly>
+                    
                         <NuxtLink
                           v-if="undergradVisible"
                           to="/admission/undergraduate"
@@ -230,27 +230,27 @@
                         >
                           Undergraduate
                         </NuxtLink>
-                      </ClientOnly>
+                     
 
                       <NuxtLink to="/admission/graduate" class="block px-4 py-2 hover:bg-gray-700">
                         Graduate
                       </NuxtLink>
 
                       <NuxtLink
-    v-if="admExtra1ShouldShow"
-    to="/admission/extra1"
-    class="block border-b border-gray-500 px-4 py-2 hover:bg-gray-700"
-  >
-    {{ admExtra1Label }}
-  </NuxtLink>
+                        v-if="admExtra1ShouldShow"
+                        to="/admission/extra1"
+                        class="block border-b border-gray-500 px-4 py-2 hover:bg-gray-700"
+                      >
+                        {{ admExtra1Label }}
+                      </NuxtLink>
 
-  <NuxtLink
-    v-if="admExtra2ShouldShow"
-    to="/admission/extra2"
-    class="block px-4 py-2 hover:bg-gray-700"
-  >
-    {{ admExtra2Label }}
-  </NuxtLink>
+                      <NuxtLink
+                        v-if="admExtra2ShouldShow"
+                        to="/admission/extra2"
+                        class="block px-4 py-2 hover:bg-gray-700"
+                      >
+                        {{ admExtra2Label }}
+                      </NuxtLink>
                     </div>
                   </div>
 
@@ -298,7 +298,7 @@
   import IconsSearch from "@/components/Icons/Search.vue";
   import { useSocialLinks } from "@/composables/useSocialLinks";
   import { signOut } from "firebase/auth";
-  import { collection, doc, getDocs, getDoc } from "firebase/firestore";
+  import { collection, doc, getDoc, getDocs } from "firebase/firestore";
   import { Facebook, Globe, Instagram, Linkedin, Twitter, Youtube } from "lucide-vue-next";
   import { computed, onBeforeUnmount, onMounted, ref } from "vue";
   import { useRouter } from "vue-router";
@@ -358,13 +358,13 @@
   const extra1Visible = computed(() => {
     const secVal = extra1Doc.value?.isVisible;
     const flagVal = flags.value?.["about_extra_section_1"];
-    return typeof secVal !== "undefined" ? secVal : (typeof flagVal !== "undefined" ? flagVal : true);
+    return typeof secVal !== "undefined" ? secVal : typeof flagVal !== "undefined" ? flagVal : true;
   });
 
   const extra2Visible = computed(() => {
     const secVal = extra2Doc.value?.isVisible;
     const flagVal = flags.value?.["about_extra_section_2"];
-    return typeof secVal !== "undefined" ? secVal : (typeof flagVal !== "undefined" ? flagVal : true);
+    return typeof secVal !== "undefined" ? secVal : typeof flagVal !== "undefined" ? flagVal : true;
   });
 
   // -----------------------
@@ -384,12 +384,12 @@
   const admExtra1Visible = computed(() => {
     const secVal = admExtra1Doc.value?.isVisible;
     const flagVal = flags.value?.["admission_extra_section_1"];
-    return typeof secVal !== "undefined" ? secVal : (typeof flagVal !== "undefined" ? flagVal : true);
+    return typeof secVal !== "undefined" ? secVal : typeof flagVal !== "undefined" ? flagVal : true;
   });
   const admExtra2Visible = computed(() => {
     const secVal = admExtra2Doc.value?.isVisible;
     const flagVal = flags.value?.["admission_extra_section_2"];
-    return typeof secVal !== "undefined" ? secVal : (typeof flagVal !== "undefined" ? flagVal : true);
+    return typeof secVal !== "undefined" ? secVal : typeof flagVal !== "undefined" ? flagVal : true;
   });
 
   // require non-empty title to show (you said you want title to be used if present)
@@ -478,7 +478,6 @@
     window.removeEventListener("scroll", handleScroll);
   });
 </script>
-
 
 <style scoped>
   .hover\:border-yellow-500:hover {
