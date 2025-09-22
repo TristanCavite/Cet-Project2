@@ -1,7 +1,7 @@
 <template>
   <main class="p-8">
     <div class="flex flex-col">
-      <span class="text-4xl font-bold text-red-900 font-trajan">College Faculty and Staff</span>
+      <span class="text-4xl font-bold text-red-900 font-trajan">Faculty, Teaching, and Non-Teaching Staff</span>
       <span class="text-xs font-montserrat">Manage leadership roles, department heads, and the directory</span>
     </div>
 
