@@ -140,7 +140,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useFirestore, useStorage } from "vuefire";
 
-definePageMeta({ layout: "super-admin" });
+definePageMeta({ layout: "super-admin", middleware: "auth"});
 
 const db = useFirestore();
 const storage = useStorage();
@@ -150,13 +150,14 @@ const route = useRoute();
 const isEditMode = computed(() => !!route.query.id);
 
 const EVENT_TYPES = [
-  { value: 'faculty',      label: 'Faculty' },
-  { value: 'students',     label: 'Students' },
-  { value: 'faculty-wide', label: 'Faculty Wide' },
-] as const
+  { value: "university", label: "University" }, // previously 'faculty-wide'
+  { value: "faculty", label: "Faculty" },
+  { value: "students", label: "Students" },
+  { value: "department", label: "Department" }, // new
+  { value: "general", label: "General" },       // new
+] as const;
 
-type EventType = '' | 'faculty' | 'students' | 'faculty-wide'
-
+type EventType = "" | "university" | "faculty" | "students" | "department" | "general";
 
 
 const form = ref({
