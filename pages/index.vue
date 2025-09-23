@@ -262,80 +262,84 @@
             </div>
 
             <!-- More events -->
-            <!-- More events (clickable header + desktop/mobile CTAs) -->
-<div
-  v-if="oldEvents.length"
-  class="rounded-xl border border-neutral-200 bg-white p-6 shadow-xl"
->
-  <!-- Clickable header: routes to /events/more -->
-  <div
-    class="mb-3 flex items-center gap-2 border-b border-neutral-300 pb-3 cursor-pointer"
-    @click="goToMore"
-    role="button"
-    aria-label="View all events"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="h-5 w-5 text-maroon"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M12 8v5l3 3 1.5-1.5L14 12.75V8h-2z" />
-      <path d="M12 2a10 10 0 100 20 10 10 0 000-20zM4 12a8 8 0 1116 0 8 8 0 01-16 0z" />
-    </svg>
+            <div
+              v-if="oldEvents.length"
+              class="rounded-xl border border-neutral-200 bg-white p-6 shadow-xl"
+            >
+              <!-- Clickable header: routes to /events/more -->
+              <div
+                class="mb-3 flex cursor-pointer items-center gap-2 border-b border-neutral-300 pb-3"
+                @click="goToMore"
+                role="button"
+                aria-label="View all events"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-maroon"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M12 8v5l3 3 1.5-1.5L14 12.75V8h-2z" />
+                  <path d="M12 2a10 10 0 100 20 10 10 0 000-20zM4 12a8 8 0 1116 0 8 8 0 01-16 0z" />
+                </svg>
 
-    <div class="text-lg font-semibold text-maroon">More events</div>
+                <div class="text-lg font-semibold text-maroon hover:underline">More events</div>
 
-    <!-- chevron indicating navigation -->
-    <svg xmlns="http://www.w3.org/2000/svg" class="ml-auto h-4 w-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
+                <!-- chevron indicating navigation -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="ml-auto h-4 w-4 text-gray-400"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
 
-  <!-- List of older events (each item still goes to detail) -->
-  <ul class="space-y-2">
-    <li
-      v-for="ev in oldEvents"
-      :key="ev.id"
-      class="flex items-start justify-between gap-3"
-    >
-      <button
-        class="text-left text-sm font-medium text-gray-800 hover:underline"
-        @click="readMore(ev.id)"
-        type="button"
-      >
-        {{ ev.title }}
-      </button>
-      <span class="shrink-0 text-xs text-gray-500">
-        {{ miniDate(ev.createdAt ?? ev.date) }}
-      </span>
-    </li>
-  </ul>
+              <!-- List of older events (each item still goes to detail) -->
+              <ul class="space-y-2">
+                <li
+                  v-for="ev in oldEvents"
+                  :key="ev.id"
+                  class="flex items-start justify-between gap-3"
+                >
+                  <button
+                    class="text-left text-sm font-medium text-gray-800 hover:underline"
+                    @click="readMore(ev.id)"
+                    type="button"
+                  >
+                    {{ ev.title }}
+                  </button>
+                  <span class="shrink-0 text-xs text-gray-500">
+                    {{ miniDate(ev.createdAt ?? ev.date) }}
+                  </span>
+                </li>
+              </ul>
 
-  <!-- Desktop CTA (right) -->
-  <div class="mt-4 hidden md:flex md:justify-end">
-    <button
-      @click="goToMore"
-      class="text-sm font-semibold text-maroon hover:underline"
-      type="button"
-    >
-      See all events →
-    </button>
-  </div>
+              <!-- Desktop CTA (right) -->
+              <div class="mt-4 hidden md:flex md:justify-end">
+                <button
+                  @click="goToMore"
+                  class="text-sm font-semibold text-maroon hover:underline"
+                  type="button"
+                >
+                  See all events →
+                </button>
+              </div>
 
-  <!-- Mobile CTA (center) -->
-  <div class="mt-4 md:hidden text-center">
-    <button
-      @click="goToMore"
-      class="text-sm font-semibold text-maroon hover:underline"
-      type="button"
-    >
-      See all events →
-    </button>
-  </div>
-</div>
-
+              <!-- Mobile CTA (center) -->
+              <div class="mt-4 text-center md:hidden">
+                <button
+                  @click="goToMore"
+                  class="text-sm font-semibold text-maroon hover:underline"
+                  type="button"
+                >
+                  See all events →
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -608,9 +612,8 @@
   }
 
   function goToMore() {
-  router.push("/events/moreEvents");
-}
-
+    router.push("/events/moreEvents");
+  }
 
   function inDayRange(e: any, day: Date): boolean {
     const s = asDate(e.date);
