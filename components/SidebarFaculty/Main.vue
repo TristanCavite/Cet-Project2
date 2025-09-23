@@ -9,6 +9,7 @@
               <NuxtLink
                 to="/admin/faculty/" 
                 class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
+                exact-active-class="text-black bg-yellow-400"
               > <!--this is the index.vue-->
                 Profile
               </NuxtLink>
