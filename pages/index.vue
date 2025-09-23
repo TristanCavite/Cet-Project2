@@ -255,13 +255,13 @@
         <div class="hidden md:block md:w-[420px] md:justify-self-end">
           <div class="space-y-5">
             <!-- Calendar card (narrower) -->
-            <div class="p-6 bg-white shadow-xl rounded-xl">
-  <AutoFitCalendar
-    :attributes="calendarAttributes"
-    v-model:selectedDate="selectedDate"
-    @date-click="handleDayClick"
-  />
-</div>
+            <div class="rounded-xl bg-white p-6 shadow-xl">
+              <AutoFitCalendar
+                :attributes="calendarAttributes"
+                v-model:selectedDate="selectedDate"
+                @date-click="handleDayClick"
+              />
+            </div>
 
 
             <!-- More events -->
@@ -269,19 +269,41 @@
               v-if="oldEvents.length"
               class="p-6 bg-white border shadow-xl rounded-xl border-neutral-200"
             >
-              <div class="flex items-center gap-2 pb-3 mb-3 border-b border-neutral-300">
+
+              <!-- Clickable header: routes to /events/more -->
+              <div
+                class="mb-3 flex cursor-pointer items-center gap-2 border-b border-neutral-300 pb-3"
+                @click="goToMore"
+                role="button"
+                aria-label="View all events"
+              >
+
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="w-5 h-5 text-maroon"
                   viewBox="0 0 24 24"
                   fill="currentColor"
+                  aria-hidden="true"
                 >
                   <path d="M12 8v5l3 3 1.5-1.5L14 12.75V8h-2z" />
                   <path d="M12 2a10 10 0 100 20 10 10 0 000-20zM4 12a8 8 0 1116 0 8 8 0 01-16 0z" />
                 </svg>
-                <h3 class="text-lg font-semibold text-maroon">More events</h3>
+
+                <div class="text-lg font-semibold text-maroon hover:underline">More events</div>
+
+                <!-- chevron indicating navigation -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="ml-auto h-4 w-4 text-gray-400"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
               </div>
 
+              <!-- List of older events (each item still goes to detail) -->
               <ul class="space-y-2">
                 <li
                   v-for="ev in oldEvents"
@@ -291,21 +313,45 @@
                   <button
                     class="text-sm font-medium text-left text-gray-800 hover:underline"
                     @click="readMore(ev.id)"
+                    type="button"
                   >
                     {{ ev.title }}
                   </button>
+
                   <span class="text-xs text-gray-500 shrink-0">{{
                     miniDate(ev.createdAt || ev.date)
                   }}</span>
+
                 </li>
               </ul>
+
+              <!-- Desktop CTA (right) -->
+              <div class="mt-4 hidden md:flex md:justify-end">
+                <button
+                  @click="goToMore"
+                  class="text-sm font-semibold text-maroon hover:underline"
+                  type="button"
+                >
+                  See all events →
+                </button>
+              </div>
+
+              <!-- Mobile CTA (center) -->
+              <div class="mt-4 text-center md:hidden">
+                <button
+                  @click="goToMore"
+                  class="text-sm font-semibold text-maroon hover:underline"
+                  type="button"
+                >
+                  See all events →
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </main>
-  
 </template>
 
 <script lang="ts" setup>
@@ -322,8 +368,9 @@
   import { useFirestore } from "vuefire";
 
   // Which event type is selected (for the chip filter)
-const typeFilter = ref<"all" | "university" | "faculty" | "students" | "department" | "general">("all");
-
+  const typeFilter = ref<"all" | "university" | "faculty" | "students" | "department" | "general">(
+    "all"
+  );
 
   const selectedLabel = computed(() => {
     return TYPE_OPTIONS.find((opt) => opt.value === typeFilter.value)?.label || "All events";
@@ -339,15 +386,15 @@ const typeFilter = ref<"all" | "university" | "faculty" | "students" | "departme
   }
 
   // Options for the chip UI
-// Filter dropdown options — uses canonical eventType values
-const TYPE_OPTIONS = [
-  { value: "all",        label: "All events",  icon: ListFilter },
-  { value: "university", label: "University",  icon: GraduationCap },         // top-level / college-wide
-  { value: "faculty",    label: "Faculty",     icon: School },        // department faculty
-  { value: "students",   label: "Students",    icon: Users }, // student-facing
-  { value: "department", label: "Department",  icon: Building2 },         // single-department events
-  { value: "general",    label: "General",     icon: Globe },    // misc / public
-] as const;
+  // Filter dropdown options — uses canonical eventType values
+  const TYPE_OPTIONS = [
+    { value: "all", label: "All events", icon: ListFilter },
+    { value: "university", label: "University", icon: GraduationCap }, // top-level / college-wide
+    { value: "faculty", label: "Faculty", icon: School }, // department faculty
+    { value: "students", label: "Students", icon: Users }, // student-facing
+    { value: "department", label: "Department", icon: Building2 }, // single-department events
+    { value: "general", label: "General", icon: Globe }, // misc / public
+  ] as const;
 
   const MAX_VISIBLE = 3;
   const MAX_OLD_EVENTS = 10;
@@ -383,21 +430,20 @@ const TYPE_OPTIONS = [
   const sortedByDateDesc = computed(() =>
     events.value.slice().sort((a, b) => msFrom(b.date) - msFrom(a.date))
   );
-const listByType = computed(() => {
-  if (typeFilter.value === "all") return sortedByDateDesc.value;
+  const listByType = computed(() => {
+    if (typeFilter.value === "all") return sortedByDateDesc.value;
 
-  // normalize helper (lowercase, convert spaces/underscores to hyphen, strip extra chars)
-  const normalizeType = (v: any) =>
-    String(v || "")
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-") // replace spaces/underscores/multiple chars with single hyphen
-      .replace(/(^-|-$)/g, ""); // trim leading/trailing hyphens
+    // normalize helper (lowercase, convert spaces/underscores to hyphen, strip extra chars)
+    const normalizeType = (v: any) =>
+      String(v || "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-") // replace spaces/underscores/multiple chars with single hyphen
+        .replace(/(^-|-$)/g, ""); // trim leading/trailing hyphens
 
-  const wanted = typeFilter.value; // already canonical (e.g. 'university' or 'department')
-  return sortedByDateDesc.value.filter((e) => normalizeType(e.eventType) === wanted);
-});
-
+    const wanted = typeFilter.value; // already canonical (e.g. 'university' or 'department')
+    return sortedByDateDesc.value.filter((e) => normalizeType(e.eventType) === wanted);
+  });
 
   onMounted(async () => {
     // Load events
@@ -570,6 +616,10 @@ const listByType = computed(() => {
   function miniDate(val: any): string {
     const d = typeof val?.toDate === "function" ? val.toDate() : new Date(val);
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }
+
+  function goToMore() {
+    router.push("/events/moreEvents");
   }
 
   function inDayRange(e: any, day: Date): boolean {
