@@ -1,50 +1,39 @@
 <template>
-  <div class="p-8">
+  <main class="p-8">
     <h1 class="mb-6 text-2xl font-bold text-maroon">Department Faculty and Staff</h1>
 
     <!-- Add Faculty/Staff Button -->
-    <button
-      @click="showAddModal = true"
-      class="rounded bg-maroon px-4 py-2 text-white shadow hover:bg-red-600"
-    >
-      + Add Faculty and Staff
-    </button>
+     <div class="flex justify-end">
+       <UiButton @click="showAddModal = true" class="px-4 py-2 text-white bg-red-900 rounded shadow hover:bg-red-800 hover:scale-105">
+         <UserPlus class="size-5" />
+         Add Faculty and Staff
+       </UiButton>
+     </div>
 
     <!-- Department Head Section -->
     <div class="mt-8" v-if="departmentHead">
-      <h2 class="mb-4 text-center text-xl font-semibold">Department Head</h2>
-      <div class="flex justify-center">
-        <div class="cursor-pointer text-center" @click="showProfilePreview(departmentHead)">
-          <img
-            :src="departmentHead?.photo || '/placeholder.png'"
-            alt="Department Head"
-            class="mx-auto h-32 w-32 rounded-full object-cover shadow-lg"
-          />
-          <p class="mt-2 text-lg font-bold">
-            {{ departmentHead ? departmentHead.name : "No Head Assigned" }}
-          </p>
+      <span class="text-xl font-bold font-trajan">Department Head</span>
+      <div class="grid grid-cols-3 mt-3 mb-10 gap-x-6">
+        <div class="flex justify-start h-32 pl-4 space-x-6 text-black rounded shadow-xl cursor-pointer bg-neutral-100" @click="showProfilePreview(departmentHead)">
+          <div class="flex items-center">
+            <img :src="departmentHead?.photo || '/placeholder.png'" alt="Department Head" class="object-cover rounded-full size-28"/>
+          </div>
+          <div class="flex flex-col items-start justify-center">
+            <p class="text-lg font-semibold font-montserrat">{{ departmentHead ? departmentHead.name : "No Head Assigned" }}</p>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Staff Section -->
-    <div class="mt-12" v-if="departmentStaff.length">
-      <h2 class="mb-4 text-center text-xl font-semibold">Staff</h2>
-      <div class="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
-        <div
-          v-for="staff in departmentStaff"
-          :key="staff.id"
-          class="cursor-pointer text-center"
-          @click="showProfilePreview(staff)"
-        >
-          <img
-            :src="staff.photo || '/placeholder.png'"
-            alt="Staff"
-            class="mx-auto h-24 w-24 rounded-full object-cover shadow-lg"
-          />
-          <p class="mt-2 text-lg font-bold">
-            {{ staff ? staff.name : "No Staff Assigned" }}
-          </p>
+    <span class="text-xl font-bold font-trajan">Staff</span>
+    <div class="grid grid-cols-3 mt-3 mb-10 gap-y-6 gap-x-6" v-if="departmentStaff.length">
+      <div v-for="staff in departmentStaff" :key="staff.id" class="flex justify-start h-32 pl-4 space-x-6 text-black rounded shadow-xl cursor-pointer bg-neutral-100" @click="showProfilePreview(staff)">
+        <div  class="flex items-center">
+          <img :src="staff.photo || '/placeholder.png'" alt="Staff" class="object-cover rounded-full size-28"/>
+        </div>
+        <div class="flex flex-col items-start justify-center">
+          <p class="text-lg font-semibold font-montserrat">{{ staff ? staff.name : "No Staff Assigned" }}</p>
         </div>
       </div>
     </div>
@@ -67,7 +56,7 @@
       @close="showAddModal = false"
       @added="onMemberAdded"
     />
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -84,6 +73,7 @@ import {
 import { getAuth } from "firebase/auth";
 import ProfilePreviewModal from "@/components/ProfilePreviewModal.vue";
 import HeadFacultyModal from "@/components/HeadFacultyModal.vue";
+import { UserPlus } from "lucide-vue-next";
 
 definePageMeta({
   middleware: "auth",
