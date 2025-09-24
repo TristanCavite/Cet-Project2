@@ -42,10 +42,27 @@
     <ProfilePreviewModal
       v-if="showProfilePreviewModal"
       :profile="selectedProfile"
-      :showDelete="true"
+      :showDeleteButton="true"
       @close="closeProfilePreviewModal"
       @remove="removeUserFromDepartment"
+       @request-delete="openDeleteModal"
     />
+
+      <UiModal v-if="showDelete" @close="showDelete = false">
+      <template #header>Delete image</template>
+      <template #default>
+         Are you sure you want to remove
+        <strong>{{ profilePendingDelete?.name }}</strong>
+        from college roles? This will only unassign their role(s) in the college-wide document and cannot be undone here.
+      </template>
+      <template #footer>
+        <UiButton class="bg-gray-200" @click="showDelete = false">Cancel</UiButton>
+        <UiButton class="text-white bg-red-600" :disabled="busy" @click="doDelete">
+          <span v-if="busy">Removing…</span>
+          <span v-else>Delete</span>
+        </UiButton>
+      </template>
+    </UiModal>
 
     <!-- Add Faculty/Staff Modal (componentized) -->
     <HeadFacultyModal
@@ -88,10 +105,11 @@ const departmentHead = ref(null);
 const departmentStaff = ref([]);
 
 const showAddModal = ref(false);
-
+const showDelete = ref(false)
+const busy = ref(false)
 const showProfilePreviewModal = ref(false);
 const selectedProfile = ref(null);
-
+const profilePendingDelete = ref(null)
 const users = ref([]);
 
 /** Designations passed to the modal (override or edit here anytime) */
@@ -152,6 +170,37 @@ function fetchDepartmentFacultyAndStaff() {
   });
 }
 
+async function doDelete() {
+  if (!profilePendingDelete.value) return
+  busy.value = true
+
+  try {
+    const ok = await removeUserFromDepartment(profilePendingDelete.value)
+    if (!ok) {
+      // no changes were necessary (user not found in roles) — show a message if desired
+      console.warn('No role found to remove for user', profilePendingDelete.value.id)
+    } else {
+      // update local list/UI: remove the user from local profiles array if desired
+      profiles.value = profiles.value.filter(p => p.id !== profilePendingDelete.value.id)
+    }
+
+    // close modals and reset
+    showDelete.value = false
+    showProfilePreviewModal.value = false
+    profilePendingDelete.value = null
+
+    // TODO: show success toast here (your toast implementation)
+    // e.g. toast.success('User removed from college roles.')
+  } catch (err) {
+    console.error('Failed to remove user from Department roles', err)
+    // TODO: show error toast
+    // e.g. toast.error('Failed to remove user. Try again.')
+  } finally {
+    busy.value = false
+  }
+}
+
+
 async function removeUserFromDepartment(user) {
   const depRef = doc(db, "departments", departmentId.value);
   const depSnap = await getDoc(depRef);
@@ -207,7 +256,10 @@ function closeProfilePreviewModal() {
   showProfilePreviewModal.value = false;
   selectedProfile.value = null;
 }
-
+function openDeleteModal(profile) {
+  profilePendingDelete.value = profile
+  showDelete.value = true
+}
 /** Optional: run things after a member is added (snapshot will auto-refresh UI) */
 function onMemberAdded() {
   showAddModal.value = false;
