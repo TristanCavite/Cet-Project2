@@ -2,8 +2,15 @@
   <div class="min-h-screen bg-neutral-100">
     <!-- 🔒 Left-Aligned Title Cover Image Block -->
     <div class="relative flex items-center w-full font-playfair">
-      <img src="/CET Faculty.jpg" alt="Department Cover" class="object-cover w-full h-44 md:h-128" />
-      <div class="absolute top-16 md:top-40 left-6 md:left-[120px] md:px-4 md:py-4 bg-gray-700/90 px-2 py-2">
+      <img
+        src="/CET Faculty.jpg"
+        alt="Department Cover"
+        class="object-cover w-full h-44 md:h-128"
+      />
+      <div
+        class="absolute top-16 md:top-40 left-6 md:left-[120px] md:px-4 md:py-4 bg-gray-700/90 px-2 py-2 rounded"
+      >
+        <!-- Department name -->
         <span class="text-xl text-white md:text-6xl">
           {{ dept?.name || "Department" }}
         </span>
@@ -12,9 +19,24 @@
 
     <!-- Main Content -->
     <div class="max-w-6xl px-4 py-12 mx-auto">
+      <!-- (Optional) small text link above the list -->
+      <div class="flex items-center justify-end mb-4">
+        <NuxtLink
+          :to="departmentRoute"
+          class="text-sm underline underline-offset-4 text-maroon hover:opacity-80"
+        >
+          Go to Department page →
+        </NuxtLink>
+      </div>
+
       <!-- Head Admin -->
       <div v-if="dept?.headAdmin" class="flex flex-col mb-12 text-center">
-        <span class="mb-6 text-2xl font-bold text-green-950 md:text-5xl font-playfair">Department Head</span>
+        <span
+          class="mb-6 text-2xl font-bold text-green-950 md:text-5xl font-playfair"
+        >
+          Department Head
+        </span>
+
         <div
           @click="openProfile(dept.headAdmin, 'Head Admin')"
           class="flex flex-col items-center justify-start w-full p-2 mx-auto transition bg-white rounded-lg shadow cursor-pointer md:p-6 hover:shadow-lg sm:w-96"
@@ -36,9 +58,14 @@
         </div>
       </div>
 
-        <!-- Staff -->
+      <!-- Staff -->
       <div v-if="dept?.staff?.length" class="max-w-6xl text-center">
-        <span class="mb-6 text-2xl font-bold text-center text-green-950 md:text-5xl font-playfair">Faculty and Staff</span>
+        <span
+          class="mb-6 text-2xl font-bold text-center text-green-950 md:text-5xl font-playfair"
+        >
+          Faculty and Staff
+        </span>
+
         <div class="grid grid-cols-2 gap-6 mt-6 md:grid-cols-3">
           <template v-for="(staff, index) in dept.staff" :key="index">
             <div
@@ -64,43 +91,67 @@
     </div>
 
     <!-- Profile Modal -->
-    <ProfilePreviewModal v-if="showModal" :profile="selectedProfile" @close="showModal = false" />
+    <ProfilePreviewModal
+      v-if="showModal"
+      :profile="selectedProfile"
+      @close="showModal = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-  definePageMeta({
-      layout: "custom",
-  });
-  import ProfilePreviewModal from "@/components/ProfilePreviewModal.vue";
-  import { doc } from "firebase/firestore";
-  import { useRoute } from "vue-router";
-  import { useDocument, useFirestore } from "vuefire";
+/**
+ * Page meta: use your custom layout
+ */
+definePageMeta({
+  layout: "custom",
+});
 
-  const route = useRoute();
-  const deptId = route.params.id as string;
-  const db = useFirestore();
+import ProfilePreviewModal from "@/components/ProfilePreviewModal.vue";
+import { doc } from "firebase/firestore";
+import { useRoute } from "vue-router";
+import { useDocument, useFirestore } from "vuefire";
+import { ref, computed } from "vue"; // ✅ ensure ref & computed are available
 
-  const { data: dept } = useDocument(doc(db, "departments", deptId));
+/** Router / IDs */
+const route = useRoute();
+const deptId = route.params.id as string;
 
-  const showModal = ref(false);
-  const selectedProfile = ref<any>(null);
+/** Firestore */
+const db = useFirestore();
+/**
+ * Load the department doc:
+ * departments/{deptId}
+ * Assumes this contains fields:
+ * - name: string
+ * - headAdmin: {...}
+ * - staff: array
+ */
+const { data: dept } = useDocument(doc(db, "departments", deptId));
 
-  function openProfile(profile: any, role: string) {
-    selectedProfile.value = {
-      ...profile,
-      role,
-      departmentName: dept.value?.name || "",
-    };
-    showModal.value = true;
-  }
+/** Modal state */
+const showModal = ref(false);
+const selectedProfile = ref<any>(null);
+
+/** ✅ Route to the public department page (/academics/departments/[id]) */
+const departmentRoute = computed(() => `/academics/departments/${deptId}`);
+
+/** Open profile preview modal with role + dept name */
+function openProfile(profile: any, role: string) {
+  selectedProfile.value = {
+    ...profile,
+    role,
+    departmentName: dept.value?.name || "",
+  };
+  showModal.value = true;
+}
 </script>
 
 <style scoped>
-  .text-maroon {
-    color: #740505;
-  }
-  .border-maroon {
-    border-color: #740505;
-  }
+.text-maroon {
+  color: #740505;
+}
+.border-maroon {
+  border-color: #740505;
+}
 </style>
