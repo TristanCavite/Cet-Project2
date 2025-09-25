@@ -66,8 +66,8 @@
                   <!-- Home -->
                   <NuxtLink
                     to="/"
-                    class="flex items-center h-12 pb-0 font-semibold border-b-2 border-transparent font-montserrat hover:border-yellow-500 hover:text-yellow-500"
-                    exact-active-class="px-2 py-1 bg-yellow-400 rounded"
+                    class="flex items-center h-12 pb-0 font-semibold border-b-2 border-transparent font-montserrat hover:underline-yellow hover:text-white"
+                    exact-active-class="underline decoration-yellow-500 decoration-4 text-yellow-500"
                   >
                     Home
                   </NuxtLink>
@@ -77,7 +77,7 @@
                     <TabsTrigger
                       value="about"
                       :class="[
-                        'flex items-center h-12 gap-1 pb-0 font-semibold border-b-2 border-transparent font-montserrat group-hover:border-yellow-500 group-hover:text-yellow-500',
+                        'flex items-center h-12 gap-1 pb-0 font-semibold border-b-2 border-transparent font-montserrat group-hover:border-yellow-500 group-hover:text-white',
                         isAboutActive ? 'px-2 py-1 bg-yellow-400 rounded' : 'text-white'
                       ]"
                     >
