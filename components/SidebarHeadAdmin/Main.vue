@@ -9,6 +9,7 @@
               <NuxtLink
                 to="/admin/head-admin/"
                 class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
+                exact-active-class="text-black bg-yellow-400"
               >
               <!--this is the index.vue-->
                 Profile
@@ -18,6 +19,7 @@
               <NuxtLink
                 to="/admin/head-admin/faculty-staff"
                 class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
+                exact-active-class="text-black bg-yellow-400"
               >
                 Faculty and Staff
               </NuxtLink>
@@ -28,6 +30,7 @@
             <NuxtLink
               to="/admin/head-admin/department-page"
               class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
+              exact-active-class="text-black bg-yellow-400"
             >
               Department Page
             </NuxtLink>
@@ -36,6 +39,7 @@
               <NuxtLink
                 to="/admin/head-admin/degree-program"
                 class="block px-3 py-2 transition duration-300 rounded hover:bg-yellow-400 hover:scale-105"
+                exact-active-class="text-black bg-yellow-400"
               >
                 Degree Program
               </NuxtLink>

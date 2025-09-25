@@ -8,7 +8,13 @@ module.exports = {
   prefix: "",
   content: [
     "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}", // Make sure this matches your project files
+    "./components/**/*.{vue,js,ts,jsx,tsx}",
+    "./layouts/**/*.{vue,js,ts,jsx,tsx}",
+    "./pages/**/*.{vue,js,ts,jsx,tsx}",
+    "./plugins/**/*.{js,ts}",
+    "./app.vue",
+    "./nuxt.config.{js,ts}",
+    "./src/**/*.{vue,js,ts,jsx,tsx}", // Keep this for any future src directory usage
   ],
   
   theme: {

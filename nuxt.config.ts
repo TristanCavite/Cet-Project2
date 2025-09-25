@@ -12,7 +12,8 @@ export default defineNuxtConfig({
     "@nuxt/fonts",
     "@samk-dev/nuxt-vcalendar",
     "@vee-validate/nuxt",
-    "@morev/vue-transitions/nuxt"
+    "@morev/vue-transitions/nuxt",
+    "@yuta-inoue-ph/nuxt-vcalendar"
   ],
 
   tailwindcss: {
@@ -24,6 +25,7 @@ export default defineNuxtConfig({
     '~/assets/css/tiptap.css',
     '~/assets/css/tiptap-render.css',
     '~/assets/css/rich-content.css',
+    '~/assets/css/main.css'
   ],
 
   colorMode: {

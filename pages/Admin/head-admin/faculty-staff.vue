@@ -1,50 +1,39 @@
 <template>
-  <div class="p-8">
+  <main class="p-8">
     <h1 class="mb-6 text-2xl font-bold text-maroon">Department Faculty and Staff</h1>
 
     <!-- Add Faculty/Staff Button -->
-    <button
-      @click="showAddModal = true"
-      class="rounded bg-maroon px-4 py-2 text-white shadow hover:bg-red-600"
-    >
-      + Add Faculty and Staff
-    </button>
+     <div class="flex justify-end">
+       <UiButton @click="showAddModal = true" class="px-4 py-2 text-white bg-red-900 rounded shadow hover:bg-red-800 hover:scale-105">
+         <UserPlus class="size-5" />
+         Add Faculty and Staff
+       </UiButton>
+     </div>
 
     <!-- Department Head Section -->
     <div class="mt-8" v-if="departmentHead">
-      <h2 class="mb-4 text-center text-xl font-semibold">Department Head</h2>
-      <div class="flex justify-center">
-        <div class="cursor-pointer text-center" @click="showProfilePreview(departmentHead)">
-          <img
-            :src="departmentHead?.photo || '/placeholder.png'"
-            alt="Department Head"
-            class="mx-auto h-32 w-32 rounded-full object-cover shadow-lg"
-          />
-          <p class="mt-2 text-lg font-bold">
-            {{ departmentHead ? departmentHead.name : "No Head Assigned" }}
-          </p>
+      <span class="text-xl font-bold font-trajan">Department Head</span>
+      <div class="grid grid-cols-3 mt-3 mb-10 gap-x-6">
+        <div class="flex justify-start h-32 pl-4 space-x-6 text-black rounded shadow-xl cursor-pointer bg-neutral-100" @click="showProfilePreview(departmentHead)">
+          <div class="flex items-center">
+            <img :src="departmentHead?.photo || '/placeholder.png'" alt="Department Head" class="object-cover rounded-full size-28"/>
+          </div>
+          <div class="flex flex-col items-start justify-center">
+            <p class="text-lg font-semibold font-montserrat">{{ departmentHead ? departmentHead.name : "No Head Assigned" }}</p>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Staff Section -->
-    <div class="mt-12" v-if="departmentStaff.length">
-      <h2 class="mb-4 text-center text-xl font-semibold">Staff</h2>
-      <div class="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
-        <div
-          v-for="staff in departmentStaff"
-          :key="staff.id"
-          class="cursor-pointer text-center"
-          @click="showProfilePreview(staff)"
-        >
-          <img
-            :src="staff.photo || '/placeholder.png'"
-            alt="Staff"
-            class="mx-auto h-24 w-24 rounded-full object-cover shadow-lg"
-          />
-          <p class="mt-2 text-lg font-bold">
-            {{ staff ? staff.name : "No Staff Assigned" }}
-          </p>
+    <span class="text-xl font-bold font-trajan">Staff</span>
+    <div class="grid grid-cols-3 mt-3 mb-10 gap-y-6 gap-x-6" v-if="departmentStaff.length">
+      <div v-for="staff in departmentStaff" :key="staff.id" class="flex justify-start h-32 pl-4 space-x-6 text-black rounded shadow-xl cursor-pointer bg-neutral-100" @click="showProfilePreview(staff)">
+        <div  class="flex items-center">
+          <img :src="staff.photo || '/placeholder.png'" alt="Staff" class="object-cover rounded-full size-28"/>
+        </div>
+        <div class="flex flex-col items-start justify-center">
+          <p class="text-lg font-semibold font-montserrat">{{ staff ? staff.name : "No Staff Assigned" }}</p>
         </div>
       </div>
     </div>
@@ -53,10 +42,27 @@
     <ProfilePreviewModal
       v-if="showProfilePreviewModal"
       :profile="selectedProfile"
-      :showDelete="true"
+      :showDeleteButton="true"
       @close="closeProfilePreviewModal"
       @remove="removeUserFromDepartment"
+       @request-delete="openDeleteModal"
     />
+
+      <UiModal v-if="showDelete" @close="showDelete = false">
+      <template #header>Delete image</template>
+      <template #default>
+         Are you sure you want to remove
+        <strong>{{ profilePendingDelete?.name }}</strong>
+        from college roles? This will only unassign their role(s) in the college-wide document and cannot be undone here.
+      </template>
+      <template #footer>
+        <UiButton class="bg-gray-200" @click="showDelete = false">Cancel</UiButton>
+        <UiButton class="text-white bg-red-600" :disabled="busy" @click="doDelete">
+          <span v-if="busy">Removing…</span>
+          <span v-else>Delete</span>
+        </UiButton>
+      </template>
+    </UiModal>
 
     <!-- Add Faculty/Staff Modal (componentized) -->
     <HeadFacultyModal
@@ -67,7 +73,7 @@
       @close="showAddModal = false"
       @added="onMemberAdded"
     />
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -84,6 +90,7 @@ import {
 import { getAuth } from "firebase/auth";
 import ProfilePreviewModal from "@/components/ProfilePreviewModal.vue";
 import HeadFacultyModal from "@/components/HeadFacultyModal.vue";
+import { UserPlus } from "lucide-vue-next";
 
 definePageMeta({
   middleware: "auth",
@@ -98,10 +105,11 @@ const departmentHead = ref(null);
 const departmentStaff = ref([]);
 
 const showAddModal = ref(false);
-
+const showDelete = ref(false)
+const busy = ref(false)
 const showProfilePreviewModal = ref(false);
 const selectedProfile = ref(null);
-
+const profilePendingDelete = ref(null)
 const users = ref([]);
 
 /** Designations passed to the modal (override or edit here anytime) */
@@ -162,6 +170,37 @@ function fetchDepartmentFacultyAndStaff() {
   });
 }
 
+async function doDelete() {
+  if (!profilePendingDelete.value) return
+  busy.value = true
+
+  try {
+    const ok = await removeUserFromDepartment(profilePendingDelete.value)
+    if (!ok) {
+      // no changes were necessary (user not found in roles) — show a message if desired
+      console.warn('No role found to remove for user', profilePendingDelete.value.id)
+    } else {
+      // update local list/UI: remove the user from local profiles array if desired
+      profiles.value = profiles.value.filter(p => p.id !== profilePendingDelete.value.id)
+    }
+
+    // close modals and reset
+    showDelete.value = false
+    showProfilePreviewModal.value = false
+    profilePendingDelete.value = null
+
+    // TODO: show success toast here (your toast implementation)
+    // e.g. toast.success('User removed from college roles.')
+  } catch (err) {
+    console.error('Failed to remove user from Department roles', err)
+    // TODO: show error toast
+    // e.g. toast.error('Failed to remove user. Try again.')
+  } finally {
+    busy.value = false
+  }
+}
+
+
 async function removeUserFromDepartment(user) {
   const depRef = doc(db, "departments", departmentId.value);
   const depSnap = await getDoc(depRef);
@@ -217,7 +256,10 @@ function closeProfilePreviewModal() {
   showProfilePreviewModal.value = false;
   selectedProfile.value = null;
 }
-
+function openDeleteModal(profile) {
+  profilePendingDelete.value = profile
+  showDelete.value = true
+}
 /** Optional: run things after a member is added (snapshot will auto-refresh UI) */
 function onMemberAdded() {
   showAddModal.value = false;
